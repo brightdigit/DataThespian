@@ -4,16 +4,16 @@
 //
 
 #if canImport(SwiftData)
-  public protocol AgentRegister: Sendable {
-    associatedtype AgentType: DataAgent
-    var id: String { get }
-    @Sendable
-    func agent() async -> AgentType
-  }
-
-  extension AgentRegister {
-    public var id: String {
-      "\(AgentType.self)"
+    public protocol AgentRegister: Sendable {
+        associatedtype AgentType: DataAgent
+        var id: String { get }
+        @Sendable
+        func agent() async -> AgentType
     }
-  }
+
+    public extension AgentRegister {
+        var id: String {
+            "\(AgentType.self)"
+        }
+    }
 #endif

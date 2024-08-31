@@ -3,7 +3,7 @@
 //// Copyright (c) 2024 BrightDigit.
 ////
 //
-//#if canImport(SwiftData)
+// #if canImport(SwiftData)
 //  import Foundation
 //
 //  public import SwiftData
@@ -27,4 +27,4 @@
 //      self.database = database ?? BackgroundDatabase(modelContainer: modelContainer)
 //    }
 //  }
-//#endif
+// #endif

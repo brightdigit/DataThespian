@@ -4,18 +4,18 @@
 //
 
 #if canImport(Combine) && canImport(SwiftData)
-  @preconcurrency import Combine
+    @preconcurrency import Combine
 
-  import Foundation
+    import Foundation
 
-  internal struct PublishingRegister: AgentRegister {
-    let id: String
-    let subject: PassthroughSubject<any DatabaseChangeSet, Never>
+    struct PublishingRegister: AgentRegister {
+        let id: String
+        let subject: PassthroughSubject<any DatabaseChangeSet, Never>
 
-    func agent() async -> PublishingAgent {
-      let agent = AgentType(id: id, subject: subject)
+        func agent() async -> PublishingAgent {
+            let agent = AgentType(id: id, subject: subject)
 
-      return agent
+            return agent
+        }
     }
-  }
 #endif

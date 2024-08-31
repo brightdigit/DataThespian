@@ -10,10 +10,11 @@ let package = Package(
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "DataThespian",
-            targets: ["DataThespian"]),
+            targets: ["DataThespian"]
+        )
     ],
     dependencies: [
-      .package(url: "https://github.com/brightdigit/FelinePine.git", from: "1.0.0-beta.2")
+        .package(url: "https://github.com/brightdigit/FelinePine.git", from: "1.0.0-beta.2")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -25,6 +26,6 @@ let package = Package(
         .testTarget(
             name: "DataThespianTests",
             dependencies: ["DataThespian"]
-        ),
+        )
     ]
 )

@@ -13,7 +13,7 @@
         let persistentIdentifier: PersistentIdentifier
     }
 
-    public protocol Database: Sendable, Loggable {
+    public protocol Database: Sendable {
         @discardableResult
         func delete<T: PersistentModel>(_ modelType: T.Type, withID id: PersistentIdentifier) async -> Bool
 
@@ -35,10 +35,10 @@
         func transaction(_ block: @Sendable @escaping (ModelContext) throws -> Void) async throws
     }
 
-    public extension Database {
-        static var loggingCategory: ThespianLogging.Category {
-            .data
-        }
-    }
+//    public extension Database {
+//        static var loggingCategory: ThespianLogging.Category {
+//            .data
+//        }
+//    }
 
 #endif

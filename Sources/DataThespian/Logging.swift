@@ -14,4 +14,4 @@ public enum ThespianLogging: LoggingSystem {
     }
 }
 
-public protocol Loggable: FelinePine.Loggable where Self.LoggingSystemType == ThespianLogging {}
+internal protocol Loggable: FelinePine.Loggable where Self.LoggingSystemType == ThespianLogging {}

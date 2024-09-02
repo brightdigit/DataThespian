@@ -35,6 +35,19 @@
         func transaction(_ block: @Sendable @escaping (ModelContext) throws -> Void) async throws
     }
 
+extension Database {
+  func first<T: PersistentModel, U: Sendable>(
+      _ selectPredicate: @escaping @Sendable () -> Predicate<T>,
+      with closure: @escaping @Sendable (T?) throws -> U
+  ) async throws -> U {
+    return try await self.fetch {
+      .init(predicate: selectPredicate(), fetchLimit: 1)
+    } with: { models in
+      try closure(models.first)
+    }
+
+  }
+}
 //    public extension Database {
 //        static var loggingCategory: ThespianLogging.Category {
 //            .data

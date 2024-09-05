@@ -11,51 +11,48 @@
 
     @ModelActor
     public actor ModelActorDatabase: Database, Loggable {
-        public func delete<T: PersistentModel>(_: T.Type, withID id: PersistentIdentifier) async -> Bool {
-            guard let model: T = modelContext.registeredModel(for: id) else {
-                return false
-            }
-
-            modelContext.delete(model)
-
-            return true
+      public func delete<T: PersistentModel>(_: T.Type, withID id: PersistentIdentifier) async -> Bool {
+        guard let model: T = self.modelContext.registeredModel(for: id) else {
+          return false
         }
+        self.modelContext.delete(model)
+        return true
+      }
 
-        public func delete<T>(where predicate: Predicate<T>?) async throws where T: PersistentModel {
-            try modelContext.delete(model: T.self, where: predicate)
+      public func delete<T>(where predicate: Predicate<T>?) async throws where T: PersistentModel {
+        try self.modelContext.delete(model: T.self, where: predicate)
+      }
+
+      public func insert(_ closuer: @escaping @Sendable () -> some PersistentModel) async -> PersistentIdentifier {
+        let model = closuer()
+        self.modelContext.insert(model)
+        return model.persistentModelID
+      }
+
+      public func fetch<T, U>(
+        _ selectDescriptor: @escaping @Sendable () -> FetchDescriptor<T>,
+        with closure: @escaping @Sendable ([T]) throws -> U
+      ) async throws -> U where T: PersistentModel, U: Sendable {
+        let models = try self.modelContext.fetch(selectDescriptor())
+        return try closure(models)
+      }
+
+      public func get<T, U>(for objectID: PersistentIdentifier, with closure: @escaping @Sendable (T?) throws -> U) async throws -> U where T: PersistentModel, U: Sendable {
+        let model: T? = try self.modelContext.existingModel(for: objectID)
+        return try closure(model)
+      }
+      public static var loggingCategory: ThespianLogging.Category {
+          .data
+      }
+
+      public func transaction(_ block: @escaping @Sendable (ModelContext) throws -> Void) async throws {
+        assert(isMainThread: false)
+
+        try self.modelContext.transaction {
+          assert(isMainThread: false)
+          try block(modelContext)
         }
-
-        public func insert(_ closuer: @escaping @Sendable () -> some PersistentModel) async -> PersistentIdentifier {
-            let model = closuer()
-            modelContext.insert(model)
-            return model.persistentModelID
-        }
-
-        public func fetch<T, U>(
-            _ selectDescriptor: @escaping @Sendable () -> FetchDescriptor<T>,
-            with closure: @escaping @Sendable ([T]) throws -> U
-        ) async throws -> U where T: PersistentModel, U: Sendable {
-            let models = try modelContext.fetch(selectDescriptor())
-            return try closure(models)
-        }
-
-        public func fetch<T, U>(for objectID: PersistentIdentifier, with closure: @escaping @Sendable (T?) throws -> U) async throws -> U? where T: PersistentModel, U: Sendable {
-            let model: T? = try modelContext.existingModel(for: objectID)
-            return try closure(model)
-        }
-
-        public static var loggingCategory: ThespianLogging.Category {
-            .data
-        }
-
-        public func transaction(_ block: @escaping @Sendable (ModelContext) throws -> Void) async throws {
-            assert(isMainThread: false)
-
-            try modelContext.transaction {
-                assert(isMainThread: false)
-                try block(modelContext)
-            }
-        }
+      }
     }
 
     public extension ModelActorDatabase {

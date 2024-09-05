@@ -11,7 +11,7 @@
     }
 
     extension DatabaseChangeSet {
-        var isEmpty: Bool {
+        public var isEmpty: Bool {
             inserted.isEmpty && deleted.isEmpty && updated.isEmpty
         }
 

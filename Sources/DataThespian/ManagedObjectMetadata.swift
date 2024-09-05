@@ -7,7 +7,7 @@
 
 #if canImport(SwiftData)
 @inlinable
-public func assertionFailure(error: any Error, file: StaticString = #file, line: UInt = #line) {
+internal func assertionFailure(error: any Error, file: StaticString = #file, line: UInt = #line) {
     assertionFailure(error.localizedDescription, file: file, line: line)
 }
 

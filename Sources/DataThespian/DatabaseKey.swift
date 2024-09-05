@@ -12,41 +12,41 @@
     public import SwiftUI
 
     private struct DefaultDatabase: Database {
-        func delete(_: (some PersistentModel).Type, withID _: PersistentIdentifier) async -> Bool {
-            assertionFailure("No Database Set.")
-            return false
-        }
+      func delete(_: (some PersistentModel).Type, withID _: PersistentIdentifier) async -> Bool {
+        assertionFailure("No Database Set.")
+        return false
+      }
 
-        func delete(where _: Predicate<some PersistentModel>?) async throws {
-            assertionFailure("No Database Set.")
-            throw NotImplmentedError.instance
-        }
+      func delete(where _: Predicate<some PersistentModel>?) async throws {
+        assertionFailure("No Database Set.")
+        throw NotImplmentedError.instance
+      }
 
-        func insert(_: @escaping @Sendable () -> some PersistentModel) async -> PersistentIdentifier {
-            assertionFailure("No Database Set.")
-            fatalError()
-        }
+      func insert(_: @escaping @Sendable () -> some PersistentModel) async -> PersistentIdentifier {
+        // assertionFailure("No Database Set.")
+        fatalError("No Database Set.")
+      }
 
-        func fetch<T, U>(_: @escaping @Sendable () -> FetchDescriptor<T>, with _: @escaping @Sendable ([T]) throws -> U) async throws -> U where T: PersistentModel, U: Sendable {
-            assertionFailure("No Database Set.")
-            throw NotImplmentedError.instance
-        }
+      func fetch<T, U>(_: @escaping @Sendable () -> FetchDescriptor<T>, with _: @escaping @Sendable ([T]) throws -> U) async throws -> U where T: PersistentModel, U: Sendable {
+        assertionFailure("No Database Set.")
+        throw NotImplmentedError.instance
+      }
 
-        func fetch<T, U>(for _: PersistentIdentifier, with _: @escaping @Sendable (T?) throws -> U) async throws -> U? where T: PersistentModel, U: Sendable {
-            assertionFailure("No Database Set.")
-            throw NotImplmentedError.instance
-        }
+      func get<T, U>(for _: PersistentIdentifier, with _: @escaping @Sendable (T?) throws -> U) async throws -> U where T: PersistentModel, U: Sendable {
+        assertionFailure("No Database Set.")
+        throw NotImplmentedError.instance
+      }
 
-        private struct NotImplmentedError: Error {
-            static let instance = NotImplmentedError()
-        }
+      private struct NotImplmentedError: Error {
+        static let instance = NotImplmentedError()
+      }
 
-        static let instance = DefaultDatabase()
+      static let instance = DefaultDatabase()
 
-        func transaction(_: @escaping (ModelContext) throws -> Void) async throws {
-            assertionFailure("No Database Set.")
-            throw NotImplmentedError.instance
-        }
+      func transaction(_: @escaping (ModelContext) throws -> Void) async throws {
+        assertionFailure("No Database Set.")
+        throw NotImplmentedError.instance
+      }
     }
 
     extension DefaultDatabase {

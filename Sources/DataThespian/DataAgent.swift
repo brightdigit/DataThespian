@@ -3,10 +3,10 @@
 // Copyright (c) 2024 BrightDigit.
 //
 
-public import Foundation
+
 
 #if canImport(SwiftData)
-
+public import Foundation
     public protocol DataAgent: Sendable {
         var agentID: UUID { get }
         func onUpdate(_ update: any DatabaseChangeSet)

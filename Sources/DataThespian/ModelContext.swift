@@ -7,15 +7,20 @@
     import Foundation
     import SwiftData
 
-    extension ModelContext {
+extension ModelContext : Loggable {
+  public static var loggingCategory: ThespianLogging.Category {
+    .data
+  }
         func existingModel<T>(
             for objectID: PersistentIdentifier
         ) throws -> T? where T: PersistentModel {
             if let registered: T = registeredModel(for: objectID) {
                 return registered
             }
-
-            assertionFailure("This first method should always work.")
+          
+          if let notRegistered : T = model(for: objectID) as? T {
+            return notRegistered
+          }
 
             let fetchDescriptor = FetchDescriptor<T>(
                 predicate: #Predicate {

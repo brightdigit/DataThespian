@@ -1,0 +1,24 @@
+{
+  "originHash" : "e5c5459f572d6a25f98fc4225248f15148418bc33ead188712287f082ea9172b",
+  "pins" : [
+    {
+      "identity" : "felinepine",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/brightdigit/FelinePine.git",
+      "state" : {
+        "revision" : "54c727e0b069ffda7f80db7af99bfab2518e0780",
+        "version" : "1.0.0-beta.2"
+      }
+    },
+    {
+      "identity" : "swift-log",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-log.git",
+      "state" : {
+        "revision" : "9cb486020ebf03bfa5b5df985387a14a98744537",
+        "version" : "1.6.1"
+      }
+    }
+  ],
+  "version" : 3
+}

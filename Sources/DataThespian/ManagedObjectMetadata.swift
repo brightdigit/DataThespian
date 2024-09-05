@@ -3,12 +3,13 @@
 // Copyright (c) 2024 BrightDigit.
 //
 
+
+
+#if canImport(SwiftData)
 @inlinable
 public func assertionFailure(error: any Error, file: StaticString = #file, line: UInt = #line) {
     assertionFailure(error.localizedDescription, file: file, line: line)
 }
-
-#if canImport(SwiftData)
 
     public import SwiftData
 

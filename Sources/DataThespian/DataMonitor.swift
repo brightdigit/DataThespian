@@ -2,12 +2,12 @@
 // DataMonitor.swift
 // Copyright (c) 2024 BrightDigit.
 //
+
+#if canImport(Combine) && canImport(SwiftData) && canImport(CoreData)
 @inlinable
 public func assert(isMainThread: Bool) {
     assert(isMainThread == Thread.isMainThread)
 }
-
-#if canImport(Combine) && canImport(SwiftData) && canImport(CoreData)
 
     import Combine
 

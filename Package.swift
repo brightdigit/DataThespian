@@ -14,7 +14,8 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/brightdigit/FelinePine.git", from: "1.0.0-beta.2")
+        .package(url: "https://github.com/brightdigit/FelinePine.git", from: "1.0.0-beta.2"),
+        .package(url: "https://github.com/swiftlang/swift-testing.git", from: "0.12.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -25,7 +26,10 @@ let package = Package(
         ),
         .testTarget(
             name: "DataThespianTests",
-            dependencies: ["DataThespian"]
+            dependencies: [
+                "DataThespian",
+                .product(name: "Testing", package: "swift-testing"),
+            ]
         )
     ]
 )

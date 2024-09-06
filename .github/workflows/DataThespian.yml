@@ -84,7 +84,9 @@ jobs:
       - name: Setup Xcode
         run: sudo xcode-select -s ${{ matrix.xcode }}/Contents/Developer || (sudo ls -1 /Applications | grep "Xcode")
       - name: Enable Swift Testing
-        run: cp macros.json ~/Library/org.swift.swiftpm/security/        
+        run: |
+          mkdir -p ~/Library/org.swift.swiftpm/security/        
+          cp macros.json ~/Library/org.swift.swiftpm/security/        
       - name: Install mint
         if: startsWith(matrix.xcode,'/Applications/Xcode_16.1')
         run: |

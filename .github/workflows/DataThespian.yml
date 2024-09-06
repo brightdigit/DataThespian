@@ -87,30 +87,30 @@ jobs:
         run: |
           mkdir -p ~/Library/org.swift.swiftpm/security/        
           cp macros.json ~/Library/org.swift.swiftpm/security/        
-      # - name: Install mint
-      #   if: startsWith(matrix.xcode,'/Applications/Xcode_16.1')
-      #   run: |
-      #     brew update
-      #     brew install mint
-      # - name: Build
-      #   run: swift build
-      # - name: Run Swift Package tests
-      #   run: swift test --enable-code-coverage
-      # - uses: sersoft-gmbh/swift-coverage-action@v4
-      #   id: coverage-files-spm
-      #   with:          
-      #     fail-on-empty-output: true
-      # - name: Upload coverage reports to Codecov
-      #   uses: codecov/codecov-action@v4        
-      #   with:
-      #     files: ${{ join(fromJSON(steps.coverage-files-spm.outputs.files), ',') }} 
-      #     token: ${{ secrets.CODECOV_TOKEN }}
-      #     flags: macOS,${{ env.XCODE_NAME }},${{ matrix.runs-on }}
-      # - name: Clean up spm build directory
-      #   run: rm -rf .build
-      # - name: Lint
-      #   run: ./scripts/lint.sh
-      #   if: startsWith(matrix.xcode,'/Applications/Xcode_16.1')
+      - name: Install mint
+        if: startsWith(matrix.xcode,'/Applications/Xcode_16.1')
+        run: |
+          brew update
+          brew install mint
+      - name: Build
+        run: swift build
+      - name: Run Swift Package tests
+        run: swift test --enable-code-coverage
+      - uses: sersoft-gmbh/swift-coverage-action@v4
+        id: coverage-files-spm
+        with:          
+          fail-on-empty-output: true
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4        
+        with:
+          files: ${{ join(fromJSON(steps.coverage-files-spm.outputs.files), ',') }} 
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: macOS,${{ env.XCODE_NAME }},${{ matrix.runs-on }}
+      - name: Clean up spm build directory
+        run: rm -rf .build
+      - name: Lint
+        run: ./scripts/lint.sh
+        if: startsWith(matrix.xcode,'/Applications/Xcode_16.1')
       - name: Run iOS target tests
         run: xcodebuild test -scheme ${{ env.PACKAGE_NAME }} -destination 'platform=iOS Simulator,name=${{ matrix.iPhoneName }},OS=${{ matrix.iOSVersion }}' -enableCodeCoverage YES build test
       - uses: sersoft-gmbh/swift-coverage-action@v4

@@ -108,7 +108,7 @@ jobs:
         run: ./scripts/lint.sh
         if: startsWith(matrix.xcode,'/Applications/Xcode_16.1')
       - name: Run iOS target tests
-        run: xcodebuild test -scheme ${{ env.PACKAGE_NAME }}-Package -sdk "iphonesimulator" -destination 'platform=iOS Simulator,name=${{ matrix.iPhoneName }},OS=${{ matrix.iOSVersion }}' -enableCodeCoverage YES build test
+        run: xcodebuild test -scheme ${{ env.PACKAGE_NAME }} -sdk "iphonesimulator" -destination 'platform=iOS Simulator,name=${{ matrix.iPhoneName }},OS=${{ matrix.iOSVersion }}' -enableCodeCoverage YES build test
       - uses: sersoft-gmbh/swift-coverage-action@v4
         id: coverage-files-iOS
         with:          
@@ -122,7 +122,7 @@ jobs:
           files: ${{ join(fromJSON(steps.coverage-files-iOS.outputs.files), ',') }}   
           flags: iOS,iOS${{ matrix.iOSVersion }},macOS,${{ env.XCODE_NAME }}  
       - name: Run watchOS target tests
-        run: xcodebuild test -scheme ${{ env.PACKAGE_NAME }}-Package -sdk "watchsimulator" -destination 'platform=watchOS Simulator,name=${{ matrix.watchName }},OS=${{ matrix.watchOSVersion }}' -enableCodeCoverage YES build test
+        run: xcodebuild test -scheme ${{ env.PACKAGE_NAME }} -sdk "watchsimulator" -destination 'platform=watchOS Simulator,name=${{ matrix.watchName }},OS=${{ matrix.watchOSVersion }}' -enableCodeCoverage YES build test
       - uses: sersoft-gmbh/swift-coverage-action@v4
         id: coverage-files-watchOS
         with:          

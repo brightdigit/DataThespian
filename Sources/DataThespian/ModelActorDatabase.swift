@@ -33,6 +33,15 @@
 
   public import SwiftData
 
+extension ModelContext {
+  func fetch<each T: PersistentModel, Result: Sendable>(
+  _ descriptor: repeat FetchDescriptor<each T>,
+  with closure: @escaping @Sendable (repeat [each T]) throws -> Result
+  ) throws -> Result {
+  try closure (repeat try fetch(each descriptor))
+  }
+}
+
   @ModelActor public actor ModelActorDatabase: Database, Loggable {
     public func delete<T: PersistentModel>(_: T.Type, withID id: PersistentIdentifier) async -> Bool
     {
@@ -52,7 +61,23 @@
       self.modelContext.insert(model)
       return model.persistentModelID
     }
-
+    
+//    public func fetch<each T: PersistentModel, Result: Sendable>(
+//      _ descriptor: @Sendable () -> (repeat  (FetchDescriptor<each T>)),
+//    with closure: @escaping @Sendable (repeat [each T]) throws -> Result
+//    ) async throws -> Result {
+//      try closure(
+//        try    self.modelContext.fetch(repeat each descriptor())
+//      )
+//    }
+    
+//    public func fetchA<each T: PersistentModel, Result: Sendable>(
+//    _ descriptor: repeat FetchDescriptor<each T>,
+//    with closure: @escaping @Sendable (repeat [each T]) throws -> Result
+//    ) async throws -> Result {
+//      try self.modelContext.fetch(repeat each descriptor, with: closure)
+//    }
+    
     public func fetch<T, U>(
       _ selectDescriptor: @escaping @Sendable () -> FetchDescriptor<T>,
       with closure: @escaping @Sendable ([T]) throws -> U
@@ -60,6 +85,7 @@
       let models = try self.modelContext.fetch(selectDescriptor())
       return try closure(models)
     }
+    
     public func fetch<T: PersistentModel, U: PersistentModel, V: Sendable>(
       _ selectDescriptorA: @escaping @Sendable () -> FetchDescriptor<T>,
       _ selectDescriptorB: @escaping @Sendable () -> FetchDescriptor<U>,
@@ -77,6 +103,17 @@
       let model: T? = try self.modelContext.existingModel(for: objectID)
       return try closure(model)
     }
+    
+  
+    public func fetch<each T: PersistentModel, U: Sendable>(
+      _ selectDescriptor: @escaping @Sendable () -> (repeat FetchDescriptor<each T>),
+      with closure: @escaping @Sendable (repeat ([each T])) throws -> U
+    ) async throws -> U where  U: Sendable {
+      return try closure(
+        repeat try self.modelContext.fetch(each selectDescriptor())
+      )
+    }
+    
     public static var loggingCategory: ThespianLogging.Category { .data }
 
     public func transaction(_ block: @escaping @Sendable (ModelContext) throws -> Void) async throws

@@ -35,7 +35,17 @@
 
   public import SwiftUI
 
-  fileprivate struct DefaultDatabase: Database {
+fileprivate struct DefaultDatabase: Database {
+
+  
+  func fetch<each T: PersistentModel, U: Sendable>(
+    _ selectDescriptor: @escaping @Sendable () -> (repeat FetchDescriptor<each T>),
+    with closure: @escaping @Sendable (repeat ([each T])) throws -> U
+  ) async throws -> U where  U: Sendable {
+    assertionFailure("No Database Set.")
+    throw NotImplmentedError.instance
+  }
+  
     func delete(_: (some PersistentModel).Type, withID _: PersistentIdentifier) async -> Bool {
       assertionFailure("No Database Set.")
       return false
@@ -51,6 +61,15 @@
       fatalError("No Database Set.")
     }
 
+    
+    func fetch<each T: PersistentModel, Result: Sendable>(
+      _ descriptor: repeat @Sendable () -> FetchDescriptor<each T>,
+    with closure: @escaping @Sendable (repeat [each T]) throws -> Result
+    ) async throws -> Result {
+      assertionFailure("No Database Set.")
+      throw NotImplmentedError.instance
+    }
+    
     func fetch<T, U>(
       _: @escaping @Sendable () -> FetchDescriptor<T>,
       with _: @escaping @Sendable ([T]) throws -> U

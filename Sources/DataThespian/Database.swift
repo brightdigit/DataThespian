@@ -44,7 +44,12 @@
     func insert(_ closuer: @Sendable @escaping () -> some PersistentModel) async
       -> PersistentIdentifier
 
-    func fetch<each T: PersistentModel, U: Sendable>(
+//    func fetch<each T: PersistentModel, Result: Sendable> (
+//    descriptor: repeat @escaping @Sendable() -> FetchDescriptor<each T>,
+//    with closure: @escaping @Sendable (repeat [each T]) throws -> Result)
+//    async throws -> Result
+    
+    func fetchA<each T: PersistentModel, U: Sendable>(
       _ selectDescriptor: @escaping @Sendable () -> (repeat FetchDescriptor<each T>),
       with closure: @escaping @Sendable (repeat ([each T])) throws -> U
     ) async throws -> U where  U: Sendable 

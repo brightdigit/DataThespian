@@ -33,6 +33,13 @@
 
   public import SwiftData
 
+public enum Pack {
+  public static func descriptors<each Model: PersistentModel>(
+    _ descriptors: repeat @escaping @Sendable() -> FetchDescriptor<each Model>) -> (repeat FetchDescriptor<each Model>){
+      return (repeat (each descriptors)())
+  }  
+}
+
 extension ModelContext {
   func fetch<each T: PersistentModel, Result: Sendable>(
   _ descriptor: repeat FetchDescriptor<each T>,
@@ -105,7 +112,7 @@ extension ModelContext {
     }
     
   
-    public func fetch<each T: PersistentModel, U: Sendable>(
+    public func fetchA<each T: PersistentModel, U: Sendable>(
       _ selectDescriptor: @escaping @Sendable () -> (repeat FetchDescriptor<each T>),
       with closure: @escaping @Sendable (repeat ([each T])) throws -> U
     ) async throws -> U where  U: Sendable {
@@ -113,6 +120,14 @@ extension ModelContext {
         repeat try self.modelContext.fetch(each selectDescriptor())
       )
     }
+    
+//    public func fetch<each T: PersistentModel, Result: Sendable> (
+//    descriptor: repeat @escaping @Sendable() -> FetchDescriptor<each T>,
+//    with closure: @escaping @Sendable (repeat [each T]) throws -> Result)
+//    async throws -> Result {
+//      fatalError()
+//    }
+    
     
     public static var loggingCategory: ThespianLogging.Category { .data }
 

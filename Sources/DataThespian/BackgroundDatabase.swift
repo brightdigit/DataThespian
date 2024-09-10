@@ -54,11 +54,11 @@
       try await self.database.fetch(selectDescriptor, with: closure)
     }
     
-    public func fetch<each T: PersistentModel, U: Sendable>(
+    public func fetchA<each T: PersistentModel, U: Sendable>(
       _ selectDescriptor: @escaping @Sendable () -> (repeat FetchDescriptor<each T>),
       with closure: @escaping @Sendable (repeat ([each T])) throws -> U
     ) async throws -> U where  U: Sendable {
-      try await self.database.fetch(selectDescriptor, with: closure)
+      try await self.database.fetchA(selectDescriptor, with: closure)
     }
 
     public func get<T, U>(

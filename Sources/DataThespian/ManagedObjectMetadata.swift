@@ -51,8 +51,13 @@
           assertionFailure(error: error)
           return nil
         }
+        guard let entityName = managedObject.entity.name else {
+          assertionFailure("Missing entity name.")
+          return nil
+        }
+        
         self.init(
-          entityName: managedObject.entity.managedObjectClassName,
+          entityName: entityName,
           persistentIdentifier: persistentIdentifier
         )
       }

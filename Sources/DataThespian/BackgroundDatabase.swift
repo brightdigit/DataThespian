@@ -90,10 +90,10 @@
 
     private var database: any Database { get async { await container.database } }
 
-    public convenience init(modelContainer: ModelContainer) {
+    public convenience init(modelContainer: ModelContainer, autosaveEnabled: Bool = false) {
       self.init {
         assert(isMainThread: false)
-        return ModelActorDatabase(modelContainer: modelContainer)
+        return ModelActorDatabase(modelContainer: modelContainer, autosaveEnabled: autosaveEnabled)
       }
     }
 

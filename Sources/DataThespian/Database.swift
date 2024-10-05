@@ -34,8 +34,7 @@
   public import SwiftData
 
   public protocol Database: Sendable {
-    func save () async throws
-    
+    func save() async throws
     @discardableResult func delete<T: PersistentModel>(
       _ modelType: T.Type,
       withID id: PersistentIdentifier

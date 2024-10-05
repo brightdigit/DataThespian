@@ -55,11 +55,7 @@
           assertionFailure("Missing entity name.")
           return nil
         }
-        
-        self.init(
-          entityName: entityName,
-          persistentIdentifier: persistentIdentifier
-        )
+        self.init(entityName: entityName, persistentIdentifier: persistentIdentifier)
       }
     }
   #endif

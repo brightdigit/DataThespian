@@ -33,7 +33,7 @@
 
   public import SwiftData
 
-public actor ModelActorDatabase: Database, Loggable {
+  public actor ModelActorDatabase: Database, Loggable {
     public func delete<T: PersistentModel>(_: T.Type, withID id: PersistentIdentifier) async -> Bool
     {
       guard let model: T = self.modelContext.registeredModel(for: id) else { return false }
@@ -88,31 +88,24 @@ public actor ModelActorDatabase: Database, Loggable {
         try block(modelContext)
       }
     }
-  
-  public func save () throws {
-    assert(isMainThread: false)
-    try self.modelContext.save()
+    public func save() throws {
+      assert(isMainThread: false)
+      try self.modelContext.save()
+    }
+    public nonisolated let modelExecutor: any SwiftData.ModelExecutor
+    public nonisolated let modelContainer: SwiftData.ModelContainer
+    public init(modelContainer: SwiftData.ModelContainer, autosaveEnabled: Bool = false) {
+      let modelContext = ModelContext(modelContainer)
+      modelContext.autosaveEnabled = autosaveEnabled
+      let modelExecutor = DefaultSerialModelExecutor(modelContext: modelContext)
+      self.init(modelExecutor: modelExecutor, modelContainer: modelContainer)
+    }
+    private init(modelExecutor: any ModelExecutor, modelContainer: ModelContainer) {
+      self.modelExecutor = modelExecutor
+      self.modelContainer = modelContainer
+    }
   }
-  
-  public nonisolated let modelExecutor: any SwiftData.ModelExecutor
-  
-  public nonisolated let modelContainer: SwiftData.ModelContainer
-  
-  public init(modelContainer: SwiftData.ModelContainer, autosaveEnabled: Bool = false) {
-    let modelContext = ModelContext(modelContainer)
-    modelContext.autosaveEnabled = autosaveEnabled
-    let modelExecutor = DefaultSerialModelExecutor(modelContext: modelContext)
-    self.init(modelExecutor: modelExecutor, modelContainer: modelContainer)
-  }
-  
-  private init(modelExecutor: any ModelExecutor, modelContainer: ModelContainer) {
-    self.modelExecutor = modelExecutor
-    self.modelContainer = modelContainer
-  }
-}
 
-extension ModelActorDatabase: SwiftData.ModelActor {
-}
-
+  extension ModelActorDatabase: SwiftData.ModelActor {}
 
 #endif

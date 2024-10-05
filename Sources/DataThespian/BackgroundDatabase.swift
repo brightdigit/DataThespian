@@ -42,7 +42,7 @@
     public func delete(where predicate: Predicate<some PersistentModel>?) async throws {
       try await self.database.delete(where: predicate)
     }
-
+    public func save() async throws { try await self.database.save() }
     public func insert(_ closuer: @escaping @Sendable () -> some PersistentModel) async
       -> PersistentIdentifier
     { await self.database.insert(closuer) }
@@ -90,10 +90,10 @@
 
     private var database: any Database { get async { await container.database } }
 
-    public convenience init(modelContainer: ModelContainer) {
+    public convenience init(modelContainer: ModelContainer, autosaveEnabled: Bool = false) {
       self.init {
         assert(isMainThread: false)
-        return ModelActorDatabase(modelContainer: modelContainer)
+        return ModelActorDatabase(modelContainer: modelContainer, autosaveEnabled: autosaveEnabled)
       }
     }
 

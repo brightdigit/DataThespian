@@ -89,6 +89,10 @@ public actor ModelActorDatabase: Database, Loggable {
       }
     }
   
+  public func save () throws {
+    assert(isMainThread: false)
+    try self.modelContext.save()
+  }
   
   public nonisolated let modelExecutor: any SwiftData.ModelExecutor
   

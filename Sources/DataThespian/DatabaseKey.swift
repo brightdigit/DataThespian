@@ -36,6 +36,11 @@
   public import SwiftUI
 
   fileprivate struct DefaultDatabase: Database {
+    
+    public func save () async throws {
+      assertionFailure("No Database Set.")
+      throw NotImplmentedError.instance
+    }
     func delete(_: (some PersistentModel).Type, withID _: PersistentIdentifier) async -> Bool {
       assertionFailure("No Database Set.")
       return false

@@ -33,7 +33,10 @@ public enum DatabaseChangeType: CaseIterable, Sendable {
   case updated
   #if canImport(SwiftData)
     var keyPath: KeyPath<any DatabaseChangeSet, Set<ManagedObjectMetadata>> {
-      switch self { case .inserted: \.inserted case .deleted: \.deleted case .updated: \.updated
+      switch self {
+      case .inserted: \.inserted
+      case .deleted: \.deleted
+      case .updated: \.updated
       }
     }
   #endif

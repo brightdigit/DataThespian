@@ -89,11 +89,13 @@
       )
       let encoder = JSONEncoder()
       let data: Data
-      do { data = try encoder.encode(json) }
-      catch let error as EncodingError { throw PersistentIdentifierError.encodingError(error) }
+      do { data = try encoder.encode(json) } catch let error as EncodingError {
+        throw PersistentIdentifierError.encodingError(error)
+      }
       let decoder = JSONDecoder()
-      do { return try decoder.decode(PersistentIdentifier.self, from: data) }
-      catch let error as DecodingError { throw PersistentIdentifierError.decodingError(error) }
+      do { return try decoder.decode(PersistentIdentifier.self, from: data) } catch let error
+        as DecodingError
+      { throw PersistentIdentifierError.decodingError(error) }
     }
   }
 

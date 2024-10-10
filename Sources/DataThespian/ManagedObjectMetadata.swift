@@ -46,8 +46,7 @@
     extension ManagedObjectMetadata {
       init?(managedObject: NSManagedObject) {
         let persistentIdentifier: PersistentIdentifier
-        do { persistentIdentifier = try managedObject.objectID.persistentIdentifier() }
-        catch {
+        do { persistentIdentifier = try managedObject.objectID.persistentIdentifier() } catch {
           assertionFailure(error: error)
           return nil
         }

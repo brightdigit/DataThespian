@@ -55,8 +55,7 @@
       if let registration = registrations[id], force {
         Self.logger.debug("Overwriting \(id). Already exists.")
         await registration.finish()
-      }
-      else if registrations[id] != nil {
+      } else if registrations[id] != nil {
         Self.logger.debug("Can't register \(id). Already exists.")
         return
       }

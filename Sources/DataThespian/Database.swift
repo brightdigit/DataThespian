@@ -35,6 +35,7 @@
 
   public protocol Database: Sendable {
     func save() async throws
+
     @discardableResult func delete<T: PersistentModel>(
       _ modelType: T.Type,
       withID id: PersistentIdentifier
@@ -49,6 +50,7 @@
       _ selectDescriptor: @escaping @Sendable () -> FetchDescriptor<T>,
       with closure: @escaping @Sendable ([T]) throws -> U
     ) async throws -> U
+
     func fetch<T: PersistentModel, U: PersistentModel, V: Sendable>(
       _ selectDescriptorA: @escaping @Sendable () -> FetchDescriptor<T>,
       _ selectDescriptorB: @escaping @Sendable () -> FetchDescriptor<U>,

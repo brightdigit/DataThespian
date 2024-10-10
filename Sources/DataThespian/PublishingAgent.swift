@@ -71,7 +71,9 @@
     private func updateScriptionStatus(byEvent event: SubscriptionEvent) {
       let oldCount = subscriptionCount
       let delta: Int =
-        switch event { case .cancel: -1 case .subscribe: 1
+        switch event {
+        case .cancel: -1
+        case .subscribe: 1
         }
 
       subscriptionCount += delta

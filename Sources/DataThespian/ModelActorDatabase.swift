@@ -92,8 +92,11 @@
       assert(isMainThread: false)
       try self.modelContext.save()
     }
+
     public nonisolated let modelExecutor: any SwiftData.ModelExecutor
+
     public nonisolated let modelContainer: SwiftData.ModelContainer
+
     public init(modelContainer: SwiftData.ModelContainer, autosaveEnabled: Bool = false) {
       let modelContext = ModelContext(modelContainer)
       modelContext.autosaveEnabled = autosaveEnabled

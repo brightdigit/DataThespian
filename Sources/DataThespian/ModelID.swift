@@ -33,7 +33,7 @@
 
   public import SwiftData
   public struct ModelID<T: PersistentModel>: Sendable, Identifiable {
-    public var id: PersistentIdentifier.ID { return persistentIdentifier.id }
+    public var id: PersistentIdentifier.ID { persistentIdentifier.id }
     public let persistentIdentifier: PersistentIdentifier
 
     enum Error: Swift.Error { case notFound(PersistentIdentifier) }

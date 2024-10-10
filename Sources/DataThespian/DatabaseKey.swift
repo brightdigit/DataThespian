@@ -36,7 +36,7 @@
   public import SwiftUI
 
   fileprivate struct DefaultDatabase: Database {
-    public func save() async throws {
+    func save() async throws {
       assertionFailure("No Database Set.")
       throw NotImplmentedError.instance
     }

@@ -8,11 +8,25 @@
 import SwiftUI
 import SwiftData
 import DataThespian
+import Combine
 
+struct ItemModel : Identifiable {
+  internal init(item : Item) {
+    self.init(id: item.persistentModelID, timestamp: item.timestamp)
+  }
+  internal init(id: PersistentIdentifier, timestamp: Date) {
+    self.id = id
+    self.timestamp = timestamp
+  }
+  
+  let id : PersistentIdentifier
+  let timestamp: Date
+}
 struct ContentView: View {
-    
-    private var items = [Item]()
-  private let database = try! BackgroundDatabase(modelContainer: .init(for: Item.self))
+  private let databaseChangePublicist = DatabaseChangePublicist(dbWatcher: DataMonitor.shared)
+  @State private var items = [ItemModel]()
+  @State private var newItem: AnyCancellable?
+  private static let database = try! BackgroundDatabase(modelContainer: .init(for: Item.self), autosaveEnabled: true)
 
     var body: some View {
         NavigationSplitView {
@@ -37,16 +51,24 @@ struct ContentView: View {
         } detail: {
             Text("Select an item")
         }.onAppear {
-          
+          self.newItem = self.databaseChangePublicist(id: "contentView").sink { changes in
+            Task {
+              self.items = try await Self.database.withModelContext({ modelContext in
+                let items = try modelContext.fetch(FetchDescriptor<Item>())
+                return items.map(ItemModel.init)
+              })
+            }
+          }
         }
     }
 
     private func addItem() {
       
           Task {
-            await self.database.withModelContext { modelContext in
+            try await Self.database.withModelContext { modelContext in
               let newItem = Item(timestamp: Date())
               modelContext.insert(newItem)
+              try modelContext.save()
             }
           }
       
@@ -55,15 +77,17 @@ struct ContentView: View {
     private func deleteItems(offsets: IndexSet) {
       
         Task {
-          
-              for index in offsets {
-                let model = ModelID(items[index])
-          await self.database.withModelContext { modelContext in
-            
-            if let model : Item  = modelContext.registeredModel(for: model.persistentIdentifier) {
-              modelContext.delete(model)
+          let models = offsets
+            .compactMap{items[$0].id}
+            .map(ModelID<Item>.init(persistentIdentifier: ))
+          try await Self.database.withModelContext { modelContext in
+            let items : [Item] = models.compactMap{
+              modelContext.registeredModel(for: $0.persistentIdentifier)
             }
-                }
+            for item in items {
+              modelContext.delete(item)
+            }
+            try modelContext.save()
           }
           
         

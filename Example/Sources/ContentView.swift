@@ -53,6 +53,7 @@ struct ContentView: View {
                     Button(action: addItem) {
                         Label("Add Item", systemImage: "plus")
                     }
+                  
                 }
             }
         } detail: {
@@ -90,7 +91,7 @@ struct ContentView: View {
             .map(ModelID<Item>.init(persistentIdentifier: ))
           try await Self.database.withModelContext { modelContext in
             let items : [Item] = models.compactMap{
-              modelContext.registeredModel(for: $0.persistentIdentifier)
+              modelContext.model(for: $0.persistentIdentifier) as? Item
             }
             assert(items.count == offsets.count)
             for item in items {

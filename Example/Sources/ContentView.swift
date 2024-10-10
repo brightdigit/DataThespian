@@ -23,12 +23,19 @@ struct ItemModel : Identifiable {
   let timestamp: Date
 }
 struct ContentView: View {
-  private let databaseChangePublicist = DatabaseChangePublicist(dbWatcher: DataMonitor.shared)
+  private static let databaseChangePublicist = DatabaseChangePublicist(dbWatcher: DataMonitor.shared)
   @State private var items = [ItemModel]()
   @State private var newItem: AnyCancellable?
   private static let database = try! BackgroundDatabase(modelContainer: .init(for: Item.self), autosaveEnabled: true)
 
-    var body: some View {
+  fileprivate func updateItems() async throws {
+    self.items = try await Self.database.withModelContext({ modelContext in
+      let items = try modelContext.fetch(FetchDescriptor<Item>())
+      return items.map(ItemModel.init)
+    })
+  }
+  
+  var body: some View {
         NavigationSplitView {
             List {
                 ForEach(items) { item in
@@ -51,13 +58,13 @@ struct ContentView: View {
         } detail: {
             Text("Select an item")
         }.onAppear {
-          self.newItem = self.databaseChangePublicist(id: "contentView").sink { changes in
+          self.newItem = Self.databaseChangePublicist(id: "contentView").sink { changes in
             Task {
-              self.items = try await Self.database.withModelContext({ modelContext in
-                let items = try modelContext.fetch(FetchDescriptor<Item>())
-                return items.map(ItemModel.init)
-              })
+              try await updateItems()
             }
+          }
+          Task {
+            try await updateItems()
           }
         }
     }
@@ -66,7 +73,8 @@ struct ContentView: View {
       
           Task {
             try await Self.database.withModelContext { modelContext in
-              let newItem = Item(timestamp: Date())
+              let timestamp = Date()
+              let newItem = Item(timestamp: timestamp)
               modelContext.insert(newItem)
               try modelContext.save()
             }
@@ -84,6 +92,7 @@ struct ContentView: View {
             let items : [Item] = models.compactMap{
               modelContext.registeredModel(for: $0.persistentIdentifier)
             }
+            assert(items.count == offsets.count)
             for item in items {
               modelContext.delete(item)
             }
@@ -97,5 +106,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+        //.modelContainer(for: Item.self, inMemory: true)
 }

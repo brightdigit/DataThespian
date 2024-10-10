@@ -21,6 +21,9 @@ targets:
     sources:
       - path: "Example/Sources"
       - path: "Example/Support"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.demo.DataThespianExample
     info:
       path: Example/Support/Info.plist
       properties:

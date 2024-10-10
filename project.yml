@@ -11,3 +11,20 @@ aggregateTargets:
         name: Lint
         basedOnDependencyAnalysis: false
     schemes: {}
+targets:
+  DataThespianExample:
+    type: application
+    platform: macOS
+    dependencies:
+      - package: DataThespian
+        product: DataThespian
+    sources:
+      - path: "Example/Sources"
+      - path: "Example/Support"
+    info:
+      path: Example/Support/Info.plist
+      properties:
+        CFBundlePackageType: APPL
+        ITSAppUsesNonExemptEncryption: false
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)

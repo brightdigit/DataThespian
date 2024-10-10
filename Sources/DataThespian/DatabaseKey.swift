@@ -36,6 +36,10 @@
   public import SwiftUI
 
   fileprivate struct DefaultDatabase: Database {
+    func withModelContext<T>(_ closure: (ModelContext) throws -> T) async rethrows -> T {
+      assertionFailure("No Database Set.")
+      fatalError("No Database Set.")
+    }
     func save() async throws {
       assertionFailure("No Database Set.")
       throw NotImplmentedError.instance

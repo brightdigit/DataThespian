@@ -36,6 +36,8 @@
   public protocol Database: Sendable {
     func save() async throws
 
+    func withModelContext<T>(_ closure: @Sendable @escaping (ModelContext) throws -> T) async rethrows -> T
+    
     @discardableResult func delete<T: PersistentModel>(
       _ modelType: T.Type,
       withID id: PersistentIdentifier

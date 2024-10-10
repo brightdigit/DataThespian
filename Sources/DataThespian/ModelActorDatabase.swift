@@ -33,6 +33,12 @@
 
   public import SwiftData
 
+public enum DeleteSelector<PersistentModelType : PersistentModel> : Sendable {
+  case persistentModelID(PersistentIdentifier)
+  case predicate(Predicate<PersistentModelType>)
+  case all
+}
+
   public actor ModelActorDatabase: Database, Loggable {
     public func delete<T: PersistentModel>(_: T.Type, withID id: PersistentIdentifier) async -> Bool
     {
@@ -51,6 +57,11 @@
       let model = closuer()
       self.modelContext.insert(model)
       return model.persistentModelID
+    }
+    
+    public func withModelContext<T: Sendable>(_ closure: @Sendable (ModelContext) throws -> T) async rethrows -> T {
+      let modelContext = self.modelContext
+      return try closure(modelContext)
     }
 
     public func fetch<T, U>(

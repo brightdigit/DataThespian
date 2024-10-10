@@ -35,6 +35,10 @@
   import SwiftUI
 
   public final class BackgroundDatabase: Database {
+    public func withModelContext<T>(_ closure: @Sendable @escaping (ModelContext) throws -> T) async rethrows -> T {
+      return try await self.database.withModelContext(closure)
+    }
+    
     public func delete(_ modelType: (some PersistentModel).Type, withID id: PersistentIdentifier)
       async -> Bool
     { await self.database.delete(modelType, withID: id) }

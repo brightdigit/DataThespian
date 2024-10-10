@@ -10,102 +10,62 @@ import SwiftData
 import DataThespian
 import Combine
 
-struct ItemModel : Identifiable {
-  internal init(item : Item) {
-    self.init(id: item.persistentModelID, timestamp: item.timestamp)
-  }
-  internal init(id: PersistentIdentifier, timestamp: Date) {
-    self.id = id
-    self.timestamp = timestamp
-  }
-  
-  let id : PersistentIdentifier
-  let timestamp: Date
-}
-struct ContentView: View {
-  private static let databaseChangePublicist = DatabaseChangePublicist(dbWatcher: DataMonitor.shared)
-  @State private var items = [ItemModel]()
-  @State private var newItem: AnyCancellable?
-  private static let database = try! BackgroundDatabase(modelContainer: .init(for: Item.self), autosaveEnabled: true)
 
-  fileprivate func updateItems() async throws {
-    self.items = try await Self.database.withModelContext({ modelContext in
-      let items = try modelContext.fetch(FetchDescriptor<Item>())
-      return items.map(ItemModel.init)
-    })
-  }
+
+struct ContentView: View {
+  @State var object = ContentObject()
+  @Environment(\.database) var database
+  @Environment(\.databaseChangePublicist) var databaseChangePublisher
+  
+  
   
   var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+    NavigationSplitView {
+      List(selection: self.$object.selectedItemsID) {
+        ForEach(object.items) { item in
+          Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+        }
+        .onDelete(perform: object.deleteItems)
+      }
+      .navigationSplitViewColumnWidth(min: 180, ideal: 200)
+      .toolbar {
+        
+        ToolbarItem {
+          
+          Button(action: addItem) {
+                      Label("Add Item", systemImage: "plus")
                     }
-                }
-                .onDelete(perform: deleteItems)
-            }
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-            .toolbar {
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                  
-                }
-            }
-        } detail: {
-            Text("Select an item")
-        }.onAppear {
-          self.newItem = Self.databaseChangePublicist(id: "contentView").sink { changes in
-            Task {
-              try await updateItems()
-            }
-          }
-          Task {
-            try await updateItems()
+        }
+        ToolbarItem {
+          Button(action: object.deleteSelectedItems) {
+            Label("Delete Selected Items", systemImage: "trash")
           }
         }
-    }
-
-    private func addItem() {
-      
-          Task {
-            try await Self.database.withModelContext { modelContext in
-              let timestamp = Date()
-              let newItem = Item(timestamp: timestamp)
-              modelContext.insert(newItem)
-              try modelContext.save()
-            }
-          }
-      
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-      
-        Task {
-          let models = offsets
-            .compactMap{items[$0].id}
-            .map(ModelID<Item>.init(persistentIdentifier: ))
-          try await Self.database.withModelContext { modelContext in
-            let items : [Item] = models.compactMap{
-              modelContext.model(for: $0.persistentIdentifier) as? Item
-            }
-            assert(items.count == offsets.count)
-            for item in items {
-              modelContext.delete(item)
-            }
-            try modelContext.save()
-          }
-          
-        
       }
+    } detail: {
+      let selectedItems = object.selectedItems
+      if selectedItems.count > 1 {
+        Text("Multiple Selected")
+      } else if let item = selectedItems.first {
+        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
+      } else {
+        Text("Select an item")
+      }
+                  
+    }.onAppear {
+      self.object.initialize(withDatabase: database, databaseChangePublisher: databaseChangePublisher)
     }
+  }
+  
+  private func addItem() {
+    self.addItem(withDate: .init())
+  }
+  private func addItem(withDate date: Date ) {
+    self.object.addItem(withDate: .init())
+  }
+  
 }
 
 #Preview {
-    ContentView()
-        //.modelContainer(for: Item.self, inMemory: true)
+  ContentView()
 }

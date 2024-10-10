@@ -11,26 +11,17 @@ import DataThespian
 
 @main
 struct DataThespianExampleApp: App {
+  private static let databaseChangePublicist = DatabaseChangePublicist(dbWatcher: DataMonitor.shared)
+  private static let database = try! BackgroundDatabase(modelContainer: .init(for: Item.self), autosaveEnabled: true)
+  
   init () {
     DataMonitor.shared.begin(with: [])
   }
-//    var sharedModelContainer: ModelContainer = {
-//        let schema = Schema([
-//            Item.self,
-//        ])
-//        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-//
-//        do {
-//            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-//        } catch {
-//            fatalError("Could not create ModelContainer: \(error)")
-//        }
-//    }()
-
     var body: some Scene {
         WindowGroup {
             ContentView()
         }
-//        .modelContainer(sharedModelContainer)
+        .database(Self.database)
+        .environment(\.databaseChangePublicist, Self.databaseChangePublicist)
     }
 }

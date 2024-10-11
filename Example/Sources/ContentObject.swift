@@ -5,33 +5,47 @@
 //  Created by Leo Dion on 10/10/24.
 //
 
+import Combine
+import DataThespian
 import Foundation
 import SwiftData
-import DataThespian
-import Combine
-
-
 
 @Observable
 @MainActor
-class ContentObject {
+internal class ContentObject {
   internal let databaseChangePublisher = PassthroughSubject<any DatabaseChangeSet, Never>()
-  private var databaseChangeCancellable : AnyCancellable?
+  private var databaseChangeCancellable: AnyCancellable?
   private var databaseChangeSubscription: AnyCancellable?
-  private var database : (any Database)?
+  private var database: (any Database)?
   internal private(set) var items = [ItemModel]()
   internal var selectedItemsID: Set<ItemModel.ID> = []
-  
-  
-  var selectedItems : [ItemModel] {
-    let selectedItemsID = self.selectedItemsID
-    return try! self.items.filter(#Predicate<ItemModel> {
-      selectedItemsID.contains($0.id)
-    })
-  }
   private var newItem: AnyCancellable?
-  var error: (any Error)?
-  
+  internal var error: (any Error)?
+
+  internal var selectedItems: [ItemModel] {
+    let selectedItemsID = self.selectedItemsID
+    let items: [ItemModel]
+    do {
+      items = try self.items.filter(
+        #Predicate<ItemModel> {
+          selectedItemsID.contains($0.id)
+        }
+      )
+    } catch {
+      assertionFailure("Unable to filter selected items: \(error.localizedDescription)")
+      self.error = error
+      items = []
+    }
+    assert(items.count == selectedItemsID.count)
+    return items
+  }
+
+  internal init() {
+    self.databaseChangeSubscription = self.databaseChangePublisher.sink { _ in
+      self.beginUpdateItems()
+    }
+  }
+
   private func beginUpdateItems() {
     Task {
       do {
@@ -41,7 +55,8 @@ class ContentObject {
       }
     }
   }
-  fileprivate func updateItems() async throws {
+
+  private func updateItems() async throws {
     guard let database else {
       return
     }
@@ -50,25 +65,21 @@ class ContentObject {
       return items.map(ItemModel.init)
     })
   }
-  
-  internal init () {
-    self.databaseChangeSubscription =    self.databaseChangePublisher.sink { _ in
-      self.beginUpdateItems()
-    }
-  }
-  
-  internal func initialize(withDatabase database: any Database, databaseChangePublisher: DatabaseChangePublicist) {
+
+  internal func initialize(
+    withDatabase database: any Database, databaseChangePublisher: DatabaseChangePublicist
+  ) {
     self.database = database
-    self.databaseChangeCancellable =    databaseChangePublisher(id: "contentView")
+    self.databaseChangeCancellable = databaseChangePublisher(id: "contentView")
       .subscribe(self.databaseChangePublisher)
     self.beginUpdateItems()
   }
-  
-  
-  
-  fileprivate static func deleteModels( _ models: [ModelID<Item>], from database: (any Database)) async throws {
+
+  fileprivate static func deleteModels(_ models: [ModelID<Item>], from database: (any Database))
+    async throws
+  {
     try await database.withModelContext { modelContext in
-      let items : [Item] = models.compactMap{
+      let items: [Item] = models.compactMap {
         modelContext.model(for: $0.persistentIdentifier) as? Item
       }
       dump(items.first?.persistentModelID)
@@ -81,21 +92,21 @@ class ContentObject {
   }
   internal func deleteSelectedItems() {
     let models = self.selectedItems.map {
-      ModelID<Item>.init(persistentIdentifier: $0.id)
+      ModelID<Item>(persistentIdentifier: $0.id)
     }
     self.deleteItems(models)
   }
   internal func deleteItems(offsets: IndexSet) {
-    
-    let models = offsets
-      .compactMap{items[$0].id}
-      .map(ModelID<Item>.init(persistentIdentifier: ))
-    
+    let models =
+      offsets
+      .compactMap { items[$0].id }
+      .map(ModelID<Item>.init(persistentIdentifier:))
+
     assert(models.count == offsets.count)
-    
+
     self.deleteItems(models)
   }
-  
+
   internal func deleteItems(_ models: [ModelID<Item>]) {
     guard let database else {
       return
@@ -104,14 +115,13 @@ class ContentObject {
       try await Self.deleteModels(models, from: database)
     }
   }
-  
+
   internal func addItem(withDate date: Date = .init()) {
     guard let database else {
       return
     }
     Task {
       try await database.withModelContext { modelContext in
-        
         let newItem = Item(timestamp: date)
         modelContext.insert(newItem)
         dump(newItem.persistentModelID)

@@ -32,11 +32,11 @@
   import Foundation
 
   public import SwiftData
-public struct ModelID<T: PersistentModel>: Sendable, Identifiable {
-  public init(persistentIdentifier: PersistentIdentifier) {
-    self.persistentIdentifier = persistentIdentifier
-  }
-  
+  public struct ModelID<T: PersistentModel>: Sendable, Identifiable {
+    public init(persistentIdentifier: PersistentIdentifier) {
+      self.persistentIdentifier = persistentIdentifier
+    }
+
     public var id: PersistentIdentifier.ID { persistentIdentifier.id }
     public let persistentIdentifier: PersistentIdentifier
 

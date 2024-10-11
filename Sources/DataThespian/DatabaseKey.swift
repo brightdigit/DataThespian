@@ -108,7 +108,6 @@
     }
   }
 
-  @available(*, deprecated, message: "This is a fix for a bug. Use Scene only eventually.")
   extension View {
     public func database(_ database: any Database) -> some View {
       environment(\.database, database)

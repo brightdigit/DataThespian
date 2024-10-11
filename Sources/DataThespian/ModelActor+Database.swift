@@ -1,5 +1,5 @@
 //
-//  ModelActorDatabase.swift
+//  ModelActor+Database.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -27,32 +27,20 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(SwiftData)
+public import SwiftData
 
-  import Foundation
-
-  public import SwiftData
-
-  public actor ModelActorDatabase: Database, Loggable {
-    public static var loggingCategory: ThespianLogging.Category { .data }
-
-    public nonisolated let modelExecutor: any SwiftData.ModelExecutor
-
-    public nonisolated let modelContainer: SwiftData.ModelContainer
-
-    public init(modelContainer: SwiftData.ModelContainer, autosaveEnabled: Bool = false) {
-      let modelContext = ModelContext(modelContainer)
-      modelContext.autosaveEnabled = autosaveEnabled
-
-      let modelExecutor = DefaultSerialModelExecutor(modelContext: modelContext)
-      self.init(modelExecutor: modelExecutor, modelContainer: modelContainer)
-    }
-    private init(modelExecutor: any ModelExecutor, modelContainer: ModelContainer) {
-      self.modelExecutor = modelExecutor
-      self.modelContainer = modelContainer
-    }
+extension ModelActor where Self: Database {
+  public func withModelContext<T: Sendable>(
+    _ closure: @Sendable @escaping (ModelContext) throws -> T
+  )
+    async rethrows -> T
+  {
+    assert(isMainThread: true, if: Self.assertIsBackground)
+    let modelContext = self.modelContext
+    return try closure(modelContext)
   }
 
-  extension ModelActorDatabase: SwiftData.ModelActor {}
-
-#endif
+  public static var assertIsBackground: Bool {
+    false
+  }
+}

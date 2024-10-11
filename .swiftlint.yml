@@ -114,8 +114,6 @@ identifier_name:
 excluded:
   - DerivedData
   - .build
-  - Package.swift
-  - Package
 indentation_width:
   indentation_width: 2
 file_name:

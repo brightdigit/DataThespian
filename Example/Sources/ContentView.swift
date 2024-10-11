@@ -5,20 +5,16 @@
 //  Created by Leo Dion on 10/10/24.
 //
 
-import SwiftUI
-import SwiftData
-import DataThespian
 import Combine
-
-
+import DataThespian
+import SwiftData
+import SwiftUI
 
 struct ContentView: View {
   @State var object = ContentObject()
   @Environment(\.database) var database
   @Environment(\.databaseChangePublicist) var databaseChangePublisher
-  
-  
-  
+
   var body: some View {
     NavigationSplitView {
       List(selection: self.$object.selectedItemsID) {
@@ -29,12 +25,10 @@ struct ContentView: View {
       }
       .navigationSplitViewColumnWidth(min: 180, ideal: 200)
       .toolbar {
-        
         ToolbarItem {
-          
           Button(action: addItem) {
-                      Label("Add Item", systemImage: "plus")
-                    }
+            Label("Add Item", systemImage: "plus")
+          }
         }
         ToolbarItem {
           Button(action: object.deleteSelectedItems) {
@@ -51,21 +45,31 @@ struct ContentView: View {
       } else {
         Text("Select an item")
       }
-                  
     }.onAppear {
-      self.object.initialize(withDatabase: database, databaseChangePublisher: databaseChangePublisher)
+      self.object.initialize(
+        withDatabase: database, databaseChangePublisher: databaseChangePublisher)
     }
   }
-  
+
   private func addItem() {
     self.addItem(withDate: .init())
   }
-  private func addItem(withDate date: Date ) {
+  private func addItem(withDate date: Date) {
     self.object.addItem(withDate: .init())
   }
-  
 }
 
 #Preview {
+  let config = ModelConfiguration(isStoredInMemoryOnly: true)
+  // swiftlint:disable:next force_try
+  let modelContainer = try! ModelContainer(for: Item.self, configurations: config)
+
   ContentView()
+    .environment(
+      \.databaseChangePublicist,
+       DatabaseChangePublicist(
+          dbWatcher: DataMonitor.shared
+       )
+    )
+        .database(BackgroundDatabase(modelContainer: modelContainer))
 }

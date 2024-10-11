@@ -53,7 +53,7 @@ fi
 if [ -z "$CI" ]; then
 	run_command $MINT_RUN swiftlint --fix
 	pushd $PACKAGE_DIR
-	run_command $MINT_RUN swift-format format $SWIFTFORMAT_OPTIONS  --recursive --parallel --in-place Sources Tests
+	run_command $MINT_RUN swift-format format $SWIFTFORMAT_OPTIONS  --recursive --parallel --in-place Sources Tests Example/Sources
 	popd
 else 
 	set -e
@@ -63,6 +63,6 @@ $PACKAGE_DIR/scripts/header.sh -d  $PACKAGE_DIR/Sources -c "Leo Dion" -o "Bright
 run_command $MINT_RUN swiftlint lint $SWIFTLINT_OPTIONS
 
 pushd $PACKAGE_DIR
-run_command $MINT_RUN swift-format lint --recursive --parallel $SWIFTFORMAT_OPTIONS Sources Tests
+run_command $MINT_RUN swift-format lint --recursive --parallel $SWIFTFORMAT_OPTIONS Sources Tests Example/Sources
 run_command $MINT_RUN periphery scan $PERIPHERY_OPTIONS --disable-update-check
 popd

@@ -35,41 +35,10 @@
   import SwiftUI
 
   public final class BackgroundDatabase: Database {
-    public func withModelContext<T>(_ closure: @Sendable @escaping (ModelContext) throws -> T) async rethrows -> T {
-      return try await self.database.withModelContext(closure)
-    }
-    
-    public func delete(_ modelType: (some PersistentModel).Type, withID id: PersistentIdentifier)
-      async -> Bool
-    { await self.database.delete(modelType, withID: id) }
-
-    public func delete(where predicate: Predicate<some PersistentModel>?) async throws {
-      try await self.database.delete(where: predicate)
-    }
-    public func save() async throws { try await self.database.save() }
-    public func insert(_ closuer: @escaping @Sendable () -> some PersistentModel) async
-      -> PersistentIdentifier
-    { await self.database.insert(closuer) }
-
-    public func fetch<T, U>(
-      _ selectDescriptor: @escaping @Sendable () -> FetchDescriptor<T>,
-      with closure: @escaping @Sendable ([T]) throws -> U
-    ) async throws -> U where T: PersistentModel, U: Sendable {
-      try await self.database.fetch(selectDescriptor, with: closure)
-    }
-
-    public func get<T, U>(
-      for objectID: PersistentIdentifier,
-      with closure: @escaping @Sendable (T?) throws -> U
-    ) async throws -> U where T: PersistentModel, U: Sendable {
-      try await self.database.get(for: objectID, with: closure)
-    }
-    public func fetch<T: PersistentModel, U: PersistentModel, V: Sendable>(
-      _ selectDescriptorA: @escaping @Sendable () -> FetchDescriptor<T>,
-      _ selectDescriptorB: @escaping @Sendable () -> FetchDescriptor<U>,
-      with closure: @escaping @Sendable ([T], [U]) throws -> V
-    ) async throws -> V {
-      try await self.database.fetch(selectDescriptorA, selectDescriptorB, with: closure)
+    public func withModelContext<T>(_ closure: @Sendable @escaping (ModelContext) throws -> T)
+      async rethrows -> T
+    {
+      try await self.database.withModelContext(closure)
     }
 
     private actor DatabaseContainer {
@@ -103,12 +72,6 @@
 
     internal init(_ factory: @Sendable @escaping () -> any Database) {
       self.container = .init(factory: factory)
-    }
-
-    public func transaction(_ block: @escaping @Sendable (ModelContext) throws -> Void) async throws
-    {
-      assert(isMainThread: false)
-      try await self.database.transaction(block)
     }
   }
 #endif

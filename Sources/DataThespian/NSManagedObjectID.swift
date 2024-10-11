@@ -29,14 +29,12 @@
 
 #if canImport(CoreData) && canImport(SwiftData)
   public import CoreData
-
   import Foundation
-
   public import SwiftData
 
   // periphery:ignore
-  fileprivate struct PersistentIdentifierJSON: Codable {
-    fileprivate struct Implementation: Codable {
+  private struct PersistentIdentifierJSON: Codable {
+    private struct Implementation: Codable {
       fileprivate init(
         primaryKey: String,
         uriRepresentation: URL,
@@ -57,7 +55,30 @@
       private var entityName: String
     }
 
-    fileprivate var implementation: Implementation
+    private var implementation: Implementation
+
+    private init(implementation: PersistentIdentifierJSON.Implementation) {
+      self.implementation = implementation
+    }
+
+    fileprivate init(
+      primaryKey: String,
+      uriRepresentation: URL,
+      isTemporary: Bool,
+      storeIdentifier: String,
+      entityName: String
+    ) {
+      self.init(
+        implementation:
+          .init(
+            primaryKey: primaryKey,
+            uriRepresentation: uriRepresentation,
+            isTemporary: isTemporary,
+            storeIdentifier: storeIdentifier,
+            entityName: entityName
+          )
+      )
+    }
   }
 
   extension NSManagedObjectID {
@@ -79,38 +100,42 @@
       }
       guard let entityName else { throw PersistentIdentifierError.missingProperty(.entityName) }
       let json = PersistentIdentifierJSON(
-        implementation: .init(
-          primaryKey: primaryKey,
-          uriRepresentation: uriRepresentation(),
-          isTemporary: isTemporaryID,
-          storeIdentifier: storeIdentifier,
-          entityName: entityName
-        )
+        primaryKey: primaryKey,
+        uriRepresentation: uriRepresentation(),
+        isTemporary: isTemporaryID,
+        storeIdentifier: storeIdentifier,
+        entityName: entityName
       )
       let encoder = JSONEncoder()
       let data: Data
-      do { data = try encoder.encode(json) }
-      catch let error as EncodingError { throw PersistentIdentifierError.encodingError(error) }
+      do { data = try encoder.encode(json) } catch let error as EncodingError {
+        throw PersistentIdentifierError.encodingError(error)
+      }
       let decoder = JSONDecoder()
-      do { return try decoder.decode(PersistentIdentifier.self, from: data) }
-      catch let error as DecodingError { throw PersistentIdentifierError.decodingError(error) }
+      do { return try decoder.decode(PersistentIdentifier.self, from: data) } catch let error
+        as DecodingError
+      { throw PersistentIdentifierError.decodingError(error) }
     }
   }
 
   // Extensions to expose needed implementation details
   extension NSManagedObjectID {
     // Primary key is last path component of URI
-    var primaryKey: String { uriRepresentation().lastPathComponent }
+    public var primaryKey: String { uriRepresentation().lastPathComponent }
 
     // Store identifier is host of URI
-    var storeIdentifier: String? {
-      guard let identifier = uriRepresentation().host() else { return nil }
+    public var storeIdentifier: String? {
+      guard let identifier = uriRepresentation().host() else {
+        return nil
+      }
       return identifier
     }
 
     // Entity name from entity name
-    var entityName: String? {
-      guard let entityName = entity.name else { return nil }
+    public var entityName: String? {
+      guard let entityName = entity.name else {
+        return nil
+      }
       return entityName
     }
   }

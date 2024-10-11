@@ -29,10 +29,12 @@
 
 public import Foundation
 
+@inlinable internal func assert(isMainThread: Bool, if assertIsBackground: Bool) {
+  assert(!assertIsBackground || isMainThread == Thread.isMainThread)
+}
+
 @inlinable internal func assert(isMainThread: Bool) { assert(isMainThread == Thread.isMainThread) }
 
 @inlinable internal func assertionFailure(
-  error: any Error,
-  file: StaticString = #file,
-  line: UInt = #line
+  error: any Error, file: StaticString = #file, line: UInt = #line
 ) { assertionFailure(error.localizedDescription, file: file, line: line) }

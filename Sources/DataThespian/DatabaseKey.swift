@@ -28,66 +28,21 @@
 //
 
 #if canImport(SwiftUI)
-
   import Foundation
-
   import SwiftData
-
   public import SwiftUI
 
-  fileprivate struct DefaultDatabase: Database {
-    public func save() async throws {
-      assertionFailure("No Database Set.")
-      throw NotImplmentedError.instance
-    }
-    func delete(_: (some PersistentModel).Type, withID _: PersistentIdentifier) async -> Bool {
-      assertionFailure("No Database Set.")
-      return false
-    }
+  private struct DefaultDatabase: Database {
+    static let instance = DefaultDatabase()
 
-    func delete(where _: Predicate<some PersistentModel>?) async throws {
-      assertionFailure("No Database Set.")
-      throw NotImplmentedError.instance
-    }
-
-    func insert(_: @escaping @Sendable () -> some PersistentModel) async -> PersistentIdentifier {
+    // swiftlint:disable:next unavailable_function
+    func withModelContext<T>(_ closure: (ModelContext) throws -> T) async rethrows -> T {
       assertionFailure("No Database Set.")
       fatalError("No Database Set.")
     }
-
-    func fetch<T, U>(
-      _: @escaping @Sendable () -> FetchDescriptor<T>,
-      with _: @escaping @Sendable ([T]) throws -> U
-    ) async throws -> U where T: PersistentModel, U: Sendable {
-      assertionFailure("No Database Set.")
-      throw NotImplmentedError.instance
-    }
-    func fetch<T: PersistentModel, U: PersistentModel, V: Sendable>(
-      _ selectDescriptorA: @escaping @Sendable () -> FetchDescriptor<T>,
-      _ selectDescriptorB: @escaping @Sendable () -> FetchDescriptor<U>,
-      with closure: @escaping @Sendable ([T], [U]) throws -> V
-    ) async throws -> V {
-      assertionFailure("No Database Set.")
-      throw NotImplmentedError.instance
-    }
-    func get<T, U>(for _: PersistentIdentifier, with _: @escaping @Sendable (T?) throws -> U)
-      async throws -> U where T: PersistentModel, U: Sendable
-    {
-      assertionFailure("No Database Set.")
-      throw NotImplmentedError.instance
-    }
-
-    private struct NotImplmentedError: Error { static let instance = NotImplmentedError() }
-
-    static let instance = DefaultDatabase()
-
-    func transaction(_: @escaping (ModelContext) throws -> Void) async throws {
-      assertionFailure("No Database Set.")
-      throw NotImplmentedError.instance
-    }
   }
 
-  fileprivate struct DatabaseKey: EnvironmentKey {
+  private struct DatabaseKey: EnvironmentKey {
     static var defaultValue: any Database { DefaultDatabase.instance }
   }
 
@@ -104,7 +59,6 @@
     }
   }
 
-  @available(*, deprecated, message: "This is a fix for a bug. Use Scene only eventually.")
   extension View {
     public func database(_ database: any Database) -> some View {
       environment(\.database, database)

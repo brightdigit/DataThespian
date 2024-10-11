@@ -1,2 +1,4 @@
-apple/swift-format@4b62459
+swiftlang/swift-format@600.0.0
+realm/SwiftLint@0.57.0
+a7ex/xcresultparser@1.7.2
 peripheryapp/periphery@2.20.0

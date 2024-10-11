@@ -1,5 +1,5 @@
 //
-//  Logging.swift
+//  ModelActor+Database.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -27,13 +27,18 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-public import FelinePine
+#if canImport(SwiftData)
+  public import SwiftData
 
-public enum ThespianLogging: LoggingSystem {
-  public enum Category: String, CaseIterable {
-    case application
-    case data
+  extension ModelActor where Self: Database {
+    public static var assertIsBackground: Bool { false }
+
+    public func withModelContext<T: Sendable>(
+      _ closure: @Sendable @escaping (ModelContext) throws -> T
+    ) async rethrows -> T {
+      assert(isMainThread: true, if: Self.assertIsBackground)
+      let modelContext = self.modelContext
+      return try closure(modelContext)
+    }
   }
-}
-
-internal protocol Loggable: FelinePine.Loggable where Self.LoggingSystemType == ThespianLogging {}
+#endif

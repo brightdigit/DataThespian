@@ -29,7 +29,6 @@
 
 #if canImport(SwiftData)
   public import Foundation
-
   public import SwiftData
 
   extension FetchDescriptor {
@@ -39,10 +38,12 @@
 
       self.fetchLimit = fetchLimit
     }
-    public init(model: ModelID<T>) {
+    public init(model: Model<T>) {
       let persistentIdentifier = model.persistentIdentifier
       self.init(
-        predicate: #Predicate<T> { $0.persistentModelID == persistentIdentifier },
+        predicate: #Predicate<T> {
+          $0.persistentModelID == persistentIdentifier
+        },
         fetchLimit: 1
       )
     }

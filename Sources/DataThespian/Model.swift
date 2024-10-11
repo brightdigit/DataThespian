@@ -1,5 +1,5 @@
 //
-//  ModelID.swift
+//  Model.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -28,20 +28,26 @@
 //
 
 #if canImport(SwiftData)
-
   import Foundation
-
   public import SwiftData
-  public struct ModelID<T: PersistentModel>: Sendable, Identifiable {
-    public var id: PersistentIdentifier.ID { return persistentIdentifier.id }
+
+  @available(*, deprecated, renamed: "Model")
+  public typealias ModelID = Model
+
+  public struct Model<T: PersistentModel>: Sendable, Identifiable {
+    public struct NotFoundError: Error { public let persistentIdentifier: PersistentIdentifier }
+
+    public var id: PersistentIdentifier.ID { persistentIdentifier.id }
     public let persistentIdentifier: PersistentIdentifier
 
-    enum Error: Swift.Error { case notFound(PersistentIdentifier) }
+    public init(persistentIdentifier: PersistentIdentifier) {
+      self.persistentIdentifier = persistentIdentifier
+    }
   }
 
-  extension ModelID where T: PersistentModel {
+  extension Model where T: PersistentModel {
     public init(_ model: T) { self.init(persistentIdentifier: model.persistentModelID) }
 
-    internal static func ifMap(_ model: T?) -> ModelID? { model.map(self.init) }
+    internal static func ifMap(_ model: T?) -> Model? { model.map(self.init) }
   }
 #endif

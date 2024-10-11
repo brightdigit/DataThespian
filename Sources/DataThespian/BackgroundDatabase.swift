@@ -28,46 +28,10 @@
 //
 
 #if canImport(SwiftData)
-
-  public import Foundation
-
+  import Foundation
   public import SwiftData
-  import SwiftUI
 
   public final class BackgroundDatabase: Database {
-    public func delete(_ modelType: (some PersistentModel).Type, withID id: PersistentIdentifier)
-      async -> Bool
-    { await self.database.delete(modelType, withID: id) }
-
-    public func delete(where predicate: Predicate<some PersistentModel>?) async throws {
-      try await self.database.delete(where: predicate)
-    }
-    public func save() async throws { try await self.database.save() }
-    public func insert(_ closuer: @escaping @Sendable () -> some PersistentModel) async
-      -> PersistentIdentifier
-    { await self.database.insert(closuer) }
-
-    public func fetch<T, U>(
-      _ selectDescriptor: @escaping @Sendable () -> FetchDescriptor<T>,
-      with closure: @escaping @Sendable ([T]) throws -> U
-    ) async throws -> U where T: PersistentModel, U: Sendable {
-      try await self.database.fetch(selectDescriptor, with: closure)
-    }
-
-    public func get<T, U>(
-      for objectID: PersistentIdentifier,
-      with closure: @escaping @Sendable (T?) throws -> U
-    ) async throws -> U where T: PersistentModel, U: Sendable {
-      try await self.database.get(for: objectID, with: closure)
-    }
-    public func fetch<T: PersistentModel, U: PersistentModel, V: Sendable>(
-      _ selectDescriptorA: @escaping @Sendable () -> FetchDescriptor<T>,
-      _ selectDescriptorB: @escaping @Sendable () -> FetchDescriptor<U>,
-      with closure: @escaping @Sendable ([T], [U]) throws -> V
-    ) async throws -> V {
-      try await self.database.fetch(selectDescriptorA, selectDescriptorB, with: closure)
-    }
-
     private actor DatabaseContainer {
       private let factory: @Sendable () -> any Database
       private var wrappedTask: Task<any Database, Never>?
@@ -78,7 +42,9 @@
       // swiftlint:disable:next strict_fileprivate
       fileprivate var database: any Database {
         get async {
-          if let wrappedTask { return await wrappedTask.value }
+          if let wrappedTask {
+            return await wrappedTask.value
+          }
           let task = Task { factory() }
           self.wrappedTask = task
           return await task.value
@@ -90,21 +56,47 @@
 
     private var database: any Database { get async { await container.database } }
 
-    public convenience init(modelContainer: ModelContainer, autosaveEnabled: Bool = false) {
-      self.init {
-        assert(isMainThread: false)
-        return ModelActorDatabase(modelContainer: modelContainer, autosaveEnabled: autosaveEnabled)
-      }
+    public convenience init(database: @Sendable @escaping @autoclosure () -> any Database) {
+      self.init(database)
     }
 
-    internal init(_ factory: @Sendable @escaping () -> any Database) {
+    public init(_ factory: @Sendable @escaping () -> any Database) {
       self.container = .init(factory: factory)
     }
 
-    public func transaction(_ block: @escaping @Sendable (ModelContext) throws -> Void) async throws
-    {
-      assert(isMainThread: false)
-      try await self.database.transaction(block)
+    public func withModelContext<T>(_ closure: @Sendable @escaping (ModelContext) throws -> T)
+      async rethrows -> T
+    { try await self.database.withModelContext(closure) }
+  }
+
+  extension BackgroundDatabase {
+    public convenience init(
+      modelContainer: ModelContainer,
+      modelContext closure: (@Sendable (ModelContainer) -> ModelContext)? = nil
+    ) {
+      let closure = closure ?? ModelContext.init
+      self.init(database: ModelActorDatabase(modelContainer: modelContainer, modelContext: closure))
+    }
+
+    public convenience init(
+      modelContainer: SwiftData.ModelContainer
+    ) {
+      self.init(
+        modelContainer: modelContainer,
+        modelContext: ModelContext.init
+      )
+    }
+
+    public convenience init(
+      modelContainer: SwiftData.ModelContainer,
+      modelExecutor closure: @Sendable @escaping (ModelContainer) -> any ModelExecutor
+    ) {
+      self.init(
+        database: ModelActorDatabase(
+          modelContainer: modelContainer,
+          modelExecutor: closure
+        )
+      )
     }
   }
 #endif

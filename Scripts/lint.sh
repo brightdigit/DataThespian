@@ -1,5 +1,17 @@
 #!/bin/sh
 
+set -o pipefail
+
+ERRORS=0
+
+run_command() {
+		if [ "$LINT_MODE" == "STRICT" ]; then
+				"$@" || ERRORS=$((ERRORS + 1))
+		else
+				"$@"
+		fi
+}
+
 if [ "$ACTION" == "install" ]; then 
 	if [ -n "$SRCROOT" ]; then
 		exit
@@ -23,9 +35,11 @@ fi
 if [ "$LINT_MODE" == "NONE" ]; then
 	exit
 elif [ "$LINT_MODE" == "STRICT" ]; then
-	SWIFTFORMAT_OPTIONS="--strict"
+	SWIFTFORMAT_OPTIONS="--strict --configuration .swift-format"
+	SWIFTLINT_OPTIONS="--strict"
 else 
-	SWIFTFORMAT_OPTIONS=""
+	SWIFTFORMAT_OPTIONS="--configuration .swift-format"
+	SWIFTLINT_OPTIONS=""
 fi
 
 /opt/homebrew/bin/mint bootstrap
@@ -37,14 +51,18 @@ if [ "$LINT_MODE" == "INSTALL" ]; then
 fi
 
 if [ -z "$CI" ]; then
-	$MINT_RUN swift-format format --recursive --parallel --in-place $PACKAGE_DIR/Sources
+	run_command $MINT_RUN swiftlint --fix
+	pushd $PACKAGE_DIR
+	run_command $MINT_RUN swift-format format $SWIFTFORMAT_OPTIONS  --recursive --parallel --in-place Sources Tests Example/Sources
+	popd
 else 
 	set -e
 fi
 
 $PACKAGE_DIR/scripts/header.sh -d  $PACKAGE_DIR/Sources -c "Leo Dion" -o "BrightDigit" -p "DataThespian"
-$MINT_RUN swift-format lint --recursive --parallel $SWIFTFORMAT_OPTIONS $PACKAGE_DIR/Sources
+run_command $MINT_RUN swiftlint lint $SWIFTLINT_OPTIONS
 
 pushd $PACKAGE_DIR
-$MINT_RUN periphery scan $PERIPHERY_OPTIONS --disable-update-check
+run_command $MINT_RUN swift-format lint --recursive --parallel $SWIFTFORMAT_OPTIONS Sources Tests Example/Sources
+#run_command $MINT_RUN periphery scan $PERIPHERY_OPTIONS --disable-update-check
 popd

@@ -64,6 +64,8 @@ internal struct ContentView: View {
 #Preview {
   let databaseChangePublicist = DatabaseChangePublicist(dbWatcher: DataMonitor.shared)
   let config = ModelConfiguration(isStoredInMemoryOnly: true)
+
+  // swift-format-ignore: NeverUseForceTry
   // swiftlint:disable:next force_try
   let modelContainer = try! ModelContainer(for: Item.self, configurations: config)
 
@@ -74,6 +76,6 @@ internal struct ContentView: View {
   }
 
   ContentView()
-    .environment(      \.databaseChangePublicist, databaseChangePublicist    )
+    .environment(\.databaseChangePublicist, databaseChangePublicist)
     .database(backgroundDatabase)
 }

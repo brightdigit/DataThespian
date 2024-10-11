@@ -11,9 +11,10 @@ import SwiftUI
 
 @main
 internal struct DataThespianExampleApp: App {
-  private static let databaseChangePublicist = DatabaseChangePublicist(    dbWatcher: DataMonitor.shared)
+  private static let databaseChangePublicist = DatabaseChangePublicist()
 
   private static let database = BackgroundDatabase {
+    // swift-format-ignore: NeverUseForceTry
     // swiftlint:disable:next force_try
     try! ModelActorDatabase(modelContainer: ModelContainer(for: Item.self)) {
       let context = ModelContext($0)

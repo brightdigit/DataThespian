@@ -27,31 +27,54 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(SwiftData)
+public import SwiftData
 
-  import Foundation
+// @ModelActor
+// public actor ModelActorDatabase: Database {}
 
-  public import SwiftData
+public actor ModelActorDatabase: Database, ModelActor {
+  public nonisolated let modelExecutor: any SwiftData.ModelExecutor
+  public nonisolated let modelContainer: SwiftData.ModelContainer
 
-  @available(*, deprecated, message: "Create your own.")
-  public actor ModelActorDatabase: ModelActor, Database, Loggable {
-    public static var loggingCategory: ThespianLogging.Category { .data }
-
-    public nonisolated let modelExecutor: any SwiftData.ModelExecutor
-
-    public nonisolated let modelContainer: SwiftData.ModelContainer
-
-    public init(modelContainer: SwiftData.ModelContainer, autosaveEnabled: Bool = false) {
-      let modelContext = ModelContext(modelContainer)
-      modelContext.autosaveEnabled = autosaveEnabled
-
-      let modelExecutor = DefaultSerialModelExecutor(modelContext: modelContext)
-      self.init(modelExecutor: modelExecutor, modelContainer: modelContainer)
-    }
-    private init(modelExecutor: any ModelExecutor, modelContainer: ModelContainer) {
-      self.modelExecutor = modelExecutor
-      self.modelContainer = modelContainer
-    }
+  private init(modelExecutor: any ModelExecutor, modelContainer: ModelContainer) {
+    self.modelExecutor = modelExecutor
+    self.modelContainer = modelContainer
   }
 
-#endif
+  public init(modelContainer: SwiftData.ModelContainer) {
+    self.init(
+      modelContainer: modelContainer,
+      modelContext: ModelContext.init
+    )
+  }
+
+  public init(
+    modelContainer: SwiftData.ModelContainer,
+    modelContext closure: @Sendable @escaping (ModelContainer) -> ModelContext
+  ) {
+    self.init(
+      modelContainer: modelContainer,
+      modelExecutor: DefaultSerialModelExecutor.create(from: closure)
+    )
+  }
+
+  public init(
+    modelContainer: SwiftData.ModelContainer,
+    modelExecutor closure: @Sendable @escaping (ModelContainer) -> any ModelExecutor
+  ) {
+    self.init(
+      modelExecutor: closure(modelContainer),
+      modelContainer: modelContainer
+    )
+  }
+}
+
+extension DefaultSerialModelExecutor {
+  fileprivate static func create(
+    from closure: @Sendable @escaping (ModelContainer) -> ModelContext
+  ) -> @Sendable (ModelContainer) -> any ModelExecutor {
+    {
+      DefaultSerialModelExecutor(modelContext: closure($0))
+    }
+  }
+}

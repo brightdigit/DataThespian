@@ -57,14 +57,6 @@
 
     private var database: any Database { get async { await container.database } }
 
-//    @available(*, deprecated, message: "Use your own `ModelActorDatabase`.")
-//    public convenience init(modelContainer: ModelContainer, autosaveEnabled: Bool = false) {
-//      self.init {
-//        assert(isMainThread: false)
-//        return ModelActorDatabase(modelContainer: modelContainer, autosaveEnabled: autosaveEnabled)
-//      }
-//    }
-
     public convenience init(database: @Sendable @escaping @autoclosure () -> any Database) {
       self.init(database)
     }
@@ -76,5 +68,36 @@
     public func withModelContext<T>(_ closure: @Sendable @escaping (ModelContext) throws -> T)
       async rethrows -> T
     { try await self.database.withModelContext(closure) }
+  }
+
+  extension BackgroundDatabase {
+    public convenience init(
+      modelContainer: ModelContainer,
+      modelContext closure: (@Sendable (ModelContainer) -> ModelContext)? = nil
+    ) {
+      let closure = closure ?? ModelContext.init
+      self.init(database: ModelActorDatabase(modelContainer: modelContainer, modelContext: closure))
+    }
+
+    public convenience init(
+      modelContainer: SwiftData.ModelContainer
+    ) {
+      self.init(
+        modelContainer: modelContainer,
+        modelContext: ModelContext.init
+      )
+    }
+
+    public convenience init(
+      modelContainer: SwiftData.ModelContainer,
+      modelExecutor closure: @Sendable @escaping (ModelContainer) -> any ModelExecutor
+    ) {
+      self.init(
+        database: ModelActorDatabase(
+          modelContainer: modelContainer,
+          modelExecutor: closure
+        )
+      )
+    }
   }
 #endif

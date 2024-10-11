@@ -38,7 +38,9 @@
 
   public struct DatabaseChangePublicist: Sendable {
     private let dbWatcher: DatabaseMonitoring
-    public init(dbWatcher: any DatabaseMonitoring) { self.dbWatcher = dbWatcher }
+    public init(dbWatcher: any DatabaseMonitoring = DataMonitor.shared) {
+      self.dbWatcher = dbWatcher
+    }
 
     public static func never() -> DatabaseChangePublicist {
       self.init(dbWatcher: NeverDatabaseMonitor())

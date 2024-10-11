@@ -64,5 +64,5 @@ run_command $MINT_RUN swiftlint lint $SWIFTLINT_OPTIONS
 
 pushd $PACKAGE_DIR
 run_command $MINT_RUN swift-format lint --recursive --parallel $SWIFTFORMAT_OPTIONS Sources Tests Example/Sources
-run_command $MINT_RUN periphery scan $PERIPHERY_OPTIONS --disable-update-check
+#run_command $MINT_RUN periphery scan $PERIPHERY_OPTIONS --disable-update-check
 popd

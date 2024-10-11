@@ -46,6 +46,22 @@ internal class ContentObject {
     }
   }
 
+  private static func deleteModels(_ models: [Model<Item>], from database: (any Database))
+    async throws
+  {
+    try await database.withModelContext { modelContext in
+      let items: [Item] = models.compactMap {
+        modelContext.model(for: $0.persistentIdentifier) as? Item
+      }
+      dump(items.first?.persistentModelID)
+      assert(items.count == models.count)
+      for item in items {
+        modelContext.delete(item)
+      }
+      try modelContext.save()
+    }
+  }
+
   private func beginUpdateItems() {
     Task {
       do {
@@ -75,24 +91,9 @@ internal class ContentObject {
     self.beginUpdateItems()
   }
 
-  fileprivate static func deleteModels(_ models: [ModelID<Item>], from database: (any Database))
-    async throws
-  {
-    try await database.withModelContext { modelContext in
-      let items: [Item] = models.compactMap {
-        modelContext.model(for: $0.persistentIdentifier) as? Item
-      }
-      dump(items.first?.persistentModelID)
-      assert(items.count == models.count)
-      for item in items {
-        modelContext.delete(item)
-      }
-      try modelContext.save()
-    }
-  }
   internal func deleteSelectedItems() {
     let models = self.selectedItems.map {
-      ModelID<Item>(persistentIdentifier: $0.id)
+      Model<Item>(persistentIdentifier: $0.id)
     }
     self.deleteItems(models)
   }
@@ -100,14 +101,14 @@ internal class ContentObject {
     let models =
       offsets
       .compactMap { items[$0].id }
-      .map(ModelID<Item>.init(persistentIdentifier:))
+      .map(Model<Item>.init(persistentIdentifier:))
 
     assert(models.count == offsets.count)
 
     self.deleteItems(models)
   }
 
-  internal func deleteItems(_ models: [ModelID<Item>]) {
+  internal func deleteItems(_ models: [Model<Item>]) {
     guard let database else {
       return
     }

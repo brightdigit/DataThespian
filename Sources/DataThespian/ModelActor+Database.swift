@@ -32,15 +32,11 @@ public import SwiftData
 extension ModelActor where Self: Database {
   public func withModelContext<T: Sendable>(
     _ closure: @Sendable @escaping (ModelContext) throws -> T
-  )
-    async rethrows -> T
-  {
+  ) async rethrows -> T {
     assert(isMainThread: true, if: Self.assertIsBackground)
     let modelContext = self.modelContext
     return try closure(modelContext)
   }
 
-  public static var assertIsBackground: Bool {
-    false
-  }
+  public static var assertIsBackground: Bool { false }
 }

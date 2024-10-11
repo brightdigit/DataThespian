@@ -32,11 +32,16 @@
 
   import Foundation
 
-  struct PublishingRegister: AgentRegister {
-    let id: String
-    let subject: PassthroughSubject<any DatabaseChangeSet, Never>
+  internal struct PublishingRegister: AgentRegister {
+    internal let id: String
+    private let subject: PassthroughSubject<any DatabaseChangeSet, Never>
 
-    func agent() async -> PublishingAgent {
+    internal init(id: String, subject: PassthroughSubject<any DatabaseChangeSet, Never>) {
+      self.id = id
+      self.subject = subject
+    }
+
+    internal func agent() async -> PublishingAgent {
       let agent = AgentType(id: id, subject: subject)
 
       return agent

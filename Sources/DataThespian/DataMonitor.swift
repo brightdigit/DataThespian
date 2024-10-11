@@ -64,14 +64,11 @@
     func addObserver() {
       guard object == nil else { return }
       object = NotificationCenter.default.addObserver(
-        forName: .NSManagedObjectContextDidSave,
-        object: nil,
-        queue: nil,
+        forName: .NSManagedObjectContextDidSave, object: nil, queue: nil,
         using: { notification in
           let update = NotificationDataUpdate(notification)
           Task { await self.notifyRegisration(update) }
-        }
-      )
+        })
     }
 
     func notifyRegisration(_ update: any DatabaseChangeSet) {

@@ -38,8 +38,7 @@
     public var isEmpty: Bool { inserted.isEmpty && deleted.isEmpty && updated.isEmpty }
 
     public func update(
-      of types: Set<DatabaseChangeType> = .all,
-      contains filteringEntityNames: Set<String>
+      of types: Set<DatabaseChangeType> = .all, contains filteringEntityNames: Set<String>
     ) -> Bool {
       let updateEntityNamesArray = types.flatMap { self[keyPath: $0.keyPath] }.map(\.entityName)
       let updateEntityNames = Set(updateEntityNamesArray)

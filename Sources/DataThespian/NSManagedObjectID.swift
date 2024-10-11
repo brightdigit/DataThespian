@@ -38,10 +38,7 @@
   fileprivate struct PersistentIdentifierJSON: Codable {
     fileprivate struct Implementation: Codable {
       fileprivate init(
-        primaryKey: String,
-        uriRepresentation: URL,
-        isTemporary: Bool,
-        storeIdentifier: String,
+        primaryKey: String, uriRepresentation: URL, isTemporary: Bool, storeIdentifier: String,
         entityName: String
       ) {
         self.primaryKey = primaryKey
@@ -80,13 +77,8 @@
       guard let entityName else { throw PersistentIdentifierError.missingProperty(.entityName) }
       let json = PersistentIdentifierJSON(
         implementation: .init(
-          primaryKey: primaryKey,
-          uriRepresentation: uriRepresentation(),
-          isTemporary: isTemporaryID,
-          storeIdentifier: storeIdentifier,
-          entityName: entityName
-        )
-      )
+          primaryKey: primaryKey, uriRepresentation: uriRepresentation(),
+          isTemporary: isTemporaryID, storeIdentifier: storeIdentifier, entityName: entityName))
       let encoder = JSONEncoder()
       let data: Data
       do { data = try encoder.encode(json) } catch let error as EncodingError {

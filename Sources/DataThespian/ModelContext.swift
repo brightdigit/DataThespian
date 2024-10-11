@@ -39,8 +39,7 @@
       if let notRegistered: T = model(for: objectID) as? T { return notRegistered }
 
       let fetchDescriptor = FetchDescriptor<T>(
-        predicate: #Predicate { $0.persistentModelID == objectID }
-      )
+        predicate: #Predicate { $0.persistentModelID == objectID })
 
       return try fetch(fetchDescriptor).first
     }

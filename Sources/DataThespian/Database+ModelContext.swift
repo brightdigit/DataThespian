@@ -34,42 +34,25 @@
   public import SwiftData
 
   extension Database {
-    public func save() async throws {
-      try await self.withModelContext {
-        try $0.save()
-      }
-    }
+    public func save() async throws { try await self.withModelContext { try $0.save() } }
 
     @discardableResult public func delete<T: PersistentModel>(
-      _ modelType: T.Type,
-      withID id: PersistentIdentifier
-    ) async -> Bool {
-      await self.withModelContext {
-        $0.delete(modelType, withID: id)
-      }
-    }
+      _ modelType: T.Type, withID id: PersistentIdentifier
+    ) async -> Bool { await self.withModelContext { $0.delete(modelType, withID: id) } }
 
     public func delete<T: PersistentModel>(where predicate: Predicate<T>?) async throws {
-      try await self.withModelContext {
-        try $0.delete(where: predicate)
-      }
+      try await self.withModelContext { try $0.delete(where: predicate) }
     }
 
     public func insert(_ closuer: @Sendable @escaping () -> some PersistentModel) async
       -> PersistentIdentifier
-    {
-      await self.withModelContext {
-        $0.insert(closuer)
-      }
-    }
+    { await self.withModelContext { $0.insert(closuer) } }
 
     public func fetch<T, U: Sendable>(
       _ selectDescriptor: @escaping @Sendable () -> FetchDescriptor<T>,
       with closure: @escaping @Sendable ([T]) throws -> U
     ) async rethrows -> U {
-      try await self.withModelContext {
-        try $0.fetch(selectDescriptor, with: closure)
-      }
+      try await self.withModelContext { try $0.fetch(selectDescriptor, with: closure) }
     }
 
     public func fetch<T: PersistentModel, U: PersistentModel, V: Sendable>(
@@ -83,20 +66,13 @@
     }
 
     public func get<T, U: Sendable>(
-      for objectID: PersistentIdentifier,
-      with closure: @escaping @Sendable (T?) throws -> U
+      for objectID: PersistentIdentifier, with closure: @escaping @Sendable (T?) throws -> U
     ) async rethrows -> U where T: PersistentModel {
-      try await self.withModelContext {
-        try $0.get(for: objectID, with: closure)
-      }
+      try await self.withModelContext { try $0.get(for: objectID, with: closure) }
     }
 
     public func transaction(_ block: @Sendable @escaping (ModelContext) throws -> Void) async throws
-    {
-      try await self.withModelContext {
-        try $0.transaction(block: block)
-      }
-    }
+    { try await self.withModelContext { try $0.transaction(block: block) } }
   }
 
 #endif

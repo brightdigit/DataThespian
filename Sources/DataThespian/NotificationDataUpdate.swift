@@ -40,20 +40,15 @@
     let updated: Set<ManagedObjectMetadata>
 
     private init(
-      inserted: Set<ManagedObjectMetadata>?,
-      deleted: Set<ManagedObjectMetadata>?,
+      inserted: Set<ManagedObjectMetadata>?, deleted: Set<ManagedObjectMetadata>?,
       updated: Set<ManagedObjectMetadata>?
     ) {
       self.init(
-        inserted: inserted ?? .init(),
-        deleted: deleted ?? .init(),
-        updated: updated ?? .init()
-      )
+        inserted: inserted ?? .init(), deleted: deleted ?? .init(), updated: updated ?? .init())
     }
 
     private init(
-      inserted: Set<ManagedObjectMetadata>,
-      deleted: Set<ManagedObjectMetadata>,
+      inserted: Set<ManagedObjectMetadata>, deleted: Set<ManagedObjectMetadata>,
       updated: Set<ManagedObjectMetadata>
     ) {
       self.inserted = inserted
@@ -65,8 +60,7 @@
       self.init(
         inserted: notification.managedObjects(key: NSInsertedObjectsKey),
         deleted: notification.managedObjects(key: NSDeletedObjectsKey),
-        updated: notification.managedObjects(key: NSUpdatedObjectsKey)
-      )
+        updated: notification.managedObjects(key: NSUpdatedObjectsKey))
     }
   }
 #endif

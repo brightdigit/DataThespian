@@ -66,16 +66,13 @@ extension ModelContext {
   }
 
   public func get<T, U>(
-    for objectID: PersistentIdentifier,
-    with closure: @escaping @Sendable (T?) throws -> U
+    for objectID: PersistentIdentifier, with closure: @escaping @Sendable (T?) throws -> U
   ) throws -> U where T: PersistentModel, U: Sendable {
     let model: T? = try self.existingModel(for: objectID)
     return try closure(model)
   }
 
   public func transaction(block: @escaping @Sendable (ModelContext) throws -> Void) throws {
-    try self.transaction {
-      try block(self)
-    }
+    try self.transaction { try block(self) }
   }
 }

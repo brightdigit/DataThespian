@@ -31,27 +31,25 @@
 
   import Foundation
 
-  actor RegistrationCollection: Loggable {
-    static var loggingCategory: ThespianLogging.Category { .application }
+  internal actor RegistrationCollection: Loggable {
+    internal static var loggingCategory: ThespianLogging.Category { .application }
 
-    var registrations = [String: DataAgent]()
+    private var registrations = [String: DataAgent]()
 
-    nonisolated func notify(_ update: any DatabaseChangeSet) {
+    nonisolated internal func notify(_ update: any DatabaseChangeSet) {
       Task {
         await self.onUpdate(update)
         Self.logger.debug("Notification Complete")
       }
     }
 
-    nonisolated func add(
-      withID id: String,
-      force: Bool,
-      agent: @Sendable @escaping () async -> DataAgent
+    nonisolated internal func add(
+      withID id: String, force: Bool, agent: @Sendable @escaping () async -> DataAgent
     ) { Task { await self.append(withID: id, force: force, agent: agent) } }
 
-    func append(withID id: String, force: Bool, agent: @Sendable @escaping () async -> DataAgent)
-      async
-    {
+    private func append(
+      withID id: String, force: Bool, agent: @Sendable @escaping () async -> DataAgent
+    ) async {
       if let registration = registrations[id], force {
         Self.logger.debug("Overwriting \(id). Already exists.")
         await registration.finish()
@@ -66,7 +64,7 @@
       Self.logger.debug("Registration Count \(self.registrations.count)")
     }
 
-    func remove(withID id: String, agentID: UUID) {
+    private func remove(withID id: String, agentID: UUID) {
       guard let agent = registrations[id] else {
         Self.logger.warning("No matching registration with id: \(id)")
         return
@@ -79,7 +77,7 @@
       Self.logger.debug("Registration Count \(self.registrations.count)")
     }
 
-    func onUpdate(_ update: any DatabaseChangeSet) {
+    private func onUpdate(_ update: any DatabaseChangeSet) {
       for (id, registration) in registrations {
         Self.logger.debug("Notifying \(id)")
         registration.onUpdate(update)

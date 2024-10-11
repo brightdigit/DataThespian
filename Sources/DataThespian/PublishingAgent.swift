@@ -33,35 +33,33 @@
 
   import Foundation
 
-  actor PublishingAgent: DataAgent, Loggable {
+  internal actor PublishingAgent: DataAgent, Loggable {
     private enum SubscriptionEvent: Sendable {
       case cancel
       case subscribe
     }
 
-    static var loggingCategory: ThespianLogging.Category { .application }
+    internal static var loggingCategory: ThespianLogging.Category { .application }
 
-    let agentID = UUID()
-    let id: String
-    let subject: PassthroughSubject<any DatabaseChangeSet, Never>
-    var subscriptionCount = 0
-    var cancellable: AnyCancellable?
-    var completed: (@Sendable () -> Void)?
+    internal let agentID = UUID()
+    private let id: String
+    private let subject: PassthroughSubject<any DatabaseChangeSet, Never>
+    private var subscriptionCount = 0
+    private var cancellable: AnyCancellable?
+    private var completed: (@Sendable () -> Void)?
 
-    init(id: String, subject: PassthroughSubject<any DatabaseChangeSet, Never>) {
+    internal init(id: String, subject: PassthroughSubject<any DatabaseChangeSet, Never>) {
       self.id = id
       self.subject = subject
       Task { await self.initialize() }
     }
 
-    func initialize() {
-      cancellable =
-        subject.handleEvents { _ in
-          self.onSubscriptionEvent(.subscribe)
-        } receiveCancel: {
-          self.onSubscriptionEvent(.cancel)
-        }
-        .sink { _ in }
+    private func initialize() {
+      cancellable = subject.handleEvents { _ in
+        self.onSubscriptionEvent(.subscribe)
+      } receiveCancel: {
+        self.onSubscriptionEvent(.cancel)
+      }.sink { _ in }
     }
 
     private nonisolated func onSubscriptionEvent(_ event: SubscriptionEvent) {
@@ -83,15 +81,15 @@
       )
     }
 
-    nonisolated func onUpdate(_ update: any DatabaseChangeSet) {
+    nonisolated internal func onUpdate(_ update: any DatabaseChangeSet) {
       Task { await self.sendUpdate(update) }
     }
 
-    func sendUpdate(_ update: any DatabaseChangeSet) {
+    private func sendUpdate(_ update: any DatabaseChangeSet) {
       Task { @MainActor in await self.subject.send(update) }
     }
 
-    func cancel() {
+    private func cancel() {
       Self.logger.debug("Cancelling \(self.id) \(self.agentID)")
       cancellable?.cancel()
       cancellable = nil
@@ -99,7 +97,7 @@
       completed = nil
     }
 
-    nonisolated func onCompleted(_ closure: @escaping @Sendable () -> Void) {
+    nonisolated internal func onCompleted(_ closure: @escaping @Sendable () -> Void) {
       Task { await self.setCompleted(closure) }
     }
 
@@ -109,6 +107,6 @@
       completed = closure
     }
 
-    func finish() { cancel() }
+    internal func finish() { cancel() }
   }
 #endif

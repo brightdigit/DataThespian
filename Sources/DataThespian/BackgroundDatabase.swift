@@ -37,9 +37,7 @@
   public final class BackgroundDatabase: Database {
     public func withModelContext<T>(_ closure: @Sendable @escaping (ModelContext) throws -> T)
       async rethrows -> T
-    {
-      try await self.database.withModelContext(closure)
-    }
+    { try await self.database.withModelContext(closure) }
 
     private actor DatabaseContainer {
       private let factory: @Sendable () -> any Database

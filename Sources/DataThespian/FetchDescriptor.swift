@@ -39,12 +39,10 @@
 
       self.fetchLimit = fetchLimit
     }
-    public init(model: ModelID<T>) {
+    public init(model: Model<T>) {
       let persistentIdentifier = model.persistentIdentifier
       self.init(
-        predicate: #Predicate<T> { $0.persistentModelID == persistentIdentifier },
-        fetchLimit: 1
-      )
+        predicate: #Predicate<T> { $0.persistentModelID == persistentIdentifier }, fetchLimit: 1)
     }
   }
 #endif

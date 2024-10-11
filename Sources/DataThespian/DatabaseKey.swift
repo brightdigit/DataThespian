@@ -60,8 +60,7 @@
     }
 
     func fetch<T, U>(
-      _: @escaping @Sendable () -> FetchDescriptor<T>,
-      with _: @escaping @Sendable ([T]) throws -> U
+      _: @escaping @Sendable () -> FetchDescriptor<T>, with _: @escaping @Sendable ([T]) throws -> U
     ) async throws -> U where T: PersistentModel, U: Sendable {
       assertionFailure("No Database Set.")
       throw NotImplmentedError.instance

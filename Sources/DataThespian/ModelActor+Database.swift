@@ -27,16 +27,18 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-public import SwiftData
+#if canImport(SwiftData)
+  public import SwiftData
 
-extension ModelActor where Self: Database {
-  public static var assertIsBackground: Bool { false }
+  extension ModelActor where Self: Database {
+    public static var assertIsBackground: Bool { false }
 
-  public func withModelContext<T: Sendable>(
-    _ closure: @Sendable @escaping (ModelContext) throws -> T
-  ) async rethrows -> T {
-    assert(isMainThread: true, if: Self.assertIsBackground)
-    let modelContext = self.modelContext
-    return try closure(modelContext)
+    public func withModelContext<T: Sendable>(
+      _ closure: @Sendable @escaping (ModelContext) throws -> T
+    ) async rethrows -> T {
+      assert(isMainThread: true, if: Self.assertIsBackground)
+      let modelContext = self.modelContext
+      return try closure(modelContext)
+    }
   }
-}
+#endif

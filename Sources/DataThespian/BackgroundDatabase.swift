@@ -30,7 +30,6 @@
 #if canImport(SwiftData)
   import Foundation
   public import SwiftData
-  import SwiftUI
 
   public final class BackgroundDatabase: Database {
     private actor DatabaseContainer {

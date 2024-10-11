@@ -29,9 +29,7 @@
 
 #if canImport(CoreData) && canImport(SwiftData)
   public import CoreData
-
   import Foundation
-
   public import SwiftData
 
   // periphery:ignore

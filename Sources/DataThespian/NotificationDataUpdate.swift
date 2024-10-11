@@ -29,7 +29,6 @@
 
 #if canImport(CoreData) && canImport(SwiftData)
   import CoreData
-
   import Foundation
 
   internal struct NotificationDataUpdate: DatabaseChangeSet, Sendable {

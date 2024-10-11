@@ -29,7 +29,6 @@
 
 #if canImport(SwiftData)
   public import Foundation
-
   public import SwiftData
 
   extension FetchDescriptor {

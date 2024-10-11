@@ -28,9 +28,7 @@
 //
 
 #if canImport(SwiftData)
-
   import Foundation
-
   public import SwiftData
 
   @available(*, deprecated, renamed: "Model")

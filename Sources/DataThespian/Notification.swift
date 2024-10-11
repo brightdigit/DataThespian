@@ -29,7 +29,6 @@
 
 #if canImport(CoreData)
   import CoreData
-
   import Foundation
 
   extension Notification {

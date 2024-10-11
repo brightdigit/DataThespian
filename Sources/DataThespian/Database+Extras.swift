@@ -27,117 +27,119 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-public import Foundation
-public import SwiftData
+#if canImport(SwiftData)
+  public import Foundation
+  public import SwiftData
 
-extension Database {
-  public func insert<PersistentModelType: PersistentModel>(
-    _ closuer: @Sendable @escaping () -> PersistentModelType
-  ) async -> Model<PersistentModelType> {
-    let id: PersistentIdentifier = await self.insert(closuer)
-    return .init(persistentIdentifier: id)
-  }
-
-  public func with<PersistentModelType: PersistentModel, U: Sendable>(
-    _ id: Model<PersistentModelType>,
-    _ closure: @escaping @Sendable (PersistentModelType) throws -> U
-  ) async rethrows -> U {
-    try await self.get(for: id.persistentIdentifier) { (model: PersistentModelType?) -> U in
-      guard let model else {
-        throw Model<PersistentModelType>.NotFoundError(
-          persistentIdentifier: id.persistentIdentifier
-        )
-      }
-      return try closure(model)
-    }
-  }
-
-  public func first<T: PersistentModel>(_ selectPredicate: Predicate<T>) async throws -> Model<T>? {
-    try await self.first(selectPredicate, with: Model.ifMap)
-  }
-
-  public func first<T: PersistentModel, U: Sendable>(
-    _ selectPredicate: Predicate<T>, with closure: @escaping @Sendable (T?) throws -> U
-  ) async throws -> U {
-    try await self.fetch {
-      .init(predicate: selectPredicate, fetchLimit: 1)
-    } with: { models in
-      try closure(models.first)
-    }
-  }
-
-  public func first<T: PersistentModel, U: Sendable>(
-    fetchWith selectPredicate: Predicate<T>,
-    otherwiseInsertBy insert: @Sendable @escaping () -> T,
-    with closure: @escaping @Sendable (T) throws -> U
-  ) async throws -> U {
-    let value = try await self.fetch {
-      .init(predicate: selectPredicate, fetchLimit: 1)
-    } with: { models in
-      try models.first.map(closure)
+  extension Database {
+    public func insert<PersistentModelType: PersistentModel>(
+      _ closuer: @Sendable @escaping () -> PersistentModelType
+    ) async -> Model<PersistentModelType> {
+      let id: PersistentIdentifier = await self.insert(closuer)
+      return .init(persistentIdentifier: id)
     }
 
-    if let value {
-      return value
-    }
-
-    let inserted: Model = await self.insert(insert)
-
-    return try await self.with(inserted, closure)
-  }
-
-  public func delete<T: PersistentModel>(model _: T.Type, where predicate: Predicate<T>? = nil)
-    async throws
-  { try await self.delete(where: predicate) }
-
-  public func delete<T: PersistentModel>(_ model: Model<T>) async {
-    await self.delete(T.self, withID: model.persistentIdentifier)
-  }
-
-  public func deleteAll(of types: [any PersistentModel.Type]) async throws {
-    try await self.transaction { context in for type in types { try context.delete(model: type) } }
-  }
-
-  public func fetch<T: PersistentModel, U: Sendable>(
-    _: T.Type, with closure: @escaping @Sendable ([T]) throws -> U
-  ) async throws -> U {
-    try await self.fetch {
-      FetchDescriptor<T>()
-    } with: { models in
-      try closure(models)
-    }
-  }
-
-  public func fetch<T: PersistentModel>(_: T.Type) async throws -> [Model<T>] {
-    try await self.fetch(T.self) { models in models.map(Model.init) }
-  }
-  public func fetch<T: PersistentModel>(
-    _: T.Type, _ selectDescriptor: @escaping @Sendable () -> FetchDescriptor<T>
-  ) async throws -> [Model<T>] {
-    await self.fetch(selectDescriptor) { models in models.map(Model.init) }
-  }
-
-  public func fetch<T, U: Sendable>(
-    of _: T.Type,
-    for objectIDs: [PersistentIdentifier],
-    with closure: @escaping @Sendable (T) throws -> U
-  ) async throws -> [U] where T: PersistentModel {
-    try await withThrowingTaskGroup(of: U?.self, returning: [U].self) { group in
-      for id in objectIDs {
-        group.addTask { try await self.get(for: id) { model in try model.map(closure) } }
-      }
-
-      return try await group.reduce(into: []) { partialResult, item in
-        if let item { partialResult.append(item) }
+    public func with<PersistentModelType: PersistentModel, U: Sendable>(
+      _ id: Model<PersistentModelType>,
+      _ closure: @escaping @Sendable (PersistentModelType) throws -> U
+    ) async rethrows -> U {
+      try await self.get(for: id.persistentIdentifier) { (model: PersistentModelType?) -> U in
+        guard let model else {
+          throw Model<PersistentModelType>.NotFoundError(
+            persistentIdentifier: id.persistentIdentifier
+          )
+        }
+        return try closure(model)
       }
     }
-  }
 
-  public func get<T, U: Sendable>(
-    of _: T.Type,
-    for objectID: PersistentIdentifier,
-    with closure: @escaping @Sendable (T?) throws -> U
-  ) async throws -> U where T: PersistentModel {
-    try await self.get(for: objectID) { model in try closure(model) }
+    public func first<T: PersistentModel>(_ selectPredicate: Predicate<T>) async throws -> Model<T>? {
+      try await self.first(selectPredicate, with: Model.ifMap)
+    }
+
+    public func first<T: PersistentModel, U: Sendable>(
+      _ selectPredicate: Predicate<T>, with closure: @escaping @Sendable (T?) throws -> U
+    ) async throws -> U {
+      try await self.fetch {
+        .init(predicate: selectPredicate, fetchLimit: 1)
+      } with: { models in
+        try closure(models.first)
+      }
+    }
+
+    public func first<T: PersistentModel, U: Sendable>(
+      fetchWith selectPredicate: Predicate<T>,
+      otherwiseInsertBy insert: @Sendable @escaping () -> T,
+      with closure: @escaping @Sendable (T) throws -> U
+    ) async throws -> U {
+      let value = try await self.fetch {
+        .init(predicate: selectPredicate, fetchLimit: 1)
+      } with: { models in
+        try models.first.map(closure)
+      }
+
+      if let value {
+        return value
+      }
+
+      let inserted: Model = await self.insert(insert)
+
+      return try await self.with(inserted, closure)
+    }
+
+    public func delete<T: PersistentModel>(model _: T.Type, where predicate: Predicate<T>? = nil)
+      async throws
+    { try await self.delete(where: predicate) }
+
+    public func delete<T: PersistentModel>(_ model: Model<T>) async {
+      await self.delete(T.self, withID: model.persistentIdentifier)
+    }
+
+    public func deleteAll(of types: [any PersistentModel.Type]) async throws {
+      try await self.transaction { context in for type in types { try context.delete(model: type) } }
+    }
+
+    public func fetch<T: PersistentModel, U: Sendable>(
+      _: T.Type, with closure: @escaping @Sendable ([T]) throws -> U
+    ) async throws -> U {
+      try await self.fetch {
+        FetchDescriptor<T>()
+      } with: { models in
+        try closure(models)
+      }
+    }
+
+    public func fetch<T: PersistentModel>(_: T.Type) async throws -> [Model<T>] {
+      try await self.fetch(T.self) { models in models.map(Model.init) }
+    }
+    public func fetch<T: PersistentModel>(
+      _: T.Type, _ selectDescriptor: @escaping @Sendable () -> FetchDescriptor<T>
+    ) async throws -> [Model<T>] {
+      await self.fetch(selectDescriptor) { models in models.map(Model.init) }
+    }
+
+    public func fetch<T, U: Sendable>(
+      of _: T.Type,
+      for objectIDs: [PersistentIdentifier],
+      with closure: @escaping @Sendable (T) throws -> U
+    ) async throws -> [U] where T: PersistentModel {
+      try await withThrowingTaskGroup(of: U?.self, returning: [U].self) { group in
+        for id in objectIDs {
+          group.addTask { try await self.get(for: id) { model in try model.map(closure) } }
+        }
+
+        return try await group.reduce(into: []) { partialResult, item in
+          if let item { partialResult.append(item) }
+        }
+      }
+    }
+
+    public func get<T, U: Sendable>(
+      of _: T.Type,
+      for objectID: PersistentIdentifier,
+      with closure: @escaping @Sendable (T?) throws -> U
+    ) async throws -> U where T: PersistentModel {
+      try await self.get(for: objectID) { model in try closure(model) }
+    }
   }
-}
+#endif

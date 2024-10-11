@@ -28,7 +28,6 @@
 //
 
 #if canImport(SwiftData)
-
   public import SwiftData
 
   public struct ManagedObjectMetadata: Sendable, Hashable {

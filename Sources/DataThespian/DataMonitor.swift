@@ -30,9 +30,7 @@
 #if canImport(Combine) && canImport(SwiftData) && canImport(CoreData)
 
   import Combine
-
   import CoreData
-
   import Foundation
   import SwiftData
 

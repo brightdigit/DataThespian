@@ -28,7 +28,6 @@
 //
 
 #if canImport(SwiftData)
-
   import Foundation
 
   internal actor RegistrationCollection: Loggable {

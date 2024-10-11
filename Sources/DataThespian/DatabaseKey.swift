@@ -28,11 +28,8 @@
 //
 
 #if canImport(SwiftUI)
-
   import Foundation
-
   import SwiftData
-
   public import SwiftUI
 
   private struct DefaultDatabase: Database {

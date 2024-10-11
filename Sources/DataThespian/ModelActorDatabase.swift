@@ -27,54 +27,56 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-public import SwiftData
+#if canImport(SwiftData)
+  public import SwiftData
 
-// @ModelActor
-// public actor ModelActorDatabase: Database {}
+  // @ModelActor
+  // public actor ModelActorDatabase: Database {}
 
-public actor ModelActorDatabase: Database, ModelActor {
-  public nonisolated let modelExecutor: any SwiftData.ModelExecutor
-  public nonisolated let modelContainer: SwiftData.ModelContainer
+  public actor ModelActorDatabase: Database, ModelActor {
+    public nonisolated let modelExecutor: any SwiftData.ModelExecutor
+    public nonisolated let modelContainer: SwiftData.ModelContainer
 
-  private init(modelExecutor: any ModelExecutor, modelContainer: ModelContainer) {
-    self.modelExecutor = modelExecutor
-    self.modelContainer = modelContainer
-  }
+    private init(modelExecutor: any ModelExecutor, modelContainer: ModelContainer) {
+      self.modelExecutor = modelExecutor
+      self.modelContainer = modelContainer
+    }
 
-  public init(modelContainer: SwiftData.ModelContainer) {
-    self.init(
-      modelContainer: modelContainer,
-      modelContext: ModelContext.init
-    )
-  }
+    public init(modelContainer: SwiftData.ModelContainer) {
+      self.init(
+        modelContainer: modelContainer,
+        modelContext: ModelContext.init
+      )
+    }
 
-  public init(
-    modelContainer: SwiftData.ModelContainer,
-    modelContext closure: @Sendable @escaping (ModelContainer) -> ModelContext
-  ) {
-    self.init(
-      modelContainer: modelContainer,
-      modelExecutor: DefaultSerialModelExecutor.create(from: closure)
-    )
-  }
+    public init(
+      modelContainer: SwiftData.ModelContainer,
+      modelContext closure: @Sendable @escaping (ModelContainer) -> ModelContext
+    ) {
+      self.init(
+        modelContainer: modelContainer,
+        modelExecutor: DefaultSerialModelExecutor.create(from: closure)
+      )
+    }
 
-  public init(
-    modelContainer: SwiftData.ModelContainer,
-    modelExecutor closure: @Sendable @escaping (ModelContainer) -> any ModelExecutor
-  ) {
-    self.init(
-      modelExecutor: closure(modelContainer),
-      modelContainer: modelContainer
-    )
-  }
-}
-
-extension DefaultSerialModelExecutor {
-  fileprivate static func create(
-    from closure: @Sendable @escaping (ModelContainer) -> ModelContext
-  ) -> @Sendable (ModelContainer) -> any ModelExecutor {
-    {
-      DefaultSerialModelExecutor(modelContext: closure($0))
+    public init(
+      modelContainer: SwiftData.ModelContainer,
+      modelExecutor closure: @Sendable @escaping (ModelContainer) -> any ModelExecutor
+    ) {
+      self.init(
+        modelExecutor: closure(modelContainer),
+        modelContainer: modelContainer
+      )
     }
   }
-}
+
+  extension DefaultSerialModelExecutor {
+    fileprivate static func create(
+      from closure: @Sendable @escaping (ModelContainer) -> ModelContext
+    ) -> @Sendable (ModelContainer) -> any ModelExecutor {
+      {
+        DefaultSerialModelExecutor(modelContext: closure($0))
+      }
+    }
+  }
+#endif

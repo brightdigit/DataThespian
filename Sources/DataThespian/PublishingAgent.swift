@@ -28,9 +28,7 @@
 //
 
 #if canImport(Combine) && canImport(SwiftData)
-
   @preconcurrency import Combine
-
   import Foundation
 
   internal actor PublishingAgent: DataAgent, Loggable {

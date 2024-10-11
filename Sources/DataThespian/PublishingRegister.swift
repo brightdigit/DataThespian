@@ -29,7 +29,6 @@
 
 #if canImport(Combine) && canImport(SwiftData)
   @preconcurrency import Combine
-
   import Foundation
 
   internal struct PublishingRegister: AgentRegister {

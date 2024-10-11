@@ -20,7 +20,7 @@
     ]
   },
   "prioritizeKeepingFunctionOutputTogether" : false,
-  "respectsExistingLineBreaks" : false,
+  "respectsExistingLineBreaks" : true,
   "rules" : {
     "AllPublicDeclarationsHaveDocumentation" : false,
     "AlwaysUseLiteralForEmptyCollectionInit" : false,

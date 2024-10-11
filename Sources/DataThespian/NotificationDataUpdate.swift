@@ -32,23 +32,28 @@
 
   import Foundation
 
-  struct NotificationDataUpdate: DatabaseChangeSet, Sendable {
-    let inserted: Set<ManagedObjectMetadata>
+  internal struct NotificationDataUpdate: DatabaseChangeSet, Sendable {
+    internal let inserted: Set<ManagedObjectMetadata>
 
-    let deleted: Set<ManagedObjectMetadata>
+    internal let deleted: Set<ManagedObjectMetadata>
 
-    let updated: Set<ManagedObjectMetadata>
+    internal let updated: Set<ManagedObjectMetadata>
 
     private init(
-      inserted: Set<ManagedObjectMetadata>?, deleted: Set<ManagedObjectMetadata>?,
+      inserted: Set<ManagedObjectMetadata>?,
+      deleted: Set<ManagedObjectMetadata>?,
       updated: Set<ManagedObjectMetadata>?
     ) {
       self.init(
-        inserted: inserted ?? .init(), deleted: deleted ?? .init(), updated: updated ?? .init())
+        inserted: inserted ?? .init(),
+        deleted: deleted ?? .init(),
+        updated: updated ?? .init()
+      )
     }
 
     private init(
-      inserted: Set<ManagedObjectMetadata>, deleted: Set<ManagedObjectMetadata>,
+      inserted: Set<ManagedObjectMetadata>,
+      deleted: Set<ManagedObjectMetadata>,
       updated: Set<ManagedObjectMetadata>
     ) {
       self.inserted = inserted
@@ -56,11 +61,12 @@
       self.updated = updated
     }
 
-    init(_ notification: Notification) {
+    internal init(_ notification: Notification) {
       self.init(
         inserted: notification.managedObjects(key: NSInsertedObjectsKey),
         deleted: notification.managedObjects(key: NSDeletedObjectsKey),
-        updated: notification.managedObjects(key: NSUpdatedObjectsKey))
+        updated: notification.managedObjects(key: NSUpdatedObjectsKey)
+      )
     }
   }
 #endif

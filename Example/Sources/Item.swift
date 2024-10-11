@@ -9,10 +9,10 @@ import Foundation
 import SwiftData
 
 @Model
-final class Item {
-  var timestamp: Date
+internal final class Item {
+  internal private(set) var timestamp: Date
 
-  init(timestamp: Date) {
+  internal init(timestamp: Date) {
     self.timestamp = timestamp
   }
 }

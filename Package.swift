@@ -34,8 +34,8 @@ let package = Package(
   platforms: [.iOS(.v17), .macCatalyst(.v17), .macOS(.v14), .tvOS(.v17), .visionOS(.v1), .watchOS(.v10)],
   products: [
     .library(
-        name: "DataThespian",
-        targets: ["DataThespian"]
+      name: "DataThespian",
+      targets: ["DataThespian"]
     )
   ],
   dependencies: [

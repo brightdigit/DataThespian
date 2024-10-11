@@ -44,7 +44,7 @@
     import CoreData
 
     extension ManagedObjectMetadata {
-      init?(managedObject: NSManagedObject) {
+      internal init?(managedObject: NSManagedObject) {
         let persistentIdentifier: PersistentIdentifier
         do { persistentIdentifier = try managedObject.objectID.persistentIdentifier() } catch {
           assertionFailure(error: error)

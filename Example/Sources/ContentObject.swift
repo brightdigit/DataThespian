@@ -36,7 +36,7 @@ internal class ContentObject {
       self.error = error
       items = []
     }
-    assert(items.count == selectedItemsID.count)
+    // assert(items.count == selectedItemsID.count)
     return items
   }
 

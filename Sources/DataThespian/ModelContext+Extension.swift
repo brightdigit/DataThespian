@@ -32,7 +32,9 @@ public import SwiftData
 
 extension ModelContext {
   public func delete<T: PersistentModel>(_: T.Type, withID id: PersistentIdentifier) -> Bool {
-    guard let model: T = self.registeredModel(for: id) else { return false }
+    guard let model: T = self.registeredModel(for: id) else {
+      return false
+    }
     self.delete(model)
     return true
   }

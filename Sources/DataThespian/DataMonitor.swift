@@ -41,8 +41,8 @@
 
     public static let shared = DataMonitor()
 
-    var object: (any NSObjectProtocol)?
-    var registrations = RegistrationCollection()
+    private var object: (any NSObjectProtocol)?
+    private var registrations = RegistrationCollection()
 
     private init() { Self.logger.debug("Creating DatabaseMonitor") }
 
@@ -50,7 +50,7 @@
       Task { await self.addRegistration(registration, force: force) }
     }
 
-    func addRegistration(_ registration: any AgentRegister, force: Bool) {
+    private func addRegistration(_ registration: any AgentRegister, force: Bool) {
       registrations.add(withID: registration.id, force: force, agent: registration.agent)
     }
 
@@ -61,18 +61,25 @@
       }
     }
 
-    func addObserver() {
-      guard object == nil else { return }
+    private func addObserver() {
+      guard object == nil else {
+        return
+      }
       object = NotificationCenter.default.addObserver(
-        forName: .NSManagedObjectContextDidSave, object: nil, queue: nil,
+        forName: .NSManagedObjectContextDidSave,
+        object: nil,
+        queue: nil,
         using: { notification in
           let update = NotificationDataUpdate(notification)
           Task { await self.notifyRegisration(update) }
-        })
+        }
+      )
     }
 
-    func notifyRegisration(_ update: any DatabaseChangeSet) {
-      guard !update.isEmpty else { return }
+    private func notifyRegisration(_ update: any DatabaseChangeSet) {
+      guard !update.isEmpty else {
+        return
+      }
       Self.logger.debug("Notifying of Update")
 
       registrations.notify(update)

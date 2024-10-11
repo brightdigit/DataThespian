@@ -33,17 +33,18 @@
 
   public import SwiftData
 
-  @available(*, deprecated, renamed: "Model") public typealias ModelID = Model
+  @available(*, deprecated, renamed: "Model")
+  public typealias ModelID = Model
 
   public struct Model<T: PersistentModel>: Sendable, Identifiable {
-    public init(persistentIdentifier: PersistentIdentifier) {
-      self.persistentIdentifier = persistentIdentifier
-    }
+    public struct NotFoundError: Error { public let persistentIdentifier: PersistentIdentifier }
 
     public var id: PersistentIdentifier.ID { persistentIdentifier.id }
     public let persistentIdentifier: PersistentIdentifier
 
-    public struct NotFoundError: Error { public let persistentIdentifier: PersistentIdentifier }
+    public init(persistentIdentifier: PersistentIdentifier) {
+      self.persistentIdentifier = persistentIdentifier
+    }
   }
 
   extension Model where T: PersistentModel {

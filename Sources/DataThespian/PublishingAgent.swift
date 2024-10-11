@@ -59,7 +59,10 @@
         self.onSubscriptionEvent(.subscribe)
       } receiveCancel: {
         self.onSubscriptionEvent(.cancel)
-      }.sink { _ in }
+      }
+      .sink {
+        _ in
+      }
     }
 
     private nonisolated func onSubscriptionEvent(_ event: SubscriptionEvent) {
@@ -101,7 +104,7 @@
       Task { await self.setCompleted(closure) }
     }
 
-    func setCompleted(_ closure: @escaping @Sendable () -> Void) {
+    internal func setCompleted(_ closure: @escaping @Sendable () -> Void) {
       Self.logger.debug("SetCompleted \(self.id) \(self.agentID)")
       assert(completed == nil)
       completed = closure

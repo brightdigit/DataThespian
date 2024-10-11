@@ -28,17 +28,11 @@
 //
 
 #if canImport(SwiftData)
-
-  public import Foundation
-
+  import Foundation
   public import SwiftData
   import SwiftUI
 
   public final class BackgroundDatabase: Database {
-    public func withModelContext<T>(_ closure: @Sendable @escaping (ModelContext) throws -> T)
-      async rethrows -> T
-    { try await self.database.withModelContext(closure) }
-
     private actor DatabaseContainer {
       private let factory: @Sendable () -> any Database
       private var wrappedTask: Task<any Database, Never>?
@@ -49,7 +43,9 @@
       // swiftlint:disable:next strict_fileprivate
       fileprivate var database: any Database {
         get async {
-          if let wrappedTask { return await wrappedTask.value }
+          if let wrappedTask {
+            return await wrappedTask.value
+          }
           let task = Task { factory() }
           self.wrappedTask = task
           return await task.value
@@ -61,15 +57,24 @@
 
     private var database: any Database { get async { await container.database } }
 
-    public convenience init(modelContainer: ModelContainer, autosaveEnabled: Bool = false) {
-      self.init {
-        assert(isMainThread: false)
-        return ModelActorDatabase(modelContainer: modelContainer, autosaveEnabled: autosaveEnabled)
-      }
+//    @available(*, deprecated, message: "Use your own `ModelActorDatabase`.")
+//    public convenience init(modelContainer: ModelContainer, autosaveEnabled: Bool = false) {
+//      self.init {
+//        assert(isMainThread: false)
+//        return ModelActorDatabase(modelContainer: modelContainer, autosaveEnabled: autosaveEnabled)
+//      }
+//    }
+
+    public convenience init(database: @Sendable @escaping @autoclosure () -> any Database) {
+      self.init(database)
     }
 
-    internal init(_ factory: @Sendable @escaping () -> any Database) {
+    public init(_ factory: @Sendable @escaping () -> any Database) {
       self.container = .init(factory: factory)
     }
+
+    public func withModelContext<T>(_ closure: @Sendable @escaping (ModelContext) throws -> T)
+      async rethrows -> T
+    { try await self.database.withModelContext(closure) }
   }
 #endif

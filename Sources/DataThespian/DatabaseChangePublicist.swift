@@ -30,14 +30,14 @@
 #if canImport(Combine) && canImport(SwiftData)
   public import Combine
 
-  fileprivate struct NeverDatabaseMonitor: DatabaseMonitoring {
+  private struct NeverDatabaseMonitor: DatabaseMonitoring {
     func register(_: any AgentRegister, force _: Bool) {
       assertionFailure("Using Empty Database Listener")
     }
   }
 
   public struct DatabaseChangePublicist: Sendable {
-    let dbWatcher: DatabaseMonitoring
+    private let dbWatcher: DatabaseMonitoring
     public init(dbWatcher: any DatabaseMonitoring) { self.dbWatcher = dbWatcher }
 
     public static func never() -> DatabaseChangePublicist {

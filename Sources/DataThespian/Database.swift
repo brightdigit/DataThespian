@@ -29,7 +29,7 @@
 
 #if canImport(SwiftData)
 
-  public import Foundation
+  import Foundation
 
   public import SwiftData
 

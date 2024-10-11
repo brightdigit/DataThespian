@@ -32,7 +32,7 @@
 
   public import SwiftUI
 
-  fileprivate struct DatabaseChangePublicistKey: EnvironmentKey {
+  private struct DatabaseChangePublicistKey: EnvironmentKey {
     typealias Value = DatabaseChangePublicist
 
     nonisolated static let defaultValue: DatabaseChangePublicist = .never()

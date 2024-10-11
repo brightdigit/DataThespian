@@ -45,7 +45,8 @@ extension Database {
     try await self.get(for: id.persistentIdentifier) { (model: PersistentModelType?) -> U in
       guard let model else {
         throw Model<PersistentModelType>.NotFoundError(
-          persistentIdentifier: id.persistentIdentifier)
+          persistentIdentifier: id.persistentIdentifier
+        )
       }
       return try closure(model)
     }
@@ -66,7 +67,8 @@ extension Database {
   }
 
   public func first<T: PersistentModel, U: Sendable>(
-    fetchWith selectPredicate: Predicate<T>, otherwiseInsertBy insert: @Sendable @escaping () -> T,
+    fetchWith selectPredicate: Predicate<T>,
+    otherwiseInsertBy insert: @Sendable @escaping () -> T,
     with closure: @escaping @Sendable (T) throws -> U
   ) async throws -> U {
     let value = try await self.fetch {
@@ -75,7 +77,9 @@ extension Database {
       try models.first.map(closure)
     }
 
-    if let value { return value }
+    if let value {
+      return value
+    }
 
     let inserted: Model = await self.insert(insert)
 
@@ -110,11 +114,12 @@ extension Database {
   public func fetch<T: PersistentModel>(
     _: T.Type, _ selectDescriptor: @escaping @Sendable () -> FetchDescriptor<T>
   ) async throws -> [Model<T>] {
-    try await self.fetch(selectDescriptor) { models in models.map(Model.init) }
+    await self.fetch(selectDescriptor) { models in models.map(Model.init) }
   }
 
   public func fetch<T, U: Sendable>(
-    of _: T.Type, for objectIDs: [PersistentIdentifier],
+    of _: T.Type,
+    for objectIDs: [PersistentIdentifier],
     with closure: @escaping @Sendable (T) throws -> U
   ) async throws -> [U] where T: PersistentModel {
     try await withThrowingTaskGroup(of: U?.self, returning: [U].self) { group in
@@ -129,7 +134,8 @@ extension Database {
   }
 
   public func get<T, U: Sendable>(
-    of _: T.Type, for objectID: PersistentIdentifier,
+    of _: T.Type,
+    for objectID: PersistentIdentifier,
     with closure: @escaping @Sendable (T?) throws -> U
   ) async throws -> U where T: PersistentModel {
     try await self.get(for: objectID) { model in try closure(model) }

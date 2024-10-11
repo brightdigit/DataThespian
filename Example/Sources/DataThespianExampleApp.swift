@@ -12,11 +12,15 @@ import SwiftUI
 @main
 internal struct DataThespianExampleApp: App {
   private static let databaseChangePublicist = DatabaseChangePublicist(    dbWatcher: DataMonitor.shared)
-  // swiftlint:disable:next force_try
-  private static let database = try! BackgroundDatabase(
-    modelContainer: .init(for: Item.self),
-    autosaveEnabled: true
-  )
+
+  private static let database = BackgroundDatabase {
+    // swiftlint:disable:next force_try
+    try! ModelActorDatabase(modelContainer: ModelContainer(for: Item.self)) {
+      let context = ModelContext($0)
+      context.autosaveEnabled = true
+      return context
+    }
+  }
 
   internal var body: some Scene {
     WindowGroup {

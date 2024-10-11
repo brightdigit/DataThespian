@@ -10,12 +10,12 @@ import DataThespian
 import SwiftData
 import SwiftUI
 
-struct ContentView: View {
-  @State var object = ContentObject()
-  @Environment(\.database) var database
-  @Environment(\.databaseChangePublicist) var databaseChangePublisher
+internal struct ContentView: View {
+  @State private var object = ContentObject()
+  @Environment(\.database) private var database
+  @Environment(\.databaseChangePublicist) private var databaseChangePublisher
 
-  var body: some View {
+  internal var body: some View {
     NavigationSplitView {
       List(selection: self.$object.selectedItemsID) {
         ForEach(object.items) { item in
@@ -23,7 +23,7 @@ struct ContentView: View {
         }
         .onDelete(perform: object.deleteItems)
       }
-      .navigationSplitViewColumnWidth(min: 180, ideal: 200)
+      .navigationSplitViewColumnWidth(min: 200, ideal: 220)
       .toolbar {
         ToolbarItem {
           Button(action: addItem) {
@@ -47,7 +47,9 @@ struct ContentView: View {
       }
     }.onAppear {
       self.object.initialize(
-        withDatabase: database, databaseChangePublisher: databaseChangePublisher)
+        withDatabase: database,
+        databaseChangePublisher: databaseChangePublisher
+      )
     }
   }
 
@@ -60,16 +62,18 @@ struct ContentView: View {
 }
 
 #Preview {
+  let databaseChangePublicist = DatabaseChangePublicist(dbWatcher: DataMonitor.shared)
   let config = ModelConfiguration(isStoredInMemoryOnly: true)
   // swiftlint:disable:next force_try
   let modelContainer = try! ModelContainer(for: Item.self, configurations: config)
 
+  let backgroundDatabase = BackgroundDatabase(modelContainer: modelContainer) {
+    let context = ModelContext($0)
+    context.autosaveEnabled = true
+    return context
+  }
+
   ContentView()
-    .environment(
-      \.databaseChangePublicist,
-       DatabaseChangePublicist(
-          dbWatcher: DataMonitor.shared
-       )
-    )
-        .database(BackgroundDatabase(modelContainer: modelContainer))
+    .environment(      \.databaseChangePublicist, databaseChangePublicist    )
+    .database(backgroundDatabase)
 }

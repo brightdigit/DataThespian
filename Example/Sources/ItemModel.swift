@@ -9,11 +9,11 @@ import DataThespian
 import Foundation
 import SwiftData
 
-struct ItemModel: Identifiable {
-  let model: Model<Item>
-  let timestamp: Date
+internal struct ItemModel: Identifiable {
+  internal let model: Model<Item>
+  internal let timestamp: Date
 
-  var id: PersistentIdentifier {
+  internal var id: PersistentIdentifier {
     model.persistentIdentifier
   }
 

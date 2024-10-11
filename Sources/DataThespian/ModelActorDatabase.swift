@@ -33,7 +33,8 @@
 
   public import SwiftData
 
-  public actor ModelActorDatabase: Database, Loggable {
+  @available(*, deprecated, message: "Create your own.")
+  public actor ModelActorDatabase: ModelActor, Database, Loggable {
     public static var loggingCategory: ThespianLogging.Category { .data }
 
     public nonisolated let modelExecutor: any SwiftData.ModelExecutor
@@ -52,7 +53,5 @@
       self.modelContainer = modelContainer
     }
   }
-
-  extension ModelActorDatabase: SwiftData.ModelActor {}
 
 #endif

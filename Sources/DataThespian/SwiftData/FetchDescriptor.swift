@@ -1,5 +1,5 @@
 //
-//  DatabaseKey.swift
+//  FetchDescriptor.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -27,41 +27,27 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(SwiftUI)
-  import Foundation
-  import SwiftData
-  public import SwiftUI
+#if canImport(SwiftData)
+  public import Foundation
+  public import SwiftData
 
-  private struct DefaultDatabase: Database {
-    static let instance = DefaultDatabase()
+  extension FetchDescriptor {
+    public init(predicate: Predicate<T>? = nil, sortBy: [SortDescriptor<T>] = [], fetchLimit: Int?)
+    {
+      self.init(predicate: predicate, sortBy: sortBy)
 
-    // swiftlint:disable:next unavailable_function
-    func withModelContext<T>(_ closure: (ModelContext) throws -> T) async rethrows -> T {
-      assertionFailure("No Database Set.")
-      fatalError("No Database Set.")
+      self.fetchLimit = fetchLimit
     }
-  }
-
-  private struct DatabaseKey: EnvironmentKey {
-    static var defaultValue: any Database { DefaultDatabase.instance }
-  }
-
-  extension EnvironmentValues {
-    public var database: any Database {
-      get { self[DatabaseKey.self] }
-      set { self[DatabaseKey.self] = newValue }
-    }
-  }
-
-  extension Scene {
-    public func database(_ database: any Database) -> some Scene {
-      environment(\.database, database)
-    }
-  }
-
-  extension View {
-    public func database(_ database: any Database) -> some View {
-      environment(\.database, database)
+    
+    @available(*, deprecated)
+    public init(model: Model<T>) {
+      let persistentIdentifier = model.persistentIdentifier
+      self.init(
+        predicate: #Predicate<T> {
+          $0.persistentModelID == persistentIdentifier
+        },
+        fetchLimit: 1
+      )
     }
   }
 #endif

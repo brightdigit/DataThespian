@@ -1,5 +1,5 @@
 //
-//  FetchDescriptor.swift
+//  DatabaseChangePublicistKey.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -27,25 +27,12 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(SwiftData)
-  public import Foundation
-  public import SwiftData
+#if canImport(SwiftUI)
+  import Foundation
 
-  extension FetchDescriptor {
-    public init(predicate: Predicate<T>? = nil, sortBy: [SortDescriptor<T>] = [], fetchLimit: Int?)
-    {
-      self.init(predicate: predicate, sortBy: sortBy)
+  public import SwiftUI
 
-      self.fetchLimit = fetchLimit
-    }
-    public init(model: Model<T>) {
-      let persistentIdentifier = model.persistentIdentifier
-      self.init(
-        predicate: #Predicate<T> {
-          $0.persistentModelID == persistentIdentifier
-        },
-        fetchLimit: 1
-      )
-    }
+  extension EnvironmentValues {
+    @Entry public var databaseChangePublicist: DatabaseChangePublicist = .never()
   }
 #endif

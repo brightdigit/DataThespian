@@ -8,6 +8,30 @@
 public import SwiftData
 public import Foundation
 
+public protocol Unique {
+  associatedtype Keys : UniqueKeySet<Self>
+}
+
+public protocol UniqueKeySet<Model> : Sendable  {
+  associatedtype Model : Unique
+}
+
+public struct UniqueKey<Model, T : Sendable & Equatable> : Sendable {
+  let keyPath : @Sendable () -> KeyPath<Model, T>
+}
+
+extension UniqueKeySet {
+  public static func unique<T : Sendable & Equatable>(keyPath : @escaping @Sendable () -> KeyPath<Model, T>) -> UniqueKey<Model, T> {
+    .init(keyPath: keyPath)
+  }
+  
+  public static func unique<T : Sendable & Equatable>(_ keyPath : @autoclosure @escaping @Sendable () -> KeyPath<Model, T>) -> UniqueKey<Model, T> {
+    .init(keyPath: keyPath)
+  }
+  
+  
+}
+
 public enum Selector<T : PersistentModel> : Sendable {
   public enum Delete : Sendable{
     case predicate(Predicate<T>)
@@ -23,11 +47,20 @@ public enum Selector<T : PersistentModel> : Sendable {
   }
 }
 
+//extension Selector.Get {
+//  static func unique<ValueType: Sendable & Equatable>(_ key: UniqueKey<T, ValueType>, equals value: ValueType) -> Self {
+//    
+//    #Predicate({ input in
+//      
+//    })
+//  }
+//}
+
 public protocol Queryable {
   func insert<PersistentModelType: PersistentModel, U : Sendable>(
     _ closuer: @Sendable @escaping () -> PersistentModelType,
     with closure: @escaping @Sendable (PersistentModelType) throws -> U
-  ) async -> Model<PersistentModelType>
+  ) async rethrows -> U
   
   func get<PersistentModelType, U:Sendable>(
     for selector: Selector<PersistentModelType>.Get,

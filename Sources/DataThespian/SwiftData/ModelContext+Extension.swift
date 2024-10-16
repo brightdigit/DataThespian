@@ -32,6 +32,7 @@
   public import SwiftData
 
   extension ModelContext {
+    @available(*, deprecated)
     public func delete<T: PersistentModel>(_: T.Type, withID id: PersistentIdentifier) -> Bool {
       guard let model: T = self.registeredModel(for: id) else {
         return false
@@ -40,10 +41,12 @@
       return true
     }
 
+    @available(*, deprecated)
     public func delete<T>(where predicate: Predicate<T>?) throws where T: PersistentModel {
       try self.delete(model: T.self, where: predicate)
     }
 
+    @available(*, deprecated)
     public func insert(_ closuer: @escaping @Sendable () -> some PersistentModel)
       -> PersistentIdentifier
     {
@@ -51,6 +54,8 @@
       self.insert(model)
       return model.persistentModelID
     }
+
+    @available(*, deprecated)
     public func fetch<T, U>(
       _ selectDescriptor: @escaping @Sendable () -> FetchDescriptor<T>,
       with closure: @escaping @Sendable ([T]) throws -> U
@@ -58,6 +63,8 @@
       let models = try self.fetch(selectDescriptor())
       return try closure(models)
     }
+
+    @available(*, deprecated)
     public func fetch<T: PersistentModel, U: PersistentModel, V: Sendable>(
       _ selectDescriptorA: @escaping @Sendable () -> FetchDescriptor<T>,
       _ selectDescriptorB: @escaping @Sendable () -> FetchDescriptor<U>,
@@ -68,6 +75,7 @@
       return try closure(firstModels, secondModels)
     }
 
+    @available(*, deprecated)
     public func get<T, U>(
       for objectID: PersistentIdentifier, with closure: @escaping @Sendable (T?) throws -> U
     ) throws -> U where T: PersistentModel, U: Sendable {
@@ -75,8 +83,15 @@
       return try closure(model)
     }
 
+    @available(*, deprecated)
     public func transaction(block: @escaping @Sendable (ModelContext) throws -> Void) throws {
       try self.transaction { try block(self) }
+    }
+
+    public func first<PersistentModelType: PersistentModel>(
+      where predicate: Predicate<PersistentModelType>? = nil
+    ) throws -> PersistentModelType? {
+      try self.fetch(FetchDescriptor(predicate: predicate, fetchLimit: 1)).first
     }
   }
 #endif

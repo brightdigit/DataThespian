@@ -1,5 +1,5 @@
 //
-//  Database.swift
+//  Selector.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -28,13 +28,39 @@
 //
 
 #if canImport(SwiftData)
-
-  import Foundation
-
+  public import Foundation
   public import SwiftData
 
-  public protocol Database: Sendable {
-    func withModelContext<T>(_ closure: @Sendable @escaping (ModelContext) throws -> T)
-      async rethrows -> T
+  public enum Selector<T: PersistentModel>: Sendable {
+    public enum Delete: Sendable {
+      case predicate(Predicate<T>)
+      case all
+      case model(Model<T>)
+    }
+    public enum List: Sendable {
+      case descriptor(FetchDescriptor<T>)
+    }
+    public enum Get: Sendable {
+      case model(Model<T>)
+      case predicate(Predicate<T>)
+    }
+  }
+
+  extension Selector.Get {
+    @available(*, unavailable, message: "Not implemented yet.")
+    public static func unique<UniqueKeyableType: UniqueKey>(
+      _ key: UniqueKeyableType,
+      equals value: UniqueKeyableType.ValueType
+    ) -> Self where UniqueKeyableType.Model == T {
+      .predicate(
+        key.predicate(equals: value)
+      )
+    }
+  }
+
+  extension Selector.List {
+    public static func all() -> Selector.List {
+      .descriptor(.init())
+    }
   }
 #endif

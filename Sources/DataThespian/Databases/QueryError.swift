@@ -1,5 +1,5 @@
 //
-//  Model.swift
+//  QueryError.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -28,30 +28,9 @@
 //
 
 #if canImport(SwiftData)
-  import Foundation
   public import SwiftData
 
-  @available(*, deprecated, renamed: "Model")
-  public typealias ModelID = Model
-
-  public struct Model<T: PersistentModel>: Sendable, Identifiable {
-    public struct NotFoundError: Error { public let persistentIdentifier: PersistentIdentifier }
-
-    public var id: PersistentIdentifier.ID { persistentIdentifier.id }
-    public let persistentIdentifier: PersistentIdentifier
-
-    public init(persistentIdentifier: PersistentIdentifier) {
-      self.persistentIdentifier = persistentIdentifier
-    }
-  }
-
-  extension Model where T: PersistentModel {
-    public var isTemporary: Bool {
-      self.persistentIdentifier.isTemporary ?? false
-    }
-
-    public init(_ model: T) { self.init(persistentIdentifier: model.persistentModelID) }
-
-    internal static func ifMap(_ model: T?) -> Model? { model.map(self.init) }
+  public enum QueryError<PersistentModelType: PersistentModel>: Error {
+    case itemNotFound(Selector<PersistentModelType>.Get)
   }
 #endif

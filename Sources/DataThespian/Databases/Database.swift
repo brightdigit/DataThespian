@@ -1,5 +1,5 @@
 //
-//  ModelContext.swift
+//  Database.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -28,25 +28,13 @@
 //
 
 #if canImport(SwiftData)
+
   import Foundation
+
   public import SwiftData
 
-  extension ModelContext {
-    public func existingModel<T>(for objectID: PersistentIdentifier) throws -> T?
-    where T: PersistentModel {
-      if let registered: T = registeredModel(for: objectID) {
-        return registered
-      }
-      if let notRegistered: T = model(for: objectID) as? T {
-        return notRegistered
-      }
-
-      let fetchDescriptor = FetchDescriptor<T>(
-        predicate: #Predicate { $0.persistentModelID == objectID }
-      )
-
-      return try fetch(fetchDescriptor).first
-    }
+  public protocol Database: Sendable, Queryable {
+    func withModelContext<T>(_ closure: @Sendable @escaping (ModelContext) throws -> T)
+      async rethrows -> T
   }
-
 #endif

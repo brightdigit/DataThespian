@@ -1,5 +1,5 @@
 //
-//  Model.swift
+//  Queryable.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -28,30 +28,26 @@
 //
 
 #if canImport(SwiftData)
-  import Foundation
   public import SwiftData
 
-  @available(*, deprecated, renamed: "Model")
-  public typealias ModelID = Model
+  public protocol Queryable: Sendable {
+    func save() async throws
 
-  public struct Model<T: PersistentModel>: Sendable, Identifiable {
-    public struct NotFoundError: Error { public let persistentIdentifier: PersistentIdentifier }
+    func insert<PersistentModelType: PersistentModel, U: Sendable>(
+      _ closuer: @Sendable @escaping () -> PersistentModelType,
+      with closure: @escaping @Sendable (PersistentModelType) throws -> U
+    ) async rethrows -> U
 
-    public var id: PersistentIdentifier.ID { persistentIdentifier.id }
-    public let persistentIdentifier: PersistentIdentifier
+    func getOptional<PersistentModelType, U: Sendable>(
+      for selector: Selector<PersistentModelType>.Get,
+      with closure: @escaping @Sendable (PersistentModelType?) throws -> U
+    ) async rethrows -> U
 
-    public init(persistentIdentifier: PersistentIdentifier) {
-      self.persistentIdentifier = persistentIdentifier
-    }
-  }
+    func fetch<PersistentModelType, U: Sendable>(
+      for selector: Selector<PersistentModelType>.List,
+      with closure: @escaping @Sendable ([PersistentModelType]) throws -> U
+    ) async rethrows -> U
 
-  extension Model where T: PersistentModel {
-    public var isTemporary: Bool {
-      self.persistentIdentifier.isTemporary ?? false
-    }
-
-    public init(_ model: T) { self.init(persistentIdentifier: model.persistentModelID) }
-
-    internal static func ifMap(_ model: T?) -> Model? { model.map(self.init) }
+    func delete<PersistentModelType>(_ selector: Selector<PersistentModelType>.Delete) async throws
   }
 #endif

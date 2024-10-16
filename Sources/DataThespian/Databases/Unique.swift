@@ -1,5 +1,5 @@
 //
-//  DatabaseChangePublicistKey.swift
+//  Unique.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -27,21 +27,6 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(SwiftUI)
-  import Foundation
-
-  public import SwiftUI
-
-  private struct DatabaseChangePublicistKey: EnvironmentKey {
-    typealias Value = DatabaseChangePublicist
-
-    nonisolated static let defaultValue: DatabaseChangePublicist = .never()
-  }
-
-  extension EnvironmentValues {
-    public var databaseChangePublicist: DatabaseChangePublicist {
-      get { self[DatabaseChangePublicistKey.self] }
-      set { self[DatabaseChangePublicistKey.self] = newValue }
-    }
-  }
-#endif
+public protocol Unique {
+  associatedtype Keys: UniqueKeys<Self>
+}

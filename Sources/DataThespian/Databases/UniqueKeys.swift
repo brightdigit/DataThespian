@@ -1,5 +1,5 @@
 //
-//  Model.swift
+//  UniqueKeys.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -27,31 +27,17 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(SwiftData)
-  import Foundation
-  public import SwiftData
+public protocol UniqueKeys<Model>: Sendable {
+  associatedtype Model: Unique
+  associatedtype PrimaryKey: UniqueKey where PrimaryKey.Model == Model
 
-  @available(*, deprecated, renamed: "Model")
-  public typealias ModelID = Model
+  static var primary: PrimaryKey { get }
+}
 
-  public struct Model<T: PersistentModel>: Sendable, Identifiable {
-    public struct NotFoundError: Error { public let persistentIdentifier: PersistentIdentifier }
-
-    public var id: PersistentIdentifier.ID { persistentIdentifier.id }
-    public let persistentIdentifier: PersistentIdentifier
-
-    public init(persistentIdentifier: PersistentIdentifier) {
-      self.persistentIdentifier = persistentIdentifier
-    }
+extension UniqueKeys {
+  public static func keyPath<ValueType: Sendable & Equatable & Codable>(
+    _ keyPath: any KeyPath<Model, ValueType> & Sendable
+  ) -> UniqueKeyPath<Model, ValueType> {
+    UniqueKeyPath(keyPath: keyPath)
   }
-
-  extension Model where T: PersistentModel {
-    public var isTemporary: Bool {
-      self.persistentIdentifier.isTemporary ?? false
-    }
-
-    public init(_ model: T) { self.init(persistentIdentifier: model.persistentModelID) }
-
-    internal static func ifMap(_ model: T?) -> Model? { model.map(self.init) }
-  }
-#endif
+}

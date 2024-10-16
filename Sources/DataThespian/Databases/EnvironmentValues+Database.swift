@@ -1,5 +1,5 @@
 //
-//  Model.swift
+//  EnvironmentValues+Database.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -27,31 +27,34 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(SwiftData)
+#if canImport(SwiftUI) && canImport(SwiftData)
   import Foundation
-  public import SwiftData
+  import SwiftData
+  public import SwiftUI
 
-  @available(*, deprecated, renamed: "Model")
-  public typealias ModelID = Model
+  private struct DefaultDatabase: Database {
+    static let instance = DefaultDatabase()
 
-  public struct Model<T: PersistentModel>: Sendable, Identifiable {
-    public struct NotFoundError: Error { public let persistentIdentifier: PersistentIdentifier }
-
-    public var id: PersistentIdentifier.ID { persistentIdentifier.id }
-    public let persistentIdentifier: PersistentIdentifier
-
-    public init(persistentIdentifier: PersistentIdentifier) {
-      self.persistentIdentifier = persistentIdentifier
+    // swiftlint:disable:next unavailable_function
+    func withModelContext<T>(_ closure: (ModelContext) throws -> T) async rethrows -> T {
+      assertionFailure("No Database Set.")
+      fatalError("No Database Set.")
     }
   }
 
-  extension Model where T: PersistentModel {
-    public var isTemporary: Bool {
-      self.persistentIdentifier.isTemporary ?? false
+  extension EnvironmentValues {
+    @Entry public var database: any Database = DefaultDatabase.instance
+  }
+
+  extension Scene {
+    public func database(_ database: any Database) -> some Scene {
+      environment(\.database, database)
     }
+  }
 
-    public init(_ model: T) { self.init(persistentIdentifier: model.persistentModelID) }
-
-    internal static func ifMap(_ model: T?) -> Model? { model.map(self.init) }
+  extension View {
+    public func database(_ database: any Database) -> some View {
+      environment(\.database, database)
+    }
   }
 #endif

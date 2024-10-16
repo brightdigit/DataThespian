@@ -41,7 +41,7 @@ internal struct ContentView: View {
       if selectedItems.count > 1 {
         Text("Multiple Selected")
       } else if let item = selectedItems.first {
-        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
+        ItemChildView(object: object, item: item)
       } else {
         Text("Select an item")
       }

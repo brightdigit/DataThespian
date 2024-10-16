@@ -1,5 +1,5 @@
 //
-//  Model.swift
+//  UniqueKeyPath.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -27,31 +27,17 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(SwiftData)
-  import Foundation
-  public import SwiftData
+public import Foundation
 
-  @available(*, deprecated, renamed: "Model")
-  public typealias ModelID = Model
+public struct UniqueKeyPath<Model: Unique, ValueType: Sendable & Equatable & Codable>: UniqueKey {
+  private let keyPath: KeyPath<Model, ValueType> & Sendable
 
-  public struct Model<T: PersistentModel>: Sendable, Identifiable {
-    public struct NotFoundError: Error { public let persistentIdentifier: PersistentIdentifier }
-
-    public var id: PersistentIdentifier.ID { persistentIdentifier.id }
-    public let persistentIdentifier: PersistentIdentifier
-
-    public init(persistentIdentifier: PersistentIdentifier) {
-      self.persistentIdentifier = persistentIdentifier
-    }
+  internal init(keyPath: any KeyPath<Model, ValueType> & Sendable) {
+    self.keyPath = keyPath
   }
 
-  extension Model where T: PersistentModel {
-    public var isTemporary: Bool {
-      self.persistentIdentifier.isTemporary ?? false
-    }
-
-    public init(_ model: T) { self.init(persistentIdentifier: model.persistentModelID) }
-
-    internal static func ifMap(_ model: T?) -> Model? { model.map(self.init) }
+  // swiftlint:disable:next unavailable_function
+  public func predicate(equals value: ValueType) -> Predicate<Model> {
+    fatalError("Not implemented yet.")
   }
-#endif
+}

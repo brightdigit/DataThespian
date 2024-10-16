@@ -1,5 +1,5 @@
 //
-//  DatabaseKey.swift
+//  EnvironmentValues+DatabaseChangePublicist.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -29,39 +29,10 @@
 
 #if canImport(SwiftUI)
   import Foundation
-  import SwiftData
+
   public import SwiftUI
 
-  private struct DefaultDatabase: Database {
-    static let instance = DefaultDatabase()
-
-    // swiftlint:disable:next unavailable_function
-    func withModelContext<T>(_ closure: (ModelContext) throws -> T) async rethrows -> T {
-      assertionFailure("No Database Set.")
-      fatalError("No Database Set.")
-    }
-  }
-
-  private struct DatabaseKey: EnvironmentKey {
-    static var defaultValue: any Database { DefaultDatabase.instance }
-  }
-
   extension EnvironmentValues {
-    public var database: any Database {
-      get { self[DatabaseKey.self] }
-      set { self[DatabaseKey.self] = newValue }
-    }
-  }
-
-  extension Scene {
-    public func database(_ database: any Database) -> some Scene {
-      environment(\.database, database)
-    }
-  }
-
-  extension View {
-    public func database(_ database: any Database) -> some View {
-      environment(\.database, database)
-    }
+    @Entry public var databaseChangePublicist: DatabaseChangePublicist = .never()
   }
 #endif

@@ -29,7 +29,7 @@
 
 public import SwiftData
 
-public protocol Queryable {
+public protocol Queryable: Sendable {
   func save() async throws
 
   func insert<PersistentModelType: PersistentModel, U: Sendable>(

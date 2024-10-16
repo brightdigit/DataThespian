@@ -46,6 +46,10 @@
   }
 
   extension Model where T: PersistentModel {
+    public var isTemporary: Bool {
+      self.persistentIdentifier.isTemporary ?? false
+    }
+
     public init(_ model: T) { self.init(persistentIdentifier: model.persistentModelID) }
 
     internal static func ifMap(_ model: T?) -> Model? { model.map(self.init) }

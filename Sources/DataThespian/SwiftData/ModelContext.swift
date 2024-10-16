@@ -29,10 +29,10 @@
 
 #if canImport(SwiftData)
   import Foundation
-  import SwiftData
+  public import SwiftData
 
   extension ModelContext {
-    internal func existingModel<T>(for model: Model<T>) throws -> T?
+    public func existingModel<T>(for model: Model<T>) throws -> T?
     where T: PersistentModel {
       try self.existingModel(for: model.persistentIdentifier)
     }

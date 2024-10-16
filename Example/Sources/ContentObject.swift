@@ -17,17 +17,17 @@ internal class ContentObject {
   private var databaseChangeCancellable: AnyCancellable?
   private var databaseChangeSubscription: AnyCancellable?
   private var database: (any Database)?
-  internal private(set) var items = [ItemModel]()
-  internal var selectedItemsID: Set<ItemModel.ID> = []
+  internal private(set) var items = [ItemViewModel]()
+  internal var selectedItemsID: Set<ItemViewModel.ID> = []
   private var newItem: AnyCancellable?
   internal var error: (any Error)?
 
-  internal var selectedItems: [ItemModel] {
+  internal var selectedItems: [ItemViewModel] {
     let selectedItemsID = self.selectedItemsID
-    let items: [ItemModel]
+    let items: [ItemViewModel]
     do {
       items = try self.items.filter(
-        #Predicate<ItemModel> {
+        #Predicate<ItemViewModel> {
           selectedItemsID.contains($0.id)
         }
       )
@@ -49,17 +49,7 @@ internal class ContentObject {
   private static func deleteModels(_ models: [Model<Item>], from database: (any Database))
     async throws
   {
-    try await database.withModelContext { modelContext in
-      let items: [Item] = models.compactMap {
-        modelContext.model(for: $0.persistentIdentifier) as? Item
-      }
-      dump(items.first?.persistentModelID)
-      assert(items.count == models.count)
-      for item in items {
-        modelContext.delete(item)
-      }
-      try modelContext.save()
-    }
+    try await database.deleteModels(models)
   }
 
   private func beginUpdateItems() {
@@ -76,10 +66,10 @@ internal class ContentObject {
     guard let database else {
       return
     }
-    self.items = try await database.withModelContext({ modelContext in
+    self.items = try await database.withModelContext { modelContext in
       let items = try modelContext.fetch(FetchDescriptor<Item>())
-      return items.map(ItemModel.init)
-    })
+      return items.map(ItemViewModel.init)
+    }
   }
 
   internal func initialize(
@@ -114,6 +104,27 @@ internal class ContentObject {
     }
     Task {
       try await Self.deleteModels(models, from: database)
+      try await database.save()
+    }
+  }
+
+  internal func addChild(to item: ItemViewModel) {
+    guard let database else {
+      return
+    }
+    Task {
+      let timestamp = Date()
+      let childModel = await database.insert {
+        ItemChild(timestamp: timestamp)
+      }
+
+      try await database.withModelContext { modelContext in
+        let item = try modelContext.existingModel(for: item.model)
+        let child = try modelContext.existingModel(for: childModel)
+        assert(child != nil && item != nil)
+        child?.parent = item
+        try modelContext.save()
+      }
     }
   }
 
@@ -122,12 +133,17 @@ internal class ContentObject {
       return
     }
     Task {
-      try await database.withModelContext { modelContext in
-        let newItem = Item(timestamp: date)
-        modelContext.insert(newItem)
-        dump(newItem.persistentModelID)
-        try modelContext.save()
-      }
+      let insertedModel = await database.insert { Item(timestamp: date) }
+      print("inserted:", insertedModel.isTemporary)
+      try await database.save()
+      let savedModel = try await database.get(
+        for: .predicate(
+          #Predicate<Item> {
+            $0.timestamp == date
+          }
+        )
+      )
+      print("saved:", savedModel.isTemporary)
     }
   }
 }

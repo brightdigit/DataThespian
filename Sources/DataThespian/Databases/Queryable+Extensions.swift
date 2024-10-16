@@ -30,6 +30,7 @@
 public import SwiftData
 
 extension Queryable {
+  @discardableResult
   public func insert<PersistentModelType: PersistentModel>(
     _ closuer: @Sendable @escaping () -> PersistentModelType
   ) async -> Model<PersistentModelType> {
@@ -113,5 +114,22 @@ extension Queryable {
   ) async throws -> U {
     let model = await self.insertIf(model, notExist: selector)
     return try await self.get(for: .model(model), with: closure)
+  }
+}
+
+extension Queryable {
+  public func deleteModels<PersistentModelType>(_ models: [Model<PersistentModelType>]) async throws
+  {
+    try await withThrowingTaskGroup(
+      of: Void.self,
+      body: { group in
+        for model in models {
+          group.addTask {
+            try await self.delete(.model(model))
+          }
+        }
+        try await group.waitForAll()
+      }
+    )
   }
 }

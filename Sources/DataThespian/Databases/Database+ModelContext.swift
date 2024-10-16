@@ -42,9 +42,9 @@
       try await self.withModelContext { try $0.delete(where: predicate) }
     }
 
-    public func insert(_ closuer: @Sendable @escaping () -> some PersistentModel) async
-      -> PersistentIdentifier
-    { await self.withModelContext { $0.insert(closuer) } }
+    //    public func insert(_ closuer: @Sendable @escaping () -> some PersistentModel) async
+    //      -> PersistentIdentifier
+    //    { await self.withModelContext { $0.insert(closuer) } }
 
     public func fetch<T, U: Sendable>(
       _ selectDescriptor: @escaping @Sendable () -> FetchDescriptor<T>,

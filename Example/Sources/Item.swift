@@ -18,6 +18,7 @@ internal final class Item: Unique {
   }
 
   internal private(set) var timestamp: Date
+  internal private(set) var children: [ItemChild]?
 
   internal init(timestamp: Date) {
     self.timestamp = timestamp

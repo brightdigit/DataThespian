@@ -32,13 +32,6 @@
   public import SwiftData
 
   extension Database {
-    public func insert<PersistentModelType: PersistentModel>(
-      _ closuer: @Sendable @escaping () -> PersistentModelType
-    ) async -> Model<PersistentModelType> {
-      let id: PersistentIdentifier = await self.insert(closuer)
-      return .init(persistentIdentifier: id)
-    }
-
     public func with<PersistentModelType: PersistentModel, U: Sendable>(
       _ id: Model<PersistentModelType>,
       _ closure: @escaping @Sendable (PersistentModelType) throws -> U
@@ -68,25 +61,25 @@
       }
     }
 
-    public func first<T: PersistentModel, U: Sendable>(
-      fetchWith selectPredicate: Predicate<T>,
-      otherwiseInsertBy insert: @Sendable @escaping () -> T,
-      with closure: @escaping @Sendable (T) throws -> U
-    ) async throws -> U {
-      let value = try await self.fetch {
-        .init(predicate: selectPredicate, fetchLimit: 1)
-      } with: { models in
-        try models.first.map(closure)
-      }
-
-      if let value {
-        return value
-      }
-
-      let inserted: Model = await self.insert(insert)
-
-      return try await self.with(inserted, closure)
-    }
+    //    public func first<T: PersistentModel, U: Sendable>(
+    //      fetchWith selectPredicate: Predicate<T>,
+    //      otherwiseInsertBy insert: @Sendable @escaping () -> T,
+    //      with closure: @escaping @Sendable (T) throws -> U
+    //    ) async throws -> U {
+    //      let value = try await self.fetch {
+    //        .init(predicate: selectPredicate, fetchLimit: 1)
+    //      } with: { models in
+    //        try models.first.map(closure)
+    //      }
+    //
+    //      if let value {
+    //        return value
+    //      }
+    //
+    //      let inserted: Model = await self.insert(insert)
+    //
+    //      return try await self.with(inserted, closure)
+    //    }
 
     public func delete<T: PersistentModel>(model _: T.Type, where predicate: Predicate<T>? = nil)
       async throws

@@ -1,5 +1,5 @@
 //
-//  ModelContext.swift
+//  Unique.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -27,27 +27,6 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(SwiftData)
-  import Foundation
-  import SwiftData
-
-  extension ModelContext {
-    internal func existingModel<T>(for objectID: PersistentIdentifier) throws -> T?
-    where T: PersistentModel {
-      if let registered: T = registeredModel(for: objectID) {
-        return registered
-      }
-      if let notRegistered: T = model(for: objectID) as? T {
-        return notRegistered
-      }
-
-      let fetchDescriptor = FetchDescriptor<T>(
-        predicate: #Predicate { $0.persistentModelID == objectID },
-        fetchLimit: 1
-      )
-
-      return try fetch(fetchDescriptor).first
-    }
-  }
-
-#endif
+public protocol Unique {
+  associatedtype Keys: UniqueKeys<Self>
+}

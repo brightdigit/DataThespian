@@ -53,7 +53,8 @@
       }
     }
 
-    public func first<T: PersistentModel>(_ selectPredicate: Predicate<T>) async throws -> Model<T>? {
+    public func first<T: PersistentModel>(_ selectPredicate: Predicate<T>) async throws -> Model<T>?
+    {
       try await self.first(selectPredicate, with: Model.ifMap)
     }
 
@@ -96,7 +97,8 @@
     }
 
     public func deleteAll(of types: [any PersistentModel.Type]) async throws {
-      try await self.transaction { context in for type in types { try context.delete(model: type) } }
+      try await self.transaction { context in for type in types { try context.delete(model: type) }
+      }
     }
 
     public func fetch<T: PersistentModel, U: Sendable>(

@@ -38,7 +38,7 @@
 
       self.fetchLimit = fetchLimit
     }
-    
+
     @available(*, deprecated)
     public init(model: Model<T>) {
       let persistentIdentifier = model.persistentIdentifier

@@ -52,7 +52,7 @@
       self.insert(model)
       return model.persistentModelID
     }
-    
+
     public func fetch<T, U>(
       _ selectDescriptor: @escaping @Sendable () -> FetchDescriptor<T>,
       with closure: @escaping @Sendable ([T]) throws -> U
@@ -60,7 +60,7 @@
       let models = try self.fetch(selectDescriptor())
       return try closure(models)
     }
-    
+
     @available(*, deprecated)
     public func fetch<T: PersistentModel, U: PersistentModel, V: Sendable>(
       _ selectDescriptorA: @escaping @Sendable () -> FetchDescriptor<T>,
@@ -79,7 +79,7 @@
       let model: T? = try self.existingModel(for: objectID)
       return try closure(model)
     }
-    
+
     @available(*, deprecated)
     public func transaction(block: @escaping @Sendable (ModelContext) throws -> Void) throws {
       try self.transaction { try block(self) }

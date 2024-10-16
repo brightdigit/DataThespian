@@ -1,5 +1,5 @@
 //
-//  DatabaseChangePublicistKey.swift
+//  UniqueKeyPath.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -27,12 +27,16 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(SwiftUI)
-  import Foundation
+public import Foundation
 
-  public import SwiftUI
-
-  extension EnvironmentValues {
-    @Entry public var databaseChangePublicist: DatabaseChangePublicist = .never()
+public struct UniqueKeyPath<Model: Unique, ValueType: Sendable & Equatable & Codable>: UniqueKey {
+  internal init(keyPath: any KeyPath<Model, ValueType> & Sendable) {
+    self.keyPath = keyPath
   }
-#endif
+  
+  private let keyPath: KeyPath<Model, ValueType> & Sendable
+
+  public func predicate(equals value: ValueType) -> Predicate<Model> {
+    fatalError("Not implemented yet.")
+  }
+}

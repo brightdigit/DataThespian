@@ -1,5 +1,5 @@
 //
-//  ModelContext.swift
+//  Selector.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -27,27 +27,32 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(SwiftData)
-  import Foundation
-  import SwiftData
+public import Foundation
+public import SwiftData
 
-  extension ModelContext {
-    internal func existingModel<T>(for objectID: PersistentIdentifier) throws -> T?
-    where T: PersistentModel {
-      if let registered: T = registeredModel(for: objectID) {
-        return registered
-      }
-      if let notRegistered: T = model(for: objectID) as? T {
-        return notRegistered
-      }
-
-      let fetchDescriptor = FetchDescriptor<T>(
-        predicate: #Predicate { $0.persistentModelID == objectID },
-        fetchLimit: 1
-      )
-
-      return try fetch(fetchDescriptor).first
-    }
+public enum Selector<T: PersistentModel>: Sendable {
+  public enum Delete: Sendable {
+    case predicate(Predicate<T>)
+    case all
+    case model(Model<T>)
   }
+  public enum List: Sendable {
+    case descriptor(FetchDescriptor<T>)
+  }
+  public enum Get: Sendable {
+    case model(Model<T>)
+    case predicate(Predicate<T>)
+  }
+}
 
-#endif
+extension Selector.Get {
+  @available(*, unavailable, message: "Not implemented yet.")
+  public static func unique<UniqueKeyableType: UniqueKey>(
+    _ key: UniqueKeyableType,
+    equals value: UniqueKeyableType.ValueType
+  ) -> Self where UniqueKeyableType.Model == T {
+    .predicate(
+      key.predicate(equals: value)
+    )
+  }
+}

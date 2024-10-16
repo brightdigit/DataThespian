@@ -47,7 +47,7 @@
       let persistentModel: PersistentModelType?
       switch selector {
       case .model(let model):
-        persistentModel = try self.existingModel(for: model)
+        persistentModel = try self.get(model)
       case .predicate(let predicate):
         persistentModel = try self.first(where: predicate)
       }
@@ -66,12 +66,13 @@
       return try closure(persistentModels)
     }
 
-    public func delete<PersistentModelType>(_ selector: Selector<PersistentModelType>.Delete) throws {
+    public func delete<PersistentModelType>(_ selector: Selector<PersistentModelType>.Delete) throws
+    {
       switch selector {
       case .all:
         try self.delete(model: PersistentModelType.self)
       case .model(let model):
-        if let persistentModel = try self.existingModel(for: model) {
+        if let persistentModel = try self.get(model) {
           self.delete(persistentModel)
         }
       case .predicate(let predicate):

@@ -119,8 +119,8 @@ internal class ContentObject {
       }
 
       try await database.withModelContext { modelContext in
-        let item = try modelContext.existingModel(for: item.model)
-        let child = try modelContext.existingModel(for: childModel)
+        let item = try modelContext.get(item.model)
+        let child = try modelContext.get(childModel)
         assert(child != nil && item != nil)
         child?.parent = item
         try modelContext.save()

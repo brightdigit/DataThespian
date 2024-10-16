@@ -32,7 +32,7 @@
   public import SwiftData
 
   extension ModelContext {
-    public func existingModel<T>(for model: Model<T>) throws -> T?
+    public func get<T>(_ model: Model<T>) throws -> T?
     where T: PersistentModel {
       try self.existingModel(for: model.persistentIdentifier)
     }

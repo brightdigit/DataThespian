@@ -119,7 +119,8 @@
   }
 
   extension Queryable {
-    public func deleteModels<PersistentModelType>(_ models: [Model<PersistentModelType>]) async throws
+    public func deleteModels<PersistentModelType>(_ models: [Model<PersistentModelType>])
+      async throws
     {
       try await withThrowingTaskGroup(
         of: Void.self,

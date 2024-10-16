@@ -56,3 +56,9 @@ extension Selector.Get {
     )
   }
 }
+
+extension Selector.List {
+  public static func all() -> Selector.List {
+    .descriptor(.init())
+  }
+}

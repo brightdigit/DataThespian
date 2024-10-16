@@ -32,6 +32,10 @@
   import SwiftData
 
   extension ModelContext {
+    internal func existingModel<T>(for model: Model<T>) throws -> T?
+    where T: PersistentModel {
+      try self.existingModel(for: model.persistentIdentifier)
+    }
     internal func existingModel<T>(for objectID: PersistentIdentifier) throws -> T?
     where T: PersistentModel {
       if let registered: T = registeredModel(for: objectID) {

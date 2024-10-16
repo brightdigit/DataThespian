@@ -41,10 +41,12 @@
       return true
     }
 
+    @available(*, deprecated)
     public func delete<T>(where predicate: Predicate<T>?) throws where T: PersistentModel {
       try self.delete(model: T.self, where: predicate)
     }
 
+    @available(*, deprecated)
     public func insert(_ closuer: @escaping @Sendable () -> some PersistentModel)
       -> PersistentIdentifier
     {
@@ -53,6 +55,7 @@
       return model.persistentModelID
     }
 
+    @available(*, deprecated)
     public func fetch<T, U>(
       _ selectDescriptor: @escaping @Sendable () -> FetchDescriptor<T>,
       with closure: @escaping @Sendable ([T]) throws -> U
@@ -83,6 +86,12 @@
     @available(*, deprecated)
     public func transaction(block: @escaping @Sendable (ModelContext) throws -> Void) throws {
       try self.transaction { try block(self) }
+    }
+
+    public func first<PersistentModelType: PersistentModel>(
+      where predicate: Predicate<PersistentModelType>? = nil
+    ) throws -> PersistentModelType? {
+      try self.fetch(FetchDescriptor(predicate: predicate, fetchLimit: 1)).first
     }
   }
 #endif

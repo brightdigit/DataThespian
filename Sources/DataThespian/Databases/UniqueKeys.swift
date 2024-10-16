@@ -29,6 +29,9 @@
 
 public protocol UniqueKeys<Model>: Sendable {
   associatedtype Model: Unique
+  associatedtype PrimaryKey: UniqueKey where PrimaryKey.Model == Model
+
+  static var primary: PrimaryKey { get }
 }
 
 extension UniqueKeys {

@@ -33,7 +33,7 @@
 
   public import SwiftData
 
-  public protocol Database: Sendable {
+  public protocol Database: Sendable, Queryable {
     func withModelContext<T>(_ closure: @Sendable @escaping (ModelContext) throws -> T)
       async rethrows -> T
   }

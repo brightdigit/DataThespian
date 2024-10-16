@@ -34,8 +34,6 @@
   public import SwiftData
 
   extension Database {
-    public func save() async throws { try await self.withModelContext { try $0.save() } }
-
     @discardableResult public func delete<T: PersistentModel>(
       _ modelType: T.Type, withID id: PersistentIdentifier
     ) async -> Bool { await self.withModelContext { $0.delete(modelType, withID: id) } }

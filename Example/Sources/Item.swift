@@ -11,15 +11,15 @@ import SwiftData
 
 @Model
 internal final class Item: Unique {
+  internal enum Keys: UniqueKeys {
+    internal typealias Model = Item
+    internal static let primary = timestamp
+    internal static let timestamp = keyPath(\.timestamp)
+  }
+
   internal private(set) var timestamp: Date
 
   internal init(timestamp: Date) {
     self.timestamp = timestamp
-  }
-
-  enum Keys: UniqueKeys {
-    typealias Model = Item
-
-    static let timestamp = keyPath(\.timestamp)
   }
 }

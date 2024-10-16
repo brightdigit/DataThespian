@@ -33,7 +33,7 @@ public struct UniqueKeyPath<Model: Unique, ValueType: Sendable & Equatable & Cod
   internal init(keyPath: any KeyPath<Model, ValueType> & Sendable) {
     self.keyPath = keyPath
   }
-  
+
   private let keyPath: KeyPath<Model, ValueType> & Sendable
 
   public func predicate(equals value: ValueType) -> Predicate<Model> {

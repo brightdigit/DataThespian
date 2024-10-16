@@ -34,8 +34,27 @@
   extension ModelContext {
     public func get<T>(_ model: Model<T>) throws -> T?
     where T: PersistentModel {
-      try self.existingModel(for: model.persistentIdentifier)
+      try self.persistentModel(withID: model.persistentIdentifier)
     }
+
+    private func persistentModel<T>(withID objectID: PersistentIdentifier) throws -> T?
+    where T: PersistentModel {
+      if let registered: T = registeredModel(for: objectID) {
+        return registered
+      }
+      if let notRegistered: T = model(for: objectID) as? T {
+        return notRegistered
+      }
+
+      let fetchDescriptor = FetchDescriptor<T>(
+        predicate: #Predicate { $0.persistentModelID == objectID },
+        fetchLimit: 1
+      )
+
+      return try fetch(fetchDescriptor).first
+    }
+
+    @available(*, deprecated)
     internal func existingModel<T>(for objectID: PersistentIdentifier) throws -> T?
     where T: PersistentModel {
       if let registered: T = registeredModel(for: objectID) {

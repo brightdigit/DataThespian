@@ -30,12 +30,13 @@
 public import Foundation
 
 public struct UniqueKeyPath<Model: Unique, ValueType: Sendable & Equatable & Codable>: UniqueKey {
+  private let keyPath: KeyPath<Model, ValueType> & Sendable
+
   internal init(keyPath: any KeyPath<Model, ValueType> & Sendable) {
     self.keyPath = keyPath
   }
 
-  private let keyPath: KeyPath<Model, ValueType> & Sendable
-
+  // swiftlint:disable:next unavailable_function
   public func predicate(equals value: ValueType) -> Predicate<Model> {
     fatalError("Not implemented yet.")
   }

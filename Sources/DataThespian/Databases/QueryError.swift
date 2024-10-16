@@ -27,8 +27,10 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-public import SwiftData
+#if canImport(SwiftData)
+  public import SwiftData
 
-public enum QueryError<PersistentModelType: PersistentModel>: Error {
-  case itemNotFound(Selector<PersistentModelType>.Get)
-}
+  public enum QueryError<PersistentModelType: PersistentModel>: Error {
+    case itemNotFound(Selector<PersistentModelType>.Get)
+  }
+#endif

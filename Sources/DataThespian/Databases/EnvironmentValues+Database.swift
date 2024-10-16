@@ -27,7 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(SwiftUI)
+#if canImport(SwiftUI) && canImport(SwiftData)
   import Foundation
   import SwiftData
   public import SwiftUI

@@ -27,109 +27,111 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-public import SwiftData
+#if canImport(SwiftData)
+  public import SwiftData
 
-extension Queryable {
-  @discardableResult
-  public func insert<PersistentModelType: PersistentModel>(
-    _ closuer: @Sendable @escaping () -> PersistentModelType
-  ) async -> Model<PersistentModelType> {
-    await self.insert(closuer, with: Model.init)
-  }
-
-  public func getOptional<PersistentModelType>(
-    for selector: Selector<PersistentModelType>.Get
-  ) async -> Model<PersistentModelType>? {
-    await self.getOptional(for: selector) { persistentModel in
-      persistentModel.flatMap(Model.init)
+  extension Queryable {
+    @discardableResult
+    public func insert<PersistentModelType: PersistentModel>(
+      _ closuer: @Sendable @escaping () -> PersistentModelType
+    ) async -> Model<PersistentModelType> {
+      await self.insert(closuer, with: Model.init)
     }
-  }
 
-  public func fetch<PersistentModelType>(
-    for selector: Selector<PersistentModelType>.List
-  ) async -> [Model<PersistentModelType>] {
-    await self.fetch(for: selector) { persistentModels in
-      persistentModels.map(Model.init)
-    }
-  }
-
-  public func get<PersistentModelType>(
-    for selector: Selector<PersistentModelType>.Get
-  ) async throws -> Model<PersistentModelType> {
-    try await self.getOptional(for: selector) { persistentModel in
-      guard let persistentModel else {
-        throw QueryError<PersistentModelType>.itemNotFound(selector)
+    public func getOptional<PersistentModelType>(
+      for selector: Selector<PersistentModelType>.Get
+    ) async -> Model<PersistentModelType>? {
+      await self.getOptional(for: selector) { persistentModel in
+        persistentModel.flatMap(Model.init)
       }
-      return Model(persistentModel)
     }
-  }
 
-  public func get<PersistentModelType, U: Sendable>(
-    for selector: Selector<PersistentModelType>.Get,
-    with closure: @escaping @Sendable (PersistentModelType) throws -> U
-  ) async throws -> U {
-    try await self.getOptional(for: selector) { persistentModel in
-      guard let persistentModel else {
-        throw QueryError<PersistentModelType>.itemNotFound(selector)
+    public func fetch<PersistentModelType>(
+      for selector: Selector<PersistentModelType>.List
+    ) async -> [Model<PersistentModelType>] {
+      await self.fetch(for: selector) { persistentModels in
+        persistentModels.map(Model.init)
       }
-      return try closure(persistentModel)
     }
-  }
 
-  public func update<PersistentModelType>(
-    for selector: Selector<PersistentModelType>.Get,
-    with closure: @escaping @Sendable (PersistentModelType) throws -> Void
-  ) async throws {
-    try await self.get(for: selector, with: closure)
-  }
-
-  public func update<PersistentModelType>(
-    for selector: Selector<PersistentModelType>.List,
-    with closure: @escaping @Sendable ([PersistentModelType]) throws -> Void
-  ) async throws {
-    try await self.fetch(for: selector, with: closure)
-  }
-
-  public func insertIf<PersistentModelType>(
-    _ model: @Sendable @escaping () -> PersistentModelType,
-    notExist selector: @Sendable @escaping (PersistentModelType) ->
-      Selector<PersistentModelType>.Get
-  ) async -> Model<PersistentModelType> {
-    let persistentModel = model()
-    let selector = selector(persistentModel)
-    let modelOptional = await self.getOptional(for: selector)
-
-    if let modelOptional {
-      return modelOptional
-    } else {
-      return await self.insert(model)
-    }
-  }
-
-  public func insertIf<PersistentModelType, U: Sendable>(
-    _ model: @Sendable @escaping () -> PersistentModelType,
-    notExist selector: @Sendable @escaping (PersistentModelType) ->
-      Selector<PersistentModelType>.Get,
-    with closure: @escaping @Sendable (PersistentModelType) throws -> U
-  ) async throws -> U {
-    let model = await self.insertIf(model, notExist: selector)
-    return try await self.get(for: .model(model), with: closure)
-  }
-}
-
-extension Queryable {
-  public func deleteModels<PersistentModelType>(_ models: [Model<PersistentModelType>]) async throws
-  {
-    try await withThrowingTaskGroup(
-      of: Void.self,
-      body: { group in
-        for model in models {
-          group.addTask {
-            try await self.delete(.model(model))
-          }
+    public func get<PersistentModelType>(
+      for selector: Selector<PersistentModelType>.Get
+    ) async throws -> Model<PersistentModelType> {
+      try await self.getOptional(for: selector) { persistentModel in
+        guard let persistentModel else {
+          throw QueryError<PersistentModelType>.itemNotFound(selector)
         }
-        try await group.waitForAll()
+        return Model(persistentModel)
       }
-    )
+    }
+
+    public func get<PersistentModelType, U: Sendable>(
+      for selector: Selector<PersistentModelType>.Get,
+      with closure: @escaping @Sendable (PersistentModelType) throws -> U
+    ) async throws -> U {
+      try await self.getOptional(for: selector) { persistentModel in
+        guard let persistentModel else {
+          throw QueryError<PersistentModelType>.itemNotFound(selector)
+        }
+        return try closure(persistentModel)
+      }
+    }
+
+    public func update<PersistentModelType>(
+      for selector: Selector<PersistentModelType>.Get,
+      with closure: @escaping @Sendable (PersistentModelType) throws -> Void
+    ) async throws {
+      try await self.get(for: selector, with: closure)
+    }
+
+    public func update<PersistentModelType>(
+      for selector: Selector<PersistentModelType>.List,
+      with closure: @escaping @Sendable ([PersistentModelType]) throws -> Void
+    ) async throws {
+      try await self.fetch(for: selector, with: closure)
+    }
+
+    public func insertIf<PersistentModelType>(
+      _ model: @Sendable @escaping () -> PersistentModelType,
+      notExist selector: @Sendable @escaping (PersistentModelType) ->
+        Selector<PersistentModelType>.Get
+    ) async -> Model<PersistentModelType> {
+      let persistentModel = model()
+      let selector = selector(persistentModel)
+      let modelOptional = await self.getOptional(for: selector)
+
+      if let modelOptional {
+        return modelOptional
+      } else {
+        return await self.insert(model)
+      }
+    }
+
+    public func insertIf<PersistentModelType, U: Sendable>(
+      _ model: @Sendable @escaping () -> PersistentModelType,
+      notExist selector: @Sendable @escaping (PersistentModelType) ->
+        Selector<PersistentModelType>.Get,
+      with closure: @escaping @Sendable (PersistentModelType) throws -> U
+    ) async throws -> U {
+      let model = await self.insertIf(model, notExist: selector)
+      return try await self.get(for: .model(model), with: closure)
+    }
   }
-}
+
+  extension Queryable {
+    public func deleteModels<PersistentModelType>(_ models: [Model<PersistentModelType>]) async throws
+    {
+      try await withThrowingTaskGroup(
+        of: Void.self,
+        body: { group in
+          for model in models {
+            group.addTask {
+              try await self.delete(.model(model))
+            }
+          }
+          try await group.waitForAll()
+        }
+      )
+    }
+  }
+#endif

@@ -27,38 +27,40 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-public import Foundation
-public import SwiftData
+#if canImport(SwiftData)
+  public import Foundation
+  public import SwiftData
 
-public enum Selector<T: PersistentModel>: Sendable {
-  public enum Delete: Sendable {
-    case predicate(Predicate<T>)
-    case all
-    case model(Model<T>)
+  public enum Selector<T: PersistentModel>: Sendable {
+    public enum Delete: Sendable {
+      case predicate(Predicate<T>)
+      case all
+      case model(Model<T>)
+    }
+    public enum List: Sendable {
+      case descriptor(FetchDescriptor<T>)
+    }
+    public enum Get: Sendable {
+      case model(Model<T>)
+      case predicate(Predicate<T>)
+    }
   }
-  public enum List: Sendable {
-    case descriptor(FetchDescriptor<T>)
-  }
-  public enum Get: Sendable {
-    case model(Model<T>)
-    case predicate(Predicate<T>)
-  }
-}
 
-extension Selector.Get {
-  @available(*, unavailable, message: "Not implemented yet.")
-  public static func unique<UniqueKeyableType: UniqueKey>(
-    _ key: UniqueKeyableType,
-    equals value: UniqueKeyableType.ValueType
-  ) -> Self where UniqueKeyableType.Model == T {
-    .predicate(
-      key.predicate(equals: value)
-    )
+  extension Selector.Get {
+    @available(*, unavailable, message: "Not implemented yet.")
+    public static func unique<UniqueKeyableType: UniqueKey>(
+      _ key: UniqueKeyableType,
+      equals value: UniqueKeyableType.ValueType
+    ) -> Self where UniqueKeyableType.Model == T {
+      .predicate(
+        key.predicate(equals: value)
+      )
+    }
   }
-}
 
-extension Selector.List {
-  public static func all() -> Selector.List {
-    .descriptor(.init())
+  extension Selector.List {
+    public static func all() -> Selector.List {
+      .descriptor(.init())
+    }
   }
-}
+#endif

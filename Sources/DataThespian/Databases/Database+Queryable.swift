@@ -27,45 +27,47 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-public import SwiftData
+#if canImport(SwiftData)
+  public import SwiftData
 
-extension Database {
-  public func save() async throws {
-    try await self.withModelContext { try $0.save() }
-  }
+  extension Database {
+    public func save() async throws {
+      try await self.withModelContext { try $0.save() }
+    }
 
-  public func insert<PersistentModelType: PersistentModel, U: Sendable>(
-    _ closuer: @Sendable @escaping () -> PersistentModelType,
-    with closure: @escaping @Sendable (PersistentModelType) throws -> U
-  ) async rethrows -> U {
-    try await self.withModelContext {
-      try $0.insert(closuer, with: closure)
+    public func insert<PersistentModelType: PersistentModel, U: Sendable>(
+      _ closuer: @Sendable @escaping () -> PersistentModelType,
+      with closure: @escaping @Sendable (PersistentModelType) throws -> U
+    ) async rethrows -> U {
+      try await self.withModelContext {
+        try $0.insert(closuer, with: closure)
+      }
+    }
+
+    public func getOptional<PersistentModelType, U: Sendable>(
+      for selector: Selector<PersistentModelType>.Get,
+      with closure: @escaping @Sendable (PersistentModelType?) throws -> U
+    ) async rethrows -> U {
+      try await self.withModelContext {
+        try $0.getOptional(for: selector, with: closure)
+      }
+    }
+
+    public func fetch<PersistentModelType, U: Sendable>(
+      for selector: Selector<PersistentModelType>.List,
+      with closure: @escaping @Sendable ([PersistentModelType]) throws -> U
+    ) async rethrows -> U {
+      try await self.withModelContext {
+        try $0.fetch(for: selector, with: closure)
+      }
+    }
+
+    public func delete<PersistentModelType>(_ selector: Selector<PersistentModelType>.Delete)
+      async throws
+    {
+      try await self.withModelContext {
+        try $0.delete(selector)
+      }
     }
   }
-
-  public func getOptional<PersistentModelType, U: Sendable>(
-    for selector: Selector<PersistentModelType>.Get,
-    with closure: @escaping @Sendable (PersistentModelType?) throws -> U
-  ) async rethrows -> U {
-    try await self.withModelContext {
-      try $0.getOptional(for: selector, with: closure)
-    }
-  }
-
-  public func fetch<PersistentModelType, U: Sendable>(
-    for selector: Selector<PersistentModelType>.List,
-    with closure: @escaping @Sendable ([PersistentModelType]) throws -> U
-  ) async rethrows -> U {
-    try await self.withModelContext {
-      try $0.fetch(for: selector, with: closure)
-    }
-  }
-
-  public func delete<PersistentModelType>(_ selector: Selector<PersistentModelType>.Delete)
-    async throws
-  {
-    try await self.withModelContext {
-      try $0.delete(selector)
-    }
-  }
-}
+#endif

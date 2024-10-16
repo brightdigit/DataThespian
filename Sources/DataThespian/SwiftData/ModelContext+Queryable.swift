@@ -27,54 +27,56 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-public import SwiftData
+#if canImport(SwiftData)
+  public import SwiftData
 
-extension ModelContext {
-  public func insert<PersistentModelType: PersistentModel, U: Sendable>(
-    _ closuer: @Sendable @escaping () -> PersistentModelType,
-    with closure: @escaping @Sendable (PersistentModelType) throws -> U
-  ) rethrows -> U {
-    let persistentModel = closuer()
-    self.insert(persistentModel)
-    return try closure(persistentModel)
-  }
-
-  public func getOptional<PersistentModelType, U: Sendable>(
-    for selector: Selector<PersistentModelType>.Get,
-    with closure: @escaping @Sendable (PersistentModelType?) throws -> U
-  ) throws -> U {
-    let persistentModel: PersistentModelType?
-    switch selector {
-    case .model(let model):
-      persistentModel = try self.existingModel(for: model)
-    case .predicate(let predicate):
-      persistentModel = try self.first(where: predicate)
+  extension ModelContext {
+    public func insert<PersistentModelType: PersistentModel, U: Sendable>(
+      _ closuer: @Sendable @escaping () -> PersistentModelType,
+      with closure: @escaping @Sendable (PersistentModelType) throws -> U
+    ) rethrows -> U {
+      let persistentModel = closuer()
+      self.insert(persistentModel)
+      return try closure(persistentModel)
     }
-    return try closure(persistentModel)
-  }
 
-  public func fetch<PersistentModelType, U: Sendable>(
-    for selector: Selector<PersistentModelType>.List,
-    with closure: @escaping @Sendable ([PersistentModelType]) throws -> U
-  ) throws -> U {
-    let persistentModels: [PersistentModelType]
-    switch selector {
-    case .descriptor(let descriptor):
-      persistentModels = try self.fetch(descriptor)
-    }
-    return try closure(persistentModels)
-  }
-
-  public func delete<PersistentModelType>(_ selector: Selector<PersistentModelType>.Delete) throws {
-    switch selector {
-    case .all:
-      try self.delete(model: PersistentModelType.self)
-    case .model(let model):
-      if let persistentModel = try self.existingModel(for: model) {
-        self.delete(persistentModel)
+    public func getOptional<PersistentModelType, U: Sendable>(
+      for selector: Selector<PersistentModelType>.Get,
+      with closure: @escaping @Sendable (PersistentModelType?) throws -> U
+    ) throws -> U {
+      let persistentModel: PersistentModelType?
+      switch selector {
+      case .model(let model):
+        persistentModel = try self.existingModel(for: model)
+      case .predicate(let predicate):
+        persistentModel = try self.first(where: predicate)
       }
-    case .predicate(let predicate):
-      try self.delete(model: PersistentModelType.self, where: predicate)
+      return try closure(persistentModel)
+    }
+
+    public func fetch<PersistentModelType, U: Sendable>(
+      for selector: Selector<PersistentModelType>.List,
+      with closure: @escaping @Sendable ([PersistentModelType]) throws -> U
+    ) throws -> U {
+      let persistentModels: [PersistentModelType]
+      switch selector {
+      case .descriptor(let descriptor):
+        persistentModels = try self.fetch(descriptor)
+      }
+      return try closure(persistentModels)
+    }
+
+    public func delete<PersistentModelType>(_ selector: Selector<PersistentModelType>.Delete) throws {
+      switch selector {
+      case .all:
+        try self.delete(model: PersistentModelType.self)
+      case .model(let model):
+        if let persistentModel = try self.existingModel(for: model) {
+          self.delete(persistentModel)
+        }
+      case .predicate(let predicate):
+        try self.delete(model: PersistentModelType.self, where: predicate)
+      }
     }
   }
-}
+#endif

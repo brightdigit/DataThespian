@@ -27,62 +27,64 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import CoreData
-import Foundation
-import SwiftData
+#if canImport(CoreData) && canImport(SwiftData)
+  import CoreData
+  import Foundation
+  import SwiftData
 
-/// Returns the value of a child property of an object using reflection.
-///
-/// - Parameters:
-///   - object: The object to inspect.
-///   - childName: The name of the child property to retrieve.
-/// - Returns: The value of the child property, or nil if it does not exist.
-private func getMirrorChildValue(of object: Any, childName: String) -> Any? {
-  guard let child = Mirror(reflecting: object).children.first(where: { $0.label == childName })
-  else {
-    return nil
-  }
-
-  return child.value
-}
-
-// Extension to add computed properties for accessing underlying CoreData
-// implementation details of PersistentIdentifier
-extension PersistentIdentifier {
-  // Private stored property to hold reference to underlying implementation
-  private var mirrorImplementation: Any? {
-    guard let implementation = getMirrorChildValue(of: self, childName: "implementation") else {
-      assertionFailure("Should always be there.")
-      return nil
-    }
-    return implementation
-  }
-
-  // Computed property to access managedObjectID from implementation
-  private var objectID: NSManagedObjectID? {
-    guard let mirrorImplementation,
-      let objectID = getMirrorChildValue(of: mirrorImplementation, childName: "managedObjectID")
-        as? NSManagedObjectID
+  /// Returns the value of a child property of an object using reflection.
+  ///
+  /// - Parameters:
+  ///   - object: The object to inspect.
+  ///   - childName: The name of the child property to retrieve.
+  /// - Returns: The value of the child property, or nil if it does not exist.
+  private func getMirrorChildValue(of object: Any, childName: String) -> Any? {
+    guard let child = Mirror(reflecting: object).children.first(where: { $0.label == childName })
     else {
       return nil
     }
-    return objectID
+
+    return child.value
   }
 
-  // Computed property to access uriRepresentation from objectID
-  private var uriRepresentation: URL? {
-    objectID?.uriRepresentation()
-  }
-
-  // swiftlint:disable:next discouraged_optional_boolean
-  internal var isTemporary: Bool? {
-    guard let mirrorImplementation,
-      let isTemporary = getMirrorChildValue(of: mirrorImplementation, childName: "isTemporary")
-        as? Bool
-    else {
-      assertionFailure("Should always be there.")
-      return nil
+  // Extension to add computed properties for accessing underlying CoreData
+  // implementation details of PersistentIdentifier
+  extension PersistentIdentifier {
+    // Private stored property to hold reference to underlying implementation
+    private var mirrorImplementation: Any? {
+      guard let implementation = getMirrorChildValue(of: self, childName: "implementation") else {
+        assertionFailure("Should always be there.")
+        return nil
+      }
+      return implementation
     }
-    return isTemporary
+
+    // Computed property to access managedObjectID from implementation
+    private var objectID: NSManagedObjectID? {
+      guard let mirrorImplementation,
+        let objectID = getMirrorChildValue(of: mirrorImplementation, childName: "managedObjectID")
+          as? NSManagedObjectID
+      else {
+        return nil
+      }
+      return objectID
+    }
+
+    // Computed property to access uriRepresentation from objectID
+    private var uriRepresentation: URL? {
+      objectID?.uriRepresentation()
+    }
+
+    // swiftlint:disable:next discouraged_optional_boolean
+    internal var isTemporary: Bool? {
+      guard let mirrorImplementation,
+        let isTemporary = getMirrorChildValue(of: mirrorImplementation, childName: "isTemporary")
+          as? Bool
+      else {
+        assertionFailure("Should always be there.")
+        return nil
+      }
+      return isTemporary
+    }
   }
-}
+#endif

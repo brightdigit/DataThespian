@@ -27,25 +27,27 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-public import SwiftData
+#if canImport(SwiftData)
+  public import SwiftData
 
-public protocol Queryable: Sendable {
-  func save() async throws
+  public protocol Queryable: Sendable {
+    func save() async throws
 
-  func insert<PersistentModelType: PersistentModel, U: Sendable>(
-    _ closuer: @Sendable @escaping () -> PersistentModelType,
-    with closure: @escaping @Sendable (PersistentModelType) throws -> U
-  ) async rethrows -> U
+    func insert<PersistentModelType: PersistentModel, U: Sendable>(
+      _ closuer: @Sendable @escaping () -> PersistentModelType,
+      with closure: @escaping @Sendable (PersistentModelType) throws -> U
+    ) async rethrows -> U
 
-  func getOptional<PersistentModelType, U: Sendable>(
-    for selector: Selector<PersistentModelType>.Get,
-    with closure: @escaping @Sendable (PersistentModelType?) throws -> U
-  ) async rethrows -> U
+    func getOptional<PersistentModelType, U: Sendable>(
+      for selector: Selector<PersistentModelType>.Get,
+      with closure: @escaping @Sendable (PersistentModelType?) throws -> U
+    ) async rethrows -> U
 
-  func fetch<PersistentModelType, U: Sendable>(
-    for selector: Selector<PersistentModelType>.List,
-    with closure: @escaping @Sendable ([PersistentModelType]) throws -> U
-  ) async rethrows -> U
+    func fetch<PersistentModelType, U: Sendable>(
+      for selector: Selector<PersistentModelType>.List,
+      with closure: @escaping @Sendable ([PersistentModelType]) throws -> U
+    ) async rethrows -> U
 
-  func delete<PersistentModelType>(_ selector: Selector<PersistentModelType>.Delete) async throws
-}
+    func delete<PersistentModelType>(_ selector: Selector<PersistentModelType>.Delete) async throws
+  }
+#endif

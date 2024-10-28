@@ -59,6 +59,10 @@
   }
 
   extension Selector.List {
+    public static func all(_ type: T.Type) -> Selector.List {
+      .descriptor(.init())
+    }
+    
     public static func all() -> Selector.List {
       .descriptor(.init())
     }

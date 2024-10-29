@@ -53,6 +53,30 @@
         persistentModels.map(Model.init)
       }
     }
+    
+    public func fetch<PersistentModelType, U: Sendable>(
+      for selectors: [Selector<PersistentModelType>.Get],
+      with closure: @escaping @Sendable (PersistentModelType) throws -> U
+    ) async rethrows -> [U] {
+      return try await withThrowingTaskGroup(of: Optional<U>.self, returning: [U].self, body: { group in
+        for selector in selectors {
+          group.addTask {
+            try await self.getOptional(for: selector) { persistentModel in
+              guard let persistentModel else {
+                return Optional<U>.none
+              }
+              return try closure(persistentModel)
+            }
+          }
+        }
+        return try await group.reduce(into: [U]()) { partialResult, result in
+          if let result {
+            partialResult.append(result)
+            
+          }
+        }
+      })
+    }
 
     public func get<PersistentModelType>(
       for selector: Selector<PersistentModelType>.Get

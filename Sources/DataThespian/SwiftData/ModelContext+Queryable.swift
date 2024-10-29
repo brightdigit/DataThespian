@@ -47,7 +47,7 @@
       let persistentModel: PersistentModelType?
       switch selector {
       case .model(let model):
-        persistentModel = try self.get(model)
+        persistentModel = try self.getOptional(model)
       case .predicate(let predicate):
         persistentModel = try self.first(where: predicate)
       }
@@ -72,7 +72,7 @@
       case .all:
         try self.delete(model: PersistentModelType.self)
       case .model(let model):
-        if let persistentModel = try self.get(model) {
+        if let persistentModel = try self.getOptional(model) {
           self.delete(persistentModel)
         }
       case .predicate(let predicate):

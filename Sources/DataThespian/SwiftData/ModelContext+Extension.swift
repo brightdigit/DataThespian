@@ -83,9 +83,13 @@
       return try closure(model)
     }
 
-    @available(*, deprecated)
-    public func transaction(block: @escaping @Sendable (ModelContext) throws -> Void) throws {
-      try self.transaction { try block(self) }
+    
+    public func get<T>(_ model: Model<T>) throws -> T
+    where T: PersistentModel {
+      guard let item = try self.getOptional(model) else {
+        throw QueryError.itemNotFound(.model(model))
+      }
+      return item
     }
 
     public func first<PersistentModelType: PersistentModel>(

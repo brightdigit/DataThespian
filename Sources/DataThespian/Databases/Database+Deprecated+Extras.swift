@@ -74,7 +74,6 @@
       await self.delete(T.self, withID: model.persistentIdentifier)
     }
 
-    @available(*, deprecated)
     public func deleteAll(of types: [any PersistentModel.Type]) async throws {
       try await self.transaction { context in for type in types { try context.delete(model: type) }
       }

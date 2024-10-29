@@ -70,9 +70,14 @@
       try await self.withModelContext { try $0.get(for: objectID, with: closure) }
     }
 
-    @available(*, deprecated)
     public func transaction(_ block: @Sendable @escaping (ModelContext) throws -> Void) async throws
-    { try await self.withModelContext { try $0.transaction(block: block) } }
+    {
+      try await self.withModelContext{ context in
+        try context.transaction {
+          try block(context)
+        }
+      }
+    }
   }
 
 #endif

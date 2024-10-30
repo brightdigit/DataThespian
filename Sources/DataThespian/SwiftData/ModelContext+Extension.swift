@@ -46,7 +46,7 @@
       try self.delete(model: T.self, where: predicate)
     }
 
-    @available(*, deprecated)
+    @available(*, unavailable)
     public func insert(_ closuer: @escaping @Sendable () -> some PersistentModel)
       -> PersistentIdentifier
     {
@@ -82,7 +82,22 @@
       let model: T? = try self.existingModel(for: objectID)
       return try closure(model)
     }
-
+    
+    public func insert<T : PersistentModel>(_ closuer: @escaping @Sendable () -> T)
+      -> Model<T>
+    {
+      let model = closuer()
+      self.insert(model)
+      return .init(model)
+    }
+    
+    public func fetch<PersistentModelType>(
+      for selectors: [Selector<PersistentModelType>.Get]
+    )  throws -> [PersistentModelType] {
+      try selectors.map {
+        try self.getOptional(for: $0)
+      }.compactMap{$0}
+    }
     
     public func get<T>(_ model: Model<T>) throws -> T
     where T: PersistentModel {
@@ -90,6 +105,14 @@
         throw QueryError.itemNotFound(.model(model))
       }
       return item
+    }
+    
+    public func delete<PersistentModelType>(
+      _ selectors: [Selector<PersistentModelType>.Delete]
+    ) throws {
+      for selector in selectors {
+        try self.delete(selector)
+      }
     }
 
     public func first<PersistentModelType: PersistentModel>(

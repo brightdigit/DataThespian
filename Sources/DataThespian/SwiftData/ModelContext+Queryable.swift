@@ -39,6 +39,19 @@
       self.insert(persistentModel)
       return try closure(persistentModel)
     }
+    
+    public func getOptional<PersistentModelType>(
+      for selector: Selector<PersistentModelType>.Get
+    ) throws -> PersistentModelType? {
+      let persistentModel: PersistentModelType?
+      switch selector {
+      case .model(let model):
+        persistentModel = try self.getOptional(model)
+      case .predicate(let predicate):
+        persistentModel = try self.first(where: predicate)
+      }
+      return persistentModel
+    }
 
     public func getOptional<PersistentModelType, U: Sendable>(
       for selector: Selector<PersistentModelType>.Get,

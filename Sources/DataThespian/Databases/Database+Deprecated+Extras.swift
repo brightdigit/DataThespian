@@ -32,7 +32,7 @@
   public import SwiftData
 
   extension Database {
-    @available(*, deprecated)
+    @available(*, unavailable)
     public func with<PersistentModelType: PersistentModel, U: Sendable>(
       _ id: Model<PersistentModelType>,
       _ closure: @escaping @Sendable (PersistentModelType) throws -> U

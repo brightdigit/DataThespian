@@ -2,7 +2,29 @@
 //  CollectionSyncronizer.swift
 //  DataThespian
 //
-//  Created by Leo Dion on 11/1/24.
+//  Created by Leo Dion.
+//  Copyright © 2024 BrightDigit.
+//
+//  Permission is hereby granted, free of charge, to any person
+//  obtaining a copy of this software and associated documentation
+//  files (the “Software”), to deal in the Software without
+//  restriction, including without limitation the rights to use,
+//  copy, modify, merge, publish, distribute, sublicense, and/or
+//  sell copies of the Software, and to permit persons to whom the
+//  Software is furnished to do so, subject to the following
+//  conditions:
+//
+//  The above copyright notice and this permission notice shall be
+//  included in all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+//  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+//  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+//  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+//  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+//  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+//  OTHER DEALINGS IN THE SOFTWARE.
 //
 
 public import SwiftData
@@ -11,7 +33,6 @@ private struct SynchronizationUpdate<PersistentModelType: PersistentModel, DataT
   var file: DataType?
   var entry: PersistentModelType?
 }
-
 
 public protocol CollectionSyncronizer {
   associatedtype PersistentModelType: PersistentModel
@@ -26,8 +47,6 @@ public protocol CollectionSyncronizer {
   static func persistentModel(from data: DataType) -> PersistentModelType
   static func syncronize(_ persistentModel: PersistentModelType, with data: DataType) throws
 }
-
-
 
 extension CollectionSyncronizer {
   public static func syncronizeDifference
@@ -47,10 +66,6 @@ extension CollectionSyncronizer {
     let inserted = try modelsToInsert.map {
       try modelContext.get($0)
     }
-//      for insertedModel in modelsToInsert {
-//        let inserted = try modelContext.get(insertedModel)
-//        Self.onInsertedModel(inserted, with: helpers)
-//      }
 
     let updateSelectors = difference.updates.map {
       Self.getSelector(from: $0)
@@ -81,7 +96,5 @@ extension CollectionSyncronizer {
     }
 
     return inserted
-    // try modelContext.save()
-    // }
   }
 }

@@ -39,7 +39,7 @@
       self.insert(persistentModel)
       return try closure(persistentModel)
     }
-    
+
     public func getOptional<PersistentModelType>(
       for selector: Selector<PersistentModelType>.Get
     ) throws -> PersistentModelType? {

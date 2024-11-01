@@ -30,9 +30,9 @@
 #if canImport(SwiftData)
   import Foundation
   public import SwiftData
-
-  @available(*, deprecated, renamed: "Model")
-  public typealias ModelID = Model
+//
+//  @available(*, deprecated, renamed: "Model")
+//  public typealias ModelID = Model
 
   public struct Model<T: PersistentModel>: Sendable, Identifiable {
     public struct NotFoundError: Error { public let persistentIdentifier: PersistentIdentifier }

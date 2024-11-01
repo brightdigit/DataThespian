@@ -34,41 +34,41 @@
   public import SwiftData
 
   extension Database {
-    @available(*, deprecated)
-    @discardableResult public func delete<T: PersistentModel>(
-      _ modelType: T.Type, withID id: PersistentIdentifier
-    ) async -> Bool { await self.withModelContext { $0.delete(modelType, withID: id) } }
-
-    @available(*, deprecated)
-    public func delete<T: PersistentModel>(where predicate: Predicate<T>?) async throws {
-      try await self.withModelContext { try $0.delete(where: predicate) }
-    }
-
-    @available(*, deprecated)
-    public func fetch<T, U: Sendable>(
-      _ selectDescriptor: @escaping @Sendable () -> FetchDescriptor<T>,
-      with closure: @escaping @Sendable ([T]) throws -> U
-    ) async rethrows -> U {
-      try await self.withModelContext { try $0.fetch(selectDescriptor, with: closure) }
-    }
-
-    @available(*, deprecated)
-    public func fetch<T: PersistentModel, U: PersistentModel, V: Sendable>(
-      _ selectDescriptorA: @escaping @Sendable () -> FetchDescriptor<T>,
-      _ selectDescriptorB: @escaping @Sendable () -> FetchDescriptor<U>,
-      with closure: @escaping @Sendable ([T], [U]) throws -> V
-    ) async rethrows -> V {
-      try await self.withModelContext {
-        try $0.fetch(selectDescriptorA, selectDescriptorB, with: closure)
-      }
-    }
-
-    @available(*, deprecated)
-    public func get<T, U: Sendable>(
-      for objectID: PersistentIdentifier, with closure: @escaping @Sendable (T?) throws -> U
-    ) async rethrows -> U where T: PersistentModel {
-      try await self.withModelContext { try $0.get(for: objectID, with: closure) }
-    }
+//    @available(*, deprecated)
+//    @discardableResult public func delete<T: PersistentModel>(
+//      _ modelType: T.Type, withID id: PersistentIdentifier
+//    ) async -> Bool { await self.withModelContext { $0.delete(modelType, withID: id) } }
+//
+//    @available(*, deprecated)
+//    public func delete<T: PersistentModel>(where predicate: Predicate<T>?) async throws {
+//      try await self.withModelContext { try $0.delete(where: predicate) }
+//    }
+//
+//    @available(*, deprecated)
+//    public func fetch<T, U: Sendable>(
+//      _ selectDescriptor: @escaping @Sendable () -> FetchDescriptor<T>,
+//      with closure: @escaping @Sendable ([T]) throws -> U
+//    ) async rethrows -> U {
+//      try await self.withModelContext { try $0.fetch(selectDescriptor, with: closure) }
+//    }
+//
+//    @available(*, deprecated)
+//    public func fetch<T: PersistentModel, U: PersistentModel, V: Sendable>(
+//      _ selectDescriptorA: @escaping @Sendable () -> FetchDescriptor<T>,
+//      _ selectDescriptorB: @escaping @Sendable () -> FetchDescriptor<U>,
+//      with closure: @escaping @Sendable ([T], [U]) throws -> V
+//    ) async rethrows -> V {
+//      try await self.withModelContext {
+//        try $0.fetch(selectDescriptorA, selectDescriptorB, with: closure)
+//      }
+//    }
+//
+//    @available(*, deprecated)
+//    public func get<T, U: Sendable>(
+//      for objectID: PersistentIdentifier, with closure: @escaping @Sendable (T?) throws -> U
+//    ) async rethrows -> U where T: PersistentModel {
+//      try await self.withModelContext { try $0.get(for: objectID, with: closure) }
+//    }
 
     public func transaction(_ block: @Sendable @escaping (ModelContext) throws -> Void) async throws
     {

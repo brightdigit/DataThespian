@@ -42,12 +42,12 @@
 
     public func fetch<PersistentModelType>(
       for selectors: [Selector<PersistentModelType>.Get]
-    )  throws -> [PersistentModelType] {
+    ) throws -> [PersistentModelType] {
       try selectors
         .map {
-        try self.getOptional(for: $0)
+          try self.getOptional(for: $0)
         }
-      .compactMap { $0 }
+        .compactMap { $0 }
     }
 
     public func get<T>(_ model: Model<T>) throws -> T

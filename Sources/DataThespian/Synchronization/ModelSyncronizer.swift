@@ -27,15 +27,17 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-public import SwiftData
+#if canImport(SwiftData)
+  public import SwiftData
 
-public protocol ModelSyncronizer {
-  associatedtype PersistentModelType: PersistentModel
-  associatedtype DataType: Sendable
+  public protocol ModelSyncronizer {
+    associatedtype PersistentModelType: PersistentModel
+    associatedtype DataType: Sendable
 
-  static func synchronizeModel(
-    _ model: Model<PersistentModelType>,
-    with library: DataType,
-    using database: any Database
-  ) async throws
-}
+    static func synchronizeModel(
+      _ model: Model<PersistentModelType>,
+      with library: DataType,
+      using database: any Database
+    ) async throws
+  }
+#endif

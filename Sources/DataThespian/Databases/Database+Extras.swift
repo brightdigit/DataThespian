@@ -1,5 +1,5 @@
 //
-//  Database+Deprecated+Extras.swift
+//  Database+Extras.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -57,7 +57,7 @@
 ////
 //
 #if canImport(SwiftData)
-   import Foundation
+  import Foundation
   public import SwiftData
 
   extension Database {

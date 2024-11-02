@@ -27,11 +27,16 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-public import SwiftData
+#if canImport(SwiftData)
+  public import SwiftData
 
-public protocol SynchronizationDifference: Sendable {
-  associatedtype PersistentModelType: PersistentModel
-  associatedtype DataType: Sendable
+  public protocol SynchronizationDifference: Sendable {
+    associatedtype PersistentModelType: PersistentModel
+    associatedtype DataType: Sendable
 
-  static func comparePersistentModel(_ persistentModel: PersistentModelType, with data: DataType) -> Self
-}
+    static func comparePersistentModel(
+      _ persistentModel: PersistentModelType,
+      with data: DataType
+    ) -> Self
+  }
+#endif

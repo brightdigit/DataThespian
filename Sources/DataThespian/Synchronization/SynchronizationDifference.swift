@@ -1,5 +1,5 @@
 //
-//  Model.swift
+//  SynchronizationDifference.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -28,27 +28,15 @@
 //
 
 #if canImport(SwiftData)
-  import Foundation
   public import SwiftData
 
-  public struct Model<T: PersistentModel>: Sendable, Identifiable {
-    public struct NotFoundError: Error { public let persistentIdentifier: PersistentIdentifier }
+  public protocol SynchronizationDifference: Sendable {
+    associatedtype PersistentModelType: PersistentModel
+    associatedtype DataType: Sendable
 
-    public var id: PersistentIdentifier.ID { persistentIdentifier.id }
-    public let persistentIdentifier: PersistentIdentifier
-
-    public init(persistentIdentifier: PersistentIdentifier) {
-      self.persistentIdentifier = persistentIdentifier
-    }
-  }
-
-  extension Model where T: PersistentModel {
-    public var isTemporary: Bool {
-      self.persistentIdentifier.isTemporary ?? false
-    }
-
-    public init(_ model: T) { self.init(persistentIdentifier: model.persistentModelID) }
-
-    internal static func ifMap(_ model: T?) -> Model? { model.map(self.init) }
+    static func comparePersistentModel(
+      _ persistentModel: PersistentModelType,
+      with data: DataType
+    ) -> Self
   }
 #endif

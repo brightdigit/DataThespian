@@ -32,60 +32,38 @@
   public import SwiftData
 
   extension ModelContext {
-    @available(*, deprecated)
-    public func delete<T: PersistentModel>(_: T.Type, withID id: PersistentIdentifier) -> Bool {
-      guard let model: T = self.registeredModel(for: id) else {
-        return false
-      }
-      self.delete(model)
-      return true
-    }
-
-    @available(*, deprecated)
-    public func delete<T>(where predicate: Predicate<T>?) throws where T: PersistentModel {
-      try self.delete(model: T.self, where: predicate)
-    }
-
-    @available(*, deprecated)
-    public func insert(_ closuer: @escaping @Sendable () -> some PersistentModel)
-      -> PersistentIdentifier
+    public func insert<T: PersistentModel>(_ closuer: @escaping @Sendable () -> T)
+      -> Model<T>
     {
       let model = closuer()
       self.insert(model)
-      return model.persistentModelID
+      return .init(model)
     }
 
-    @available(*, deprecated)
-    public func fetch<T, U>(
-      _ selectDescriptor: @escaping @Sendable () -> FetchDescriptor<T>,
-      with closure: @escaping @Sendable ([T]) throws -> U
-    ) throws -> U where T: PersistentModel, U: Sendable {
-      let models = try self.fetch(selectDescriptor())
-      return try closure(models)
+    public func fetch<PersistentModelType>(
+      for selectors: [Selector<PersistentModelType>.Get]
+    ) throws -> [PersistentModelType] {
+      try selectors
+        .map {
+          try self.getOptional(for: $0)
+        }
+        .compactMap { $0 }
     }
 
-    @available(*, deprecated)
-    public func fetch<T: PersistentModel, U: PersistentModel, V: Sendable>(
-      _ selectDescriptorA: @escaping @Sendable () -> FetchDescriptor<T>,
-      _ selectDescriptorB: @escaping @Sendable () -> FetchDescriptor<U>,
-      with closure: @escaping @Sendable ([T], [U]) throws -> V
-    ) throws -> V {
-      let firstModels = try self.fetch(selectDescriptorA())
-      let secondModels = try self.fetch(selectDescriptorB())
-      return try closure(firstModels, secondModels)
+    public func get<T>(_ model: Model<T>) throws -> T
+    where T: PersistentModel {
+      guard let item = try self.getOptional(model) else {
+        throw QueryError.itemNotFound(.model(model))
+      }
+      return item
     }
 
-    @available(*, deprecated)
-    public func get<T, U>(
-      for objectID: PersistentIdentifier, with closure: @escaping @Sendable (T?) throws -> U
-    ) throws -> U where T: PersistentModel, U: Sendable {
-      let model: T? = try self.existingModel(for: objectID)
-      return try closure(model)
-    }
-
-    @available(*, deprecated)
-    public func transaction(block: @escaping @Sendable (ModelContext) throws -> Void) throws {
-      try self.transaction { try block(self) }
+    public func delete<PersistentModelType>(
+      _ selectors: [Selector<PersistentModelType>.Delete]
+    ) throws {
+      for selector in selectors {
+        try self.delete(selector)
+      }
     }
 
     public func first<PersistentModelType: PersistentModel>(

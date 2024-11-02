@@ -28,105 +28,21 @@
 //
 
 #if canImport(SwiftData)
-  public import Foundation
+  import Foundation
   public import SwiftData
 
   extension Database {
-    @available(*, deprecated)
-    public func with<PersistentModelType: PersistentModel, U: Sendable>(
-      _ id: Model<PersistentModelType>,
-      _ closure: @escaping @Sendable (PersistentModelType) throws -> U
-    ) async rethrows -> U {
-      try await self.get(for: id.persistentIdentifier) { (model: PersistentModelType?) -> U in
-        guard let model else {
-          throw Model<PersistentModelType>.NotFoundError(
-            persistentIdentifier: id.persistentIdentifier
-          )
-        }
-        return try closure(model)
-      }
-    }
-
-    @available(*, deprecated)
-    public func first<T: PersistentModel>(_ selectPredicate: Predicate<T>) async throws -> Model<T>?
+    public func transaction(_ block: @Sendable @escaping (ModelContext) throws -> Void) async throws
     {
-      try await self.first(selectPredicate, with: Model.ifMap)
-    }
-
-    @available(*, deprecated)
-    public func first<T: PersistentModel, U: Sendable>(
-      _ selectPredicate: Predicate<T>, with closure: @escaping @Sendable (T?) throws -> U
-    ) async throws -> U {
-      try await self.fetch {
-        .init(predicate: selectPredicate, fetchLimit: 1)
-      } with: { models in
-        try closure(models.first)
+      try await self.withModelContext{ context in
+        try context.transaction {
+          try block(context)
+        }
       }
     }
-
-    @available(*, deprecated)
-    public func delete<T: PersistentModel>(model _: T.Type, where predicate: Predicate<T>? = nil)
-      async throws
-    { try await self.delete(where: predicate) }
-
-    @available(*, deprecated)
-    public func delete<T: PersistentModel>(_ model: Model<T>) async {
-      await self.delete(T.self, withID: model.persistentIdentifier)
-    }
-
-    @available(*, deprecated)
     public func deleteAll(of types: [any PersistentModel.Type]) async throws {
       try await self.transaction { context in for type in types { try context.delete(model: type) }
       }
-    }
-
-    @available(*, deprecated)
-    public func fetch<T: PersistentModel, U: Sendable>(
-      _: T.Type, with closure: @escaping @Sendable ([T]) throws -> U
-    ) async throws -> U {
-      try await self.fetch {
-        FetchDescriptor<T>()
-      } with: { models in
-        try closure(models)
-      }
-    }
-
-    @available(*, deprecated)
-    public func fetch<T: PersistentModel>(_: T.Type) async throws -> [Model<T>] {
-      try await self.fetch(T.self) { models in models.map(Model.init) }
-    }
-
-    @available(*, deprecated)
-    public func fetch<T: PersistentModel>(
-      _: T.Type, _ selectDescriptor: @escaping @Sendable () -> FetchDescriptor<T>
-    ) async throws -> [Model<T>] {
-      await self.fetch(selectDescriptor) { models in models.map(Model.init) }
-    }
-
-    @available(*, deprecated)
-    public func fetch<T, U: Sendable>(
-      of _: T.Type,
-      for objectIDs: [PersistentIdentifier],
-      with closure: @escaping @Sendable (T) throws -> U
-    ) async throws -> [U] where T: PersistentModel {
-      try await withThrowingTaskGroup(of: U?.self, returning: [U].self) { group in
-        for id in objectIDs {
-          group.addTask { try await self.get(for: id) { model in try model.map(closure) } }
-        }
-
-        return try await group.reduce(into: []) { partialResult, item in
-          if let item { partialResult.append(item) }
-        }
-      }
-    }
-
-    @available(*, deprecated)
-    public func get<T, U: Sendable>(
-      of _: T.Type,
-      for objectID: PersistentIdentifier,
-      with closure: @escaping @Sendable (T?) throws -> U
-    ) async throws -> U where T: PersistentModel {
-      try await self.get(for: objectID) { model in try closure(model) }
     }
   }
 #endif

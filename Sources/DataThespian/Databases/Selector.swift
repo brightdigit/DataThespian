@@ -59,6 +59,27 @@
   }
 
   extension Selector.List {
+    public static func descriptor(
+      _ type: T.Type,
+      predicate: Predicate<T>? = nil,
+      sortBy: [SortDescriptor<T>] = [],
+      fetchLimit: Int? = nil
+    ) -> Selector.List {
+      .descriptor(.init(predicate: predicate, sortBy: sortBy, fetchLimit: fetchLimit))
+    }
+
+    public static func descriptor(
+      predicate: Predicate<T>? = nil,
+      sortBy: [SortDescriptor<T>] = [],
+      fetchLimit: Int? = nil
+    ) -> Selector.List {
+      .descriptor(.init(predicate: predicate, sortBy: sortBy, fetchLimit: fetchLimit))
+    }
+
+    public static func all(_ type: T.Type) -> Selector.List {
+      .descriptor(.init())
+    }
+
     public static func all() -> Selector.List {
       .descriptor(.init())
     }

@@ -1,5 +1,5 @@
 //
-//  Model.swift
+//  ModelDifferenceSyncronizer.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -28,27 +28,31 @@
 //
 
 #if canImport(SwiftData)
-  import Foundation
   public import SwiftData
 
-  public struct Model<T: PersistentModel>: Sendable, Identifiable {
-    public struct NotFoundError: Error { public let persistentIdentifier: PersistentIdentifier }
+  public protocol ModelDifferenceSyncronizer: ModelSyncronizer {
+    associatedtype SynchronizationDifferenceType: SynchronizationDifference
+    where
+      SynchronizationDifferenceType.DataType == DataType,
+      SynchronizationDifferenceType.PersistentModelType == PersistentModelType
 
-    public var id: PersistentIdentifier.ID { persistentIdentifier.id }
-    public let persistentIdentifier: PersistentIdentifier
-
-    public init(persistentIdentifier: PersistentIdentifier) {
-      self.persistentIdentifier = persistentIdentifier
-    }
+    static func synchronize(
+      _ diff: SynchronizationDifferenceType,
+      using database: any Database
+    ) async throws
   }
 
-  extension Model where T: PersistentModel {
-    public var isTemporary: Bool {
-      self.persistentIdentifier.isTemporary ?? false
+  extension ModelDifferenceSyncronizer {
+    public static func synchronizeModel(
+      _ model: Model<PersistentModelType>,
+      with library: DataType,
+      using database: any Database
+    ) async throws {
+      let diff = try await database.get(for: .model(model)) { libraryEntry in
+        SynchronizationDifferenceType.comparePersistentModel(libraryEntry, with: library)
+      }
+
+      return try await self.synchronize(diff, using: database)
     }
-
-    public init(_ model: T) { self.init(persistentIdentifier: model.persistentModelID) }
-
-    internal static func ifMap(_ model: T?) -> Model? { model.map(self.init) }
   }
 #endif

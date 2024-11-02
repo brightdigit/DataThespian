@@ -32,22 +32,9 @@
   public import SwiftData
 
   extension FetchDescriptor {
-    public init(predicate: Predicate<T>? = nil, sortBy: [SortDescriptor<T>] = [], fetchLimit: Int?)
-    {
+    public init(predicate: Predicate<T>? = nil, sortBy: [SortDescriptor<T>] = [], fetchLimit: Int?)    {
       self.init(predicate: predicate, sortBy: sortBy)
-
       self.fetchLimit = fetchLimit
-    }
-
-    @available(*, deprecated)
-    public init(model: Model<T>) {
-      let persistentIdentifier = model.persistentIdentifier
-      self.init(
-        predicate: #Predicate<T> {
-          $0.persistentModelID == persistentIdentifier
-        },
-        fetchLimit: 1
-      )
     }
   }
 #endif

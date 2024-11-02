@@ -33,6 +33,7 @@
   public import SwiftUI
 
   extension EnvironmentValues {
+    /// A `DatabaseChangePublicist` that determines how database changes are propagated to the UI.
     @Entry public var databaseChangePublicist: DatabaseChangePublicist = .never()
   }
 #endif

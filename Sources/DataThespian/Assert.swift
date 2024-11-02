@@ -29,12 +29,30 @@
 
 public import Foundation
 
+/// Asserts that the current thread is the main thread if the `assertIsBackground` parameter is `true`.
+///
+/// - Parameters:
+///   - isMainThread: A boolean indicating whether the current thread should be the main thread.
+///   - assertIsBackground: A boolean indicating whether the assertion should be made.
 @inlinable internal func assert(isMainThread: Bool, if assertIsBackground: Bool) {
   assert(!assertIsBackground || isMainThread == Thread.isMainThread)
 }
 
-@inlinable internal func assert(isMainThread: Bool) { assert(isMainThread == Thread.isMainThread) }
+/// Asserts that the current thread is the main thread.
+///
+/// - Parameter isMainThread: A boolean indicating whether the current thread should be the main thread.
+@inlinable internal func assert(isMainThread: Bool) {
+  assert(isMainThread == Thread.isMainThread)
+}
 
+/// Asserts that an error has occurred, logging the localized description of the error.
+///
+/// - Parameters:
+///   - error: The error that has occurred.
+///   - file: The file in which the assertion occurred (default is the current file).
+///   - line: The line in the file at which the assertion occurred (default is the current line).
 @inlinable internal func assertionFailure(
   error: any Error, file: StaticString = #file, line: UInt = #line
-) { assertionFailure(error.localizedDescription, file: file, line: line) }
+) {
+  assertionFailure(error.localizedDescription, file: file, line: line)
+}

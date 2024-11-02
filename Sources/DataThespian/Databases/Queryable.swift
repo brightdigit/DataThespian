@@ -29,25 +29,56 @@
 
 #if canImport(SwiftData)
   public import SwiftData
-
+  /// A protocol that defines a Queryable interface for interacting with a persistent data store.
   public protocol Queryable: Sendable {
+    /// Saves the current state of the Queryable instance to the persistent data store.
+    /// - Throws: An error that indicates why the save operation failed.
     func save() async throws
 
+    /// Inserts a new persistent model into the data store and returns a transformed result.
+    /// - Parameters:
+    ///   - insertClosure: A closure that creates a new instance of the `PersistentModelType`.
+    ///   - closure: A closure that performs some operation
+    ///   on the newly inserted `PersistentModelType` instance
+    ///   and returns a transformed result of type `U`.
+    /// - Returns: The transformed result of type `U`.
+    /// - Throws: An error that indicates why the insert operation failed.
     func insert<PersistentModelType: PersistentModel, U: Sendable>(
-      _ closuer: @Sendable @escaping () -> PersistentModelType,
+      _ insertClosure: @Sendable @escaping () -> PersistentModelType,
       with closure: @escaping @Sendable (PersistentModelType) throws -> U
     ) async rethrows -> U
 
+    /// Retrieves an optional persistent model from the data store and returns a transformed result.
+    /// - Parameters:
+    ///   - selector: A `Selector<PersistentModelType>.Get` instance
+    ///   that defines the criteria for retrieving the persistent model.
+    ///   - closure: A closure that performs some operation on
+    ///   the retrieved `PersistentModelType` instance (or `nil`)
+    ///   and returns a transformed result of type `U`.
+    /// - Returns: The transformed result of type `U`.
+    /// - Throws: An error that indicates why the retrieval operation failed.
     func getOptional<PersistentModelType, U: Sendable>(
       for selector: Selector<PersistentModelType>.Get,
       with closure: @escaping @Sendable (PersistentModelType?) throws -> U
     ) async rethrows -> U
 
+    /// Retrieves a list of persistent models from the data store and returns a transformed result.
+    /// - Parameters:
+    ///   - selector: A `Selector<PersistentModelType>.List` instance
+    ///   that defines the criteria for retrieving the list of persistent models.
+    ///   - closure: A closure that performs some operation on t
+    ///   he retrieved list of `PersistentModelType` instances and returns a transformed result of type `U`.
+    /// - Returns: The transformed result of type `U`.
+    /// - Throws: An error that indicates why the retrieval operation failed.
     func fetch<PersistentModelType, U: Sendable>(
       for selector: Selector<PersistentModelType>.List,
       with closure: @escaping @Sendable ([PersistentModelType]) throws -> U
     ) async rethrows -> U
 
+    /// Deletes one or more persistent models from the data store based on the provided selector.
+    /// - Parameter selector: A `Selector<PersistentModelType>.Delete` instance
+    /// that defines the criteria for deleting the persistent models.
+    /// - Throws: An error that indicates why the delete operation failed.
     func delete<PersistentModelType>(_ selector: Selector<PersistentModelType>.Delete) async throws
   }
 #endif

@@ -29,9 +29,17 @@
 
 public import Foundation
 
+/// A protocol that defines a unique key for a model type.
 public protocol UniqueKey: Sendable {
+  /// The model type associated with this unique key.
   associatedtype Model: Unique
+
+  /// The value type associated with this unique key.
   associatedtype ValueType: Sendable & Equatable & Codable
 
+  /// Creates a predicate that checks if the model's value for this key equals the specified value.
+  ///
+  /// - Parameter value: The value to compare against.
+  /// - Returns: A predicate that checks if the model's value for this key equals the specified value.
   func predicate(equals value: ValueType) -> Predicate<Model>
 }

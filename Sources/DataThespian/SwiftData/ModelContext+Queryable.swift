@@ -29,8 +29,14 @@
 
 #if canImport(SwiftData)
   public import SwiftData
-
+  /// Extends the `ModelContext` class with additional methods for querying and managing persistent models.
   extension ModelContext {
+    /// Inserts a new persistent model and performs a closure on it.
+    ///
+    /// - Parameters:
+    ///   - closuer: A closure that creates a new instance of the persistent model.
+    ///   - closure: A closure that performs an operation on the newly inserted persistent model.
+    /// - Returns: The result of the `closure` parameter.
     public func insert<PersistentModelType: PersistentModel, U: Sendable>(
       _ closuer: @Sendable @escaping () -> PersistentModelType,
       with closure: @escaping @Sendable (PersistentModelType) throws -> U
@@ -40,9 +46,13 @@
       return try closure(persistentModel)
     }
 
-    public func getOptional<PersistentModelType>(
-      for selector: Selector<PersistentModelType>.Get
-    ) throws -> PersistentModelType? {
+    /// Retrieves an optional persistent model based on a selector.
+    ///
+    /// - Parameter selector: A selector that specifies the criteria for retrieving the persistent model.
+    /// - Returns: An optional persistent model that matches the selector criteria.
+    public func getOptional<PersistentModelType>(for selector: Selector<PersistentModelType>.Get)
+      throws -> PersistentModelType?
+    {
       let persistentModel: PersistentModelType?
       switch selector {
       case .model(let model):
@@ -53,6 +63,12 @@
       return persistentModel
     }
 
+    /// Retrieves an optional persistent model based on a selector and performs a closure on it.
+    ///
+    /// - Parameters:
+    ///   - selector: A selector that specifies the criteria for retrieving the persistent model.
+    ///   - closure: A closure that performs an operation on the retrieved persistent model.
+    /// - Returns: The result of the `closure` parameter.
     public func getOptional<PersistentModelType, U: Sendable>(
       for selector: Selector<PersistentModelType>.Get,
       with closure: @escaping @Sendable (PersistentModelType?) throws -> U
@@ -67,6 +83,12 @@
       return try closure(persistentModel)
     }
 
+    /// Retrieves a list of persistent models based on a selector and performs a closure on it.
+    ///
+    /// - Parameters:
+    ///   - selector: A selector that specifies the criteria for retrieving the list of persistent models.
+    ///   - closure: A closure that performs an operation on the retrieved list of persistent models.
+    /// - Returns: The result of the `closure` parameter.
     public func fetch<PersistentModelType, U: Sendable>(
       for selector: Selector<PersistentModelType>.List,
       with closure: @escaping @Sendable ([PersistentModelType]) throws -> U
@@ -79,6 +101,9 @@
       return try closure(persistentModels)
     }
 
+    /// Deletes persistent models based on a selector.
+    ///
+    /// - Parameter selector: A selector that specifies the criteria for deleting the persistent models.
     public func delete<PersistentModelType>(_ selector: Selector<PersistentModelType>.Delete) throws
     {
       switch selector {

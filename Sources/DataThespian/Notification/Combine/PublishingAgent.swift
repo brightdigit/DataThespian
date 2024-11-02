@@ -31,27 +31,46 @@
   @preconcurrency import Combine
   import Foundation
 
+  /// An actor that manages the publishing of database change sets.
   internal actor PublishingAgent: DataAgent, Loggable {
+    /// The subscription event.
     private enum SubscriptionEvent: Sendable {
       case cancel
       case subscribe
     }
 
+    /// The logging category for the `PublishingAgent`.
     internal static var loggingCategory: ThespianLogging.Category { .application }
 
+    /// The unique identifier for the agent.
     internal let agentID = UUID()
+
+    /// The identifier for the agent.
     private let id: String
+
+    /// The subject that publishes the database change sets.
     private let subject: PassthroughSubject<any DatabaseChangeSet, Never>
+
+    /// The number of subscriptions.
     private var subscriptionCount = 0
+
+    /// The cancellable for the subject.
     private var cancellable: AnyCancellable?
+
+    /// The completion closure.
     private var completed: (@Sendable () -> Void)?
 
+    /// Initializes a new `PublishingAgent` instance.
+    /// - Parameters:
+    ///   - id: The identifier for the agent.
+    ///   - subject: The subject that publishes the database change sets.
     internal init(id: String, subject: PassthroughSubject<any DatabaseChangeSet, Never>) {
       self.id = id
       self.subject = subject
       Task { await self.initialize() }
     }
 
+    /// Initializes the agent.
     private func initialize() {
       cancellable = subject.handleEvents { _ in
         self.onSubscriptionEvent(.subscribe)
@@ -63,10 +82,14 @@
       }
     }
 
+    /// Handles a subscription event.
+    /// - Parameter event: The subscription event.
     private nonisolated func onSubscriptionEvent(_ event: SubscriptionEvent) {
       Task { await self.updateScriptionStatus(byEvent: event) }
     }
 
+    /// Updates the subscription status.
+    /// - Parameter event: The subscription event.
     private func updateScriptionStatus(byEvent event: SubscriptionEvent) {
       let oldCount = subscriptionCount
       let delta: Int =
@@ -82,14 +105,19 @@
       )
     }
 
+    /// Handles an update to the database.
+    /// - Parameter update: The database change set.
     nonisolated internal func onUpdate(_ update: any DatabaseChangeSet) {
       Task { await self.sendUpdate(update) }
     }
 
+    /// Sends the update to the subject.
+    /// - Parameter update: The database change set.
     private func sendUpdate(_ update: any DatabaseChangeSet) {
       Task { @MainActor in await self.subject.send(update) }
     }
 
+    /// Cancels the agent.
     private func cancel() {
       Self.logger.debug("Cancelling \(self.id) \(self.agentID)")
       cancellable?.cancel()
@@ -98,16 +126,21 @@
       completed = nil
     }
 
+    /// Sets the completion closure.
+    /// - Parameter closure: The completion closure.
     nonisolated internal func onCompleted(_ closure: @escaping @Sendable () -> Void) {
       Task { await self.setCompleted(closure) }
     }
 
+    /// Sets the completion closure.
+    /// - Parameter closure: The completion closure.
     internal func setCompleted(_ closure: @escaping @Sendable () -> Void) {
       Self.logger.debug("SetCompleted \(self.id) \(self.agentID)")
       assert(completed == nil)
       completed = closure
     }
 
+    /// Finishes the agent.
     internal func finish() { cancel() }
   }
 #endif

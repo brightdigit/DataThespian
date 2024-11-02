@@ -29,12 +29,31 @@
 
 #if canImport(SwiftData)
   public import Foundation
+  /// A protocol that defines a data agent responsible for managing database updates and completions.
   public protocol DataAgent: Sendable {
+    /// The unique identifier of the agent.
     var agentID: UUID { get }
+
+    /// Called when the database is updated.
+    ///
+    /// - Parameter update: The database change set.
     func onUpdate(_ update: any DatabaseChangeSet)
+
+    /// Called when the data agent's operations are completed.
+    ///
+    /// - Parameter closure: The closure to be executed when the operations are completed.
     func onCompleted(_ closure: @Sendable @escaping () -> Void)
+
+    /// Finishes the data agent's operations.
+    ///
+    /// - Returns: An asynchronous task that completes when the data agent's operations are finished.
     func finish() async
   }
 
-  extension DataAgent { public func onCompleted(_: @Sendable @escaping () -> Void) {} }
+  extension DataAgent {
+    /// Called when the data agent's operations are completed.
+    ///
+    /// - Parameter closure: The closure to be executed when the operations are completed.
+    public func onCompleted(_: @Sendable @escaping () -> Void) {}
+  }
 #endif

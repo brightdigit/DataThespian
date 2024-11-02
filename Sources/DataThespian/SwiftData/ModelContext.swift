@@ -31,12 +31,23 @@
   import Foundation
   public import SwiftData
 
+  /// An extension to the `ModelContext` class that provides additional functionality.
   extension ModelContext {
+    /// Retrieves an optional persistent model of the specified type with the given persistent identifier.
+    ///
+    /// - Parameter model: The model for which to retrieve the persistent model.
+    /// - Returns: An optional instance of the specified persistent model,
+    /// or `nil` if the model was not found.
     public func getOptional<T>(_ model: Model<T>) throws -> T?
     where T: PersistentModel {
       try self.persistentModel(withID: model.persistentIdentifier)
     }
 
+    /// Retrieves a persistent model of the specified type with the given persistent identifier.
+    ///
+    /// - Parameter objectID: The persistent identifier of the model to retrieve.
+    /// - Returns: An optional instance of the specified persistent model,
+    /// or `nil` if the model was not found.
     private func persistentModel<T>(withID objectID: PersistentIdentifier) throws -> T?
     where T: PersistentModel {
       if let registered: T = registeredModel(for: objectID) {
@@ -54,5 +65,4 @@
       return try fetch(fetchDescriptor).first
     }
   }
-
 #endif

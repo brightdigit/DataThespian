@@ -27,6 +27,8 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+/// A protocol that defines a type as being unique.
 public protocol Unique {
+  /// The associated type that conforms to `UniqueKeys` and represents the unique keys for this type.
   associatedtype Keys: UniqueKeys<Self>
 }

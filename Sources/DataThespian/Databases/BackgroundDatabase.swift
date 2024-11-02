@@ -31,15 +31,19 @@
   import Foundation
   public import SwiftData
 
+  /// Represents a background database that can be used in a concurrent environment.
   public final class BackgroundDatabase: Database {
     private actor DatabaseContainer {
       private let factory: @Sendable () -> any Database
       private var wrappedTask: Task<any Database, Never>?
 
-      // swiftlint:disable:next strict_fileprivate
-      fileprivate init(factory: @escaping @Sendable () -> any Database) { self.factory = factory }
+      /// Initializes a `DatabaseContainer` with the given factory.
+      /// - Parameter factory: A closure that creates a new database instance.
+      fileprivate init(factory: @escaping @Sendable () -> any Database) {
+        self.factory = factory
+      }
 
-      // swiftlint:disable:next strict_fileprivate
+      /// Provides access to the database instance, creating it lazily if necessary.
       fileprivate var database: any Database {
         get async {
           if let wrappedTask {
@@ -54,22 +58,40 @@
 
     private let container: DatabaseContainer
 
-    private var database: any Database { get async { await container.database } }
+    /// The database instance, accessed asynchronously.
+    private var database: any Database {
+      get async {
+        await container.database
+      }
+    }
 
     public convenience init(database: @Sendable @escaping @autoclosure () -> any Database) {
       self.init(database)
     }
 
+    /// Initializes a `BackgroundDatabase` with the given database factory.
+    /// - Parameter database: A closure that creates a new database instance.
     public init(_ factory: @Sendable @escaping () -> any Database) {
       self.container = .init(factory: factory)
     }
 
+    /// Executes the given closure within the context of the database's model context.
+    /// - Parameter closure: A closure that performs operations within the model context.
+    /// - Returns: The result of the closure.
     public func withModelContext<T>(_ closure: @Sendable @escaping (ModelContext) throws -> T)
       async rethrows -> T
-    { try await self.database.withModelContext(closure) }
+    {
+      try await self.database.withModelContext(closure)
+    }
   }
 
   extension BackgroundDatabase {
+    /// Initializes a `BackgroundDatabase` with the given model container and
+    /// optional model context closure.
+    /// - Parameters:
+    ///   - modelContainer: The model container to use.
+    ///   - modelContext: An optional closure that creates a model context
+    ///   from the provided model container.
     public convenience init(
       modelContainer: ModelContainer,
       modelContext closure: (@Sendable (ModelContainer) -> ModelContext)? = nil
@@ -78,6 +100,8 @@
       self.init(database: ModelActorDatabase(modelContainer: modelContainer, modelContext: closure))
     }
 
+    /// Initializes a `BackgroundDatabase` with the given model container and the default model context.
+    /// - Parameter modelContainer: The model container to use.
     public convenience init(
       modelContainer: SwiftData.ModelContainer
     ) {
@@ -87,6 +111,10 @@
       )
     }
 
+    /// Initializes a `BackgroundDatabase` with the given model container and model executor closure.
+    /// - Parameters:
+    ///   - modelContainer: The model container to use.
+    ///   - modelExecutor: A closure that creates a model executor from the provided model container.
     public convenience init(
       modelContainer: SwiftData.ModelContainer,
       modelExecutor closure: @Sendable @escaping (ModelContainer) -> any ModelExecutor

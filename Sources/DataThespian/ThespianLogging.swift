@@ -29,11 +29,16 @@
 
 public import FelinePine
 
+/// Conforms to the `FelinePine.Loggable` protocol, where the `LoggingSystemType` is `ThespianLogging`.
 internal protocol Loggable: FelinePine.Loggable where Self.LoggingSystemType == ThespianLogging {}
 
+/// A logging system used in the `DataThespian` application.
 public enum ThespianLogging: LoggingSystem {
+  /// Represents the different logging categories used in the `ThespianLogging` system.
   public enum Category: String, CaseIterable {
+    /// Logs related to the application.
     case application
+    /// Logs related to data.
     case data
   }
 }

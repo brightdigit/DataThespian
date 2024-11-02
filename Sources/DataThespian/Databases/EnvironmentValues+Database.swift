@@ -31,11 +31,17 @@
   import Foundation
   import SwiftData
   public import SwiftUI
-
+  /// Provides a default implementation of the `Database` protocol
+  /// for use in environments where no other database has been set.
   private struct DefaultDatabase: Database {
+    /// The singleton instance of the `DefaultDatabase`.
     static let instance = DefaultDatabase()
 
-    // swiftlint:disable:next unavailable_function
+    /// Executes the provided closure within the context of the default model context,
+    /// asserting and throwing an error if no database has been set.
+    ///
+    /// - Parameter closure: A closure that takes a `ModelContext` and returns a value of type `T`.
+    /// - Returns: The value returned by the provided closure.
     func withModelContext<T>(_ closure: (ModelContext) throws -> T) async rethrows -> T {
       assertionFailure("No Database Set.")
       fatalError("No Database Set.")
@@ -43,16 +49,25 @@
   }
 
   extension EnvironmentValues {
+    /// The database to be used within the current environment.
     @Entry public var database: any Database = DefaultDatabase.instance
   }
 
   extension Scene {
+    /// Sets the database to be used within the current scene.
+    ///
+    /// - Parameter database: The database to be used.
+    /// - Returns: A modified `Scene` with the provided database.
     public func database(_ database: any Database) -> some Scene {
       environment(\.database, database)
     }
   }
 
   extension View {
+    /// Sets the database to be used within the current view.
+    ///
+    /// - Parameter database: The database to be used.
+    /// - Returns: A modified `View` with the provided database.
     public func database(_ database: any Database) -> some View {
       environment(\.database, database)
     }

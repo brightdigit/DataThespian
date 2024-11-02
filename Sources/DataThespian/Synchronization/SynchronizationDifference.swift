@@ -30,10 +30,19 @@
 #if canImport(SwiftData)
   public import SwiftData
 
+  /// A protocol that defines a synchronization difference between a persistent model and some data.
   public protocol SynchronizationDifference: Sendable {
+    /// The type of the persistent model.
     associatedtype PersistentModelType: PersistentModel
+    /// The type of the data.
     associatedtype DataType: Sendable
 
+    /// Compares a persistent model with some data and returns a synchronization difference.
+    ///
+    /// - Parameters:
+    ///   - persistentModel: The persistent model to compare.
+    ///   - data: The data to compare.
+    /// - Returns: The synchronization difference between the persistent model and the data.
     static func comparePersistentModel(
       _ persistentModel: PersistentModelType,
       with data: DataType

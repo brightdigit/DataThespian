@@ -31,21 +31,33 @@
   public import Combine
 
   private struct NeverDatabaseMonitor: DatabaseMonitoring {
+    /// Registers an agent with the database monitor, but always fails.
+    /// - Parameter agent: The agent to register.
+    /// - Parameter force: A flag indicating whether the registration should be forced.
     func register(_: any AgentRegister, force _: Bool) {
       assertionFailure("Using Empty Database Listener")
     }
   }
 
+  /// A struct that publishes database change events.
   public struct DatabaseChangePublicist: Sendable {
     private let dbWatcher: DatabaseMonitoring
+
+    /// Initializes a new `DatabaseChangePublicist` instance.
+    /// - Parameter dbWatcher: The database monitoring instance to use. Defaults to `DataMonitor.shared`.
     public init(dbWatcher: any DatabaseMonitoring = DataMonitor.shared) {
       self.dbWatcher = dbWatcher
     }
 
+    /// Creates a `DatabaseChangePublicist` that never publishes any changes.
     public static func never() -> DatabaseChangePublicist {
       self.init(dbWatcher: NeverDatabaseMonitor())
     }
 
+    /// Publishes database change events for the specified ID.
+    /// - Parameter id: The ID of the entity to watch for changes.
+    /// - Returns: A publisher that emits `DatabaseChangeSet` values
+    /// whenever the database changes for the specified ID.
     @Sendable public func callAsFunction(id: String) -> some Publisher<any DatabaseChangeSet, Never>
     {
       // print("Creating Publisher for \(id)")

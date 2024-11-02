@@ -30,10 +30,14 @@
 #if canImport(SwiftData)
 
   import Foundation
-
   public import SwiftData
 
+  /// A protocol that defines the behavior of a database.
   public protocol Database: Sendable, Queryable {
+    /// Executes a closure within the context of a model.
+    ///
+    /// - Parameter closure: A closure that takes a `ModelContext` and returns a value of type `T`.
+    /// - Returns: The value returned by the closure.
     func withModelContext<T>(_ closure: @Sendable @escaping (ModelContext) throws -> T)
       async rethrows -> T
   }

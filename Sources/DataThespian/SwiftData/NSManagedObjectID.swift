@@ -93,7 +93,11 @@
       }
     }
 
-    // Compute PersistentIdentifier from NSManagedObjectID
+    /// Compute PersistentIdentifier from NSManagedObjectID.
+    ///
+    /// - Returns: A PersistentIdentifier instance.
+    /// - Throws: `PersistentIdentifierError`
+    /// if the `storeIdentifier` or `entityName` properties are missing.
     public func persistentIdentifier() throws -> PersistentIdentifier {
       guard let storeIdentifier else {
         throw PersistentIdentifierError.missingProperty(.storeIdentifier)
@@ -120,10 +124,10 @@
 
   // Extensions to expose needed implementation details
   extension NSManagedObjectID {
-    // Primary key is last path component of URI
+    /// The primary key of the managed object, which is the last path component of the URI.
     public var primaryKey: String { uriRepresentation().lastPathComponent }
 
-    // Store identifier is host of URI
+    /// The store identifier, which is the host of the URI.
     public var storeIdentifier: String? {
       guard let identifier = uriRepresentation().host() else {
         return nil
@@ -131,7 +135,7 @@
       return identifier
     }
 
-    // Entity name from entity name
+    /// The entity name, which is derived from the entity.
     public var entityName: String? {
       guard let entityName = entity.name else {
         return nil

@@ -29,19 +29,25 @@
 
 #if canImport(SwiftData)
   public import SwiftData
-
-  public struct CollectionDifference<
-    PersistentModelType: PersistentModel,
-    DataType: Sendable
-  >: Sendable {
+  /// Represents the difference between a persistent model and its associated data.
+  public struct CollectionDifference<PersistentModelType: PersistentModel, DataType: Sendable>:
+    Sendable
+  {
+    /// The items that need to be inserted.
     public let inserts: [DataType]
+    /// The models that need to be deleted.
     public let modelsToDelete: [Model<PersistentModelType>]
+    /// The items that need to be updated.
     public let updates: [DataType]
 
+    /// Initializes a `CollectionDifference` instance with
+    /// the specified inserts, models to delete, and updates.
+    /// - Parameters:
+    ///   - inserts: The items that need to be inserted.
+    ///   - modelsToDelete: The models that need to be deleted.
+    ///   - updates: The items that need to be updated.
     public init(
-      inserts: [DataType],
-      modelsToDelete: [Model<PersistentModelType>],
-      updates: [DataType]
+      inserts: [DataType], modelsToDelete: [Model<PersistentModelType>], updates: [DataType]
     ) {
       self.inserts = inserts
       self.modelsToDelete = modelsToDelete
@@ -50,12 +56,19 @@
   }
 
   extension CollectionDifference {
+    /// The delete selectors for the models that need to be deleted.
     public var deleteSelectors: [DataThespian.Selector<PersistentModelType>.Delete] {
       self.modelsToDelete.map {
         .model($0)
       }
     }
 
+    /// Initializes a `CollectionDifference` instance by comparing the persistent models and data.
+    /// - Parameters:
+    ///   - persistentModels: The persistent models to compare.
+    ///   - data: The data to compare.
+    ///   - persistentModelKeyPath: The key path to the unique identifier in the persistent models.
+    ///   - dataKeyPath: The key path to the unique identifier in the data.
     public init<ID: Hashable>(
       persistentModels: [PersistentModelType]?,
       data: [DataType]?,

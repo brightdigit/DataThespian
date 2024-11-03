@@ -40,6 +40,7 @@
 ///
 /// The protocol also has a static property requirement, `primary`,
 /// which returns the primary key for the `Model` type.
+@_documentation(visibility: internal)
 public protocol UniqueKeys<Model>: Sendable {
   /// The type for which the unique keys are defined. This type must conform to the `Unique` protocol.
   associatedtype Model: Unique

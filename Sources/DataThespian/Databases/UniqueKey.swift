@@ -30,6 +30,7 @@
 public import Foundation
 
 /// A protocol that defines a unique key for a model type.
+@_documentation(visibility: internal)
 public protocol UniqueKey: Sendable {
   /// The model type associated with this unique key.
   associatedtype Model: Unique

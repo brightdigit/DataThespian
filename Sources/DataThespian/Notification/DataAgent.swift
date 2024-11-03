@@ -45,15 +45,13 @@
     func onCompleted(_ closure: @Sendable @escaping () -> Void)
 
     /// Finishes the data agent's operations.
-    ///
-    /// - Returns: An asynchronous task that completes when the data agent's operations are finished.
     func finish() async
   }
 
   extension DataAgent {
     /// Called when the data agent's operations are completed.
     ///
-    /// - Parameter closure: The closure to be executed when the operations are completed.
+    /// - Parameter _: The closure to be executed when the operations are completed.
     public func onCompleted(_: @Sendable @escaping () -> Void) {}
   }
 #endif

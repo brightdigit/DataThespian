@@ -30,6 +30,7 @@
 public import Foundation
 
 /// A struct that represents a unique key path for a model type.
+@_documentation(visibility: internal)
 public struct UniqueKeyPath<Model: Unique, ValueType: Sendable & Equatable & Codable>: UniqueKey {
   /// The key path for the model type.
   private let keyPath: KeyPath<Model, ValueType> & Sendable

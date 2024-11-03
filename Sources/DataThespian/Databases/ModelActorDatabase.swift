@@ -30,6 +30,7 @@
 #if canImport(SwiftData)
   public import SwiftData
 
+/// Simplied and customizable `ModelActor` ``Database``.
   public actor ModelActorDatabase: Database, ModelActor {
     /// The model executor used by this database.
     public nonisolated let modelExecutor: any SwiftData.ModelExecutor
@@ -49,7 +50,7 @@
     /// the given `modelContainer` and a custom `modelContext` closure.
     /// - Parameters:
     ///   - modelContainer: The model container to use for this database.
-    ///   - modelContext: A closure that creates a
+    ///   - closure: A closure that creates a
     ///   custom `ModelContext` from the `ModelContainer`.
     public init(
       modelContainer: SwiftData.ModelContainer,
@@ -65,7 +66,7 @@
     /// the given `modelContainer` and a custom `modelExecutor` closure.
     /// - Parameters:
     ///   - modelContainer: The model container to use for this database.
-    ///   - modelExecutor: A closure that creates
+    ///   - closure: A closure that creates
     ///   a custom `ModelExecutor` from the `ModelContainer`.
     public init(
       modelContainer: SwiftData.ModelContainer,

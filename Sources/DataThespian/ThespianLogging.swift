@@ -33,6 +33,7 @@ public import FelinePine
 internal protocol Loggable: FelinePine.Loggable where Self.LoggingSystemType == ThespianLogging {}
 
 /// A logging system used in the `DataThespian` application.
+@_documentation(visibility: internal)
 public enum ThespianLogging: LoggingSystem {
   /// Represents the different logging categories used in the `ThespianLogging` system.
   public enum Category: String, CaseIterable {

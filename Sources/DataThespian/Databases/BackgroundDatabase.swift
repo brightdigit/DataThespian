@@ -70,7 +70,7 @@
     }
 
     /// Initializes a `BackgroundDatabase` with the given database factory.
-    /// - Parameter database: A closure that creates a new database instance.
+    /// - Parameter factory: A closure that creates a new database instance.
     public init(_ factory: @Sendable @escaping () -> any Database) {
       self.container = .init(factory: factory)
     }
@@ -90,7 +90,7 @@
     /// optional model context closure.
     /// - Parameters:
     ///   - modelContainer: The model container to use.
-    ///   - modelContext: An optional closure that creates a model context
+    ///   - closure: An optional closure that creates a model context
     ///   from the provided model container.
     public convenience init(
       modelContainer: ModelContainer,
@@ -114,7 +114,7 @@
     /// Initializes a `BackgroundDatabase` with the given model container and model executor closure.
     /// - Parameters:
     ///   - modelContainer: The model container to use.
-    ///   - modelExecutor: A closure that creates a model executor from the provided model container.
+    ///   - closure: A closure that creates a model executor from the provided model container.
     public convenience init(
       modelContainer: SwiftData.ModelContainer,
       modelExecutor closure: @Sendable @escaping (ModelContainer) -> any ModelExecutor

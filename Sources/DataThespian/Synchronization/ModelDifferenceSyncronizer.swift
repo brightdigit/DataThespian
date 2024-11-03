@@ -28,7 +28,7 @@
 //
 
 #if canImport(SwiftData)
-  public import SwiftData
+  import SwiftData
   /// A protocol that defines the requirements for a synchronizer that can synchronize model differences.
   public protocol ModelDifferenceSyncronizer: ModelSyncronizer {
     /// The type of synchronization difference used by this synchronizer.

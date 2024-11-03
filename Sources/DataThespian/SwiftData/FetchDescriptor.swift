@@ -41,9 +41,6 @@
     /// - Parameter sortBy: An array of `SortDescriptor` objects
     /// that determine the sort order of the results.
     /// - Parameter fetchLimit: An optional integer that limits the number of results returned.
-    ///
-    /// - Returns: A new `FetchDescriptor` instance.
-    ///
     public init(predicate: Predicate<T>? = nil, sortBy: [SortDescriptor<T>] = [], fetchLimit: Int?)
     {
       self.init(predicate: predicate, sortBy: sortBy)

@@ -29,7 +29,7 @@
 
 #if canImport(SwiftData)
   public import SwiftData
-  /// A protocol that defines a Queryable interface for interacting with a persistent data store.
+  /// Providers a set of _CRUD_ methods for a ``Database``.
   public protocol Queryable: Sendable {
     /// Saves the current state of the Queryable instance to the persistent data store.
     /// - Throws: An error that indicates why the save operation failed.

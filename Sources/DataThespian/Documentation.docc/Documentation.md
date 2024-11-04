@@ -14,17 +14,6 @@
 - ``BackgroundDatabase``
 - ``ModelActorDatabase``
 
-### Monitoring
-
-- ``DataMonitor``
-- ``DataAgent``
-- ``DatabaseChangeSet``
-- ``DatabaseMonitoring``
-- ``AgentRegister``
-- ``ManagedObjectMetadata``
-- ``DatabaseChangePublicist``
-- ``DatabaseChangeType``
-
 ### Querying
 
 - ``Queryable``
@@ -35,6 +24,17 @@
 - ``UniqueKey``
 - ``UniqueKeys``
 - ``UniqueKeyPath``
+
+### Monitoring
+
+- ``DataMonitor``
+- ``DataAgent``
+- ``DatabaseChangeSet``
+- ``DatabaseMonitoring``
+- ``AgentRegister``
+- ``ManagedObjectMetadata``
+- ``DatabaseChangePublicist``
+- ``DatabaseChangeType``
 
 ### Syncronization
 

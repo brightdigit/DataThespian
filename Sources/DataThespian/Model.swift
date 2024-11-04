@@ -30,10 +30,7 @@
 #if canImport(SwiftData)
   import Foundation
   public import SwiftData
-  /// A struct that represents a model in the DataThespian application.
-  ///
-  /// This struct is used to wrap a `PersistentModel` object and provides
-  /// a convenient way to work with the model.
+  /// Phantom Type for easily retrieving fetching `PersistentModel` objects from a `ModelContext`.
   public struct Model<T: PersistentModel>: Sendable, Identifiable {
     /// An error that is thrown when a `PersistentModel`
     /// with the specified `PersistentIdentifier` is not found.

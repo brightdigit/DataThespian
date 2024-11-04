@@ -65,6 +65,8 @@
       }
     }
 
+    /// Initializes a `BackgroundDatabase` with the given database.
+    /// - Parameter database: a new database instance.
     public convenience init(database: @Sendable @escaping @autoclosure () -> any Database) {
       self.init(database)
     }

@@ -31,7 +31,7 @@
   import Foundation
   public import SwiftData
 
-  /// An extension to the `ModelContext` class that provides additional functionality.
+  /// An extension to the `ModelContext` class that provides additional functionality using ``Model``.
   extension ModelContext {
     /// Retrieves an optional persistent model of the specified type with the given persistent identifier.
     ///
@@ -56,6 +56,7 @@
       if let notRegistered: T = model(for: objectID) as? T {
         return notRegistered
       }
+      
 
       let fetchDescriptor = FetchDescriptor<T>(
         predicate: #Predicate { $0.persistentModelID == objectID },

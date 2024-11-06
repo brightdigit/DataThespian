@@ -38,6 +38,7 @@
     /// - Parameter model: The model for which to retrieve the persistent model.
     /// - Returns: An optional instance of the specified persistent model,
     /// or `nil` if the model was not found.
+    /// - Throws: A `SwiftData` error.
     public func getOptional<T>(_ model: Model<T>) throws -> T?
     where T: PersistentModel {
       try self.persistentModel(withID: model.persistentIdentifier)
@@ -48,6 +49,7 @@
     /// - Parameter objectID: The persistent identifier of the model to retrieve.
     /// - Returns: An optional instance of the specified persistent model,
     /// or `nil` if the model was not found.
+    /// - Throws: A `SwiftData` error.
     private func persistentModel<T>(withID objectID: PersistentIdentifier) throws -> T?
     where T: PersistentModel {
       if let registered: T = registeredModel(for: objectID) {

@@ -50,6 +50,7 @@
     ///
     /// - Parameter selector: A selector that specifies the criteria for retrieving the persistent model.
     /// - Returns: An optional persistent model that matches the selector criteria.
+    /// - Throws: A `SwiftData` error.
     public func getOptional<PersistentModelType>(for selector: Selector<PersistentModelType>.Get)
       throws -> PersistentModelType?
     {
@@ -69,6 +70,7 @@
     ///   - selector: A selector that specifies the criteria for retrieving the persistent model.
     ///   - closure: A closure that performs an operation on the retrieved persistent model.
     /// - Returns: The result of the `closure` parameter.
+    /// - Throws: A `SwiftData` error.
     public func getOptional<PersistentModelType, U: Sendable>(
       for selector: Selector<PersistentModelType>.Get,
       with closure: @escaping @Sendable (PersistentModelType?) throws -> U
@@ -89,6 +91,7 @@
     ///   - selector: A selector that specifies the criteria for retrieving the list of persistent models.
     ///   - closure: A closure that performs an operation on the retrieved list of persistent models.
     /// - Returns: The result of the `closure` parameter.
+    /// - Throws: A `SwiftData` error.
     public func fetch<PersistentModelType, U: Sendable>(
       for selector: Selector<PersistentModelType>.List,
       with closure: @escaping @Sendable ([PersistentModelType]) throws -> U
@@ -104,6 +107,7 @@
     /// Deletes persistent models based on a selector.
     ///
     /// - Parameter selector: A selector that specifies the criteria for deleting the persistent models.
+    /// - Throws: A `SwiftData` error.
     public func delete<PersistentModelType>(_ selector: Selector<PersistentModelType>.Delete) throws
     {
       switch selector {

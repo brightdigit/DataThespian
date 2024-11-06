@@ -29,6 +29,8 @@
 
 public import Foundation
 
+// swiftlint:disable unavailable_function
+
 /// A struct that represents a unique key path for a model type.
 @_documentation(visibility: internal)
 public struct UniqueKeyPath<Model: Unique, ValueType: Sendable & Equatable & Codable>: UniqueKey {
@@ -50,3 +52,5 @@ public struct UniqueKeyPath<Model: Unique, ValueType: Sendable & Equatable & Cod
     fatalError("Not implemented yet.")
   }
 }
+
+// swiftlint:enable unavailable_function

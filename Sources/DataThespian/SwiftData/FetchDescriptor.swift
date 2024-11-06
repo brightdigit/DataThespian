@@ -36,11 +36,10 @@
   extension FetchDescriptor {
     ///
     /// Initializes a `FetchDescriptor` with the specified parameters.
-    ///
-    /// - Parameter predicate: An optional `Predicate` that filters the results.
-    /// - Parameter sortBy: An array of `SortDescriptor` objects
-    /// that determine the sort order of the results.
-    /// - Parameter fetchLimit: An optional integer that limits the number of results returned.
+    /// - Parameters:
+    ///   - predicate: An optional `Predicate` that filters the results.
+    ///   - sortBy: An array of `SortDescriptor` objects that determine the sort order of the results.
+    ///   - fetchLimit: An optional integer that limits the number of results returned.
     public init(predicate: Predicate<T>? = nil, sortBy: [SortDescriptor<T>] = [], fetchLimit: Int?)
     {
       self.init(predicate: predicate, sortBy: sortBy)

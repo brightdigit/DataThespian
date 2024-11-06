@@ -37,6 +37,8 @@
     /// The singleton instance of the `DefaultDatabase`.
     static let instance = DefaultDatabase()
 
+    // swiftlint:disable unavailable_function
+
     /// Executes the provided closure within the context of the default model context,
     /// asserting and throwing an error if no database has been set.
     ///
@@ -46,6 +48,7 @@
       assertionFailure("No Database Set.")
       fatalError("No Database Set.")
     }
+    // swiftlint:enable unavailable_function
   }
 
   extension EnvironmentValues {

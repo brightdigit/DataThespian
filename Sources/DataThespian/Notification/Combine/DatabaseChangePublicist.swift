@@ -32,8 +32,9 @@
 
   private struct NeverDatabaseMonitor: DatabaseMonitoring {
     /// Registers an agent with the database monitor, but always fails.
-    /// - Parameter agent: The agent to register.
-    /// - Parameter force: A flag indicating whether the registration should be forced.
+    /// - Parameters:
+    ///   - _: The agent to register.
+    ///   - _: A flag indicating whether the registration should be forced.
     func register(_: any AgentRegister, force _: Bool) {
       assertionFailure("Using Empty Database Listener")
     }

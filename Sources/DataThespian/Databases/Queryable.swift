@@ -42,7 +42,6 @@
     ///   on the newly inserted `PersistentModelType` instance
     ///   and returns a transformed result of type `U`.
     /// - Returns: The transformed result of type `U`.
-    /// - Throws: An error that indicates why the insert operation failed.
     func insert<PersistentModelType: PersistentModel, U: Sendable>(
       _ insertClosure: @Sendable @escaping () -> PersistentModelType,
       with closure: @escaping @Sendable (PersistentModelType) throws -> U
@@ -56,7 +55,6 @@
     ///   the retrieved `PersistentModelType` instance (or `nil`)
     ///   and returns a transformed result of type `U`.
     /// - Returns: The transformed result of type `U`.
-    /// - Throws: An error that indicates why the retrieval operation failed.
     func getOptional<PersistentModelType, U: Sendable>(
       for selector: Selector<PersistentModelType>.Get,
       with closure: @escaping @Sendable (PersistentModelType?) throws -> U
@@ -69,7 +67,6 @@
     ///   - closure: A closure that performs some operation on t
     ///   he retrieved list of `PersistentModelType` instances and returns a transformed result of type `U`.
     /// - Returns: The transformed result of type `U`.
-    /// - Throws: An error that indicates why the retrieval operation failed.
     func fetch<PersistentModelType, U: Sendable>(
       for selector: Selector<PersistentModelType>.List,
       with closure: @escaping @Sendable ([PersistentModelType]) throws -> U

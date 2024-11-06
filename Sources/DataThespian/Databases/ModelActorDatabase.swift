@@ -30,7 +30,7 @@
 #if canImport(SwiftData)
   public import SwiftData
 
-/// Simplied and customizable `ModelActor` ``Database``.
+  /// Simplied and customizable `ModelActor` ``Database``.
   public actor ModelActorDatabase: Database, ModelActor {
     /// The model executor used by this database.
     public nonisolated let modelExecutor: any SwiftData.ModelExecutor

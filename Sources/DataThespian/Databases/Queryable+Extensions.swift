@@ -68,7 +68,6 @@
     ///   - selectors: An array of selectors to fetch models
     ///   - closure: A transformation closure to apply to each fetched model
     /// - Returns: An array of transformed results
-    /// - Throws: Rethrows any errors from the transformation closure
     public func fetch<PersistentModelType, U: Sendable>(
       for selectors: [Selector<PersistentModelType>.Get],
       with closure: @escaping @Sendable (PersistentModelType) throws -> U

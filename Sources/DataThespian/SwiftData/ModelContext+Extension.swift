@@ -45,6 +45,7 @@
     /// - Parameter selectors: An array of `Selector<PersistentModelType>.Get` instances
     /// to fetch the models.
     /// - Returns: An array of `PersistentModelType` instances.
+    /// - Throws: A `SwiftData` error.
     public func fetch<PersistentModelType>(
       for selectors: [Selector<PersistentModelType>.Get]
     ) throws -> [PersistentModelType] {
@@ -70,6 +71,7 @@
     /// Deletes persistent models based on the provided selectors.
     /// - Parameter selectors: An array of `Selector<PersistentModelType>.Delete` instances
     /// to delete the models.
+    /// - Throws: A `SwiftData` error.
     public func delete<PersistentModelType>(
       _ selectors: [Selector<PersistentModelType>.Delete]
     ) throws {
@@ -82,6 +84,7 @@
     /// - Parameter predicate: An optional `Predicate<PersistentModelType>` instance to filter the results.
     /// - Returns: The first `PersistentModelType` instance that matches the predicate,
     /// or `nil` if no match is found.
+    /// - Throws: A `SwiftData` error.
     public func first<PersistentModelType: PersistentModel>(
       where predicate: Predicate<PersistentModelType>? = nil
     ) throws -> PersistentModelType? {

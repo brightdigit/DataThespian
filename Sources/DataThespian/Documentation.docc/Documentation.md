@@ -4,7 +4,7 @@ A thread-safe implementation of SwiftData.
 
 ## Overview
 
-DataThespian combines the power of 
+DataThespian combines the power of Actors, SwiftData, and ModelActors to
 
 ## Topics
 

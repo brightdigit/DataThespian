@@ -69,6 +69,8 @@ let package = Package(
 )
 ```
 
+<!--
+
 # Usage
 
 Rursus de *quoque* traxit et fata nec, *tum loqui* et functo onusque, sunt
@@ -257,12 +259,12 @@ similem erubuisse spectare: sit iamdudum terga, mittit. Monstri telum cecidisse
 haesurum exhortor curvos adhuc, umbras caelo. Infecta iram deus, sed et, nostra,
 inplevere tune erant. Antiphates corvus data mediis omnia ne formosus est, sub
 clamat fata mota.
-
+-->
 
 ## Documentation
 
-To learn more, check out the full [documentation](https://swiftpackageindex.com/brightdigit/SublimationBonjour/documentation).
+To learn more, check out the full [documentation](https://swiftpackageindex.com/brightdigit/DataThespian/documentation).
 
 # License 
 
-This code is distributed under the MIT license. See the [LICENSE](https://github.com/brightdigit/SublimationBonjour/LICENSE) file for more info.
+This code is distributed under the MIT license. See the [LICENSE](https://github.com/brightdigit/DataThespian/LICENSE) file for more info.

@@ -20,12 +20,9 @@
 # Table of Contents
 
 * [Introduction](#introduction)
-  * [Requirements](#requirements)
-  * [Installation](#installation)
-* [Usage](#usage)
-  * [Setting up your Server](#setting-up-your-server)
-  * [Setting up your Client](#setting-up-your-client)
-* [Documentation](#documentation)      
+   * [Requirements](#requirements)
+   * [Installation](#installation)
+   * [Documentation](#documentation)
 * [License](#license)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->

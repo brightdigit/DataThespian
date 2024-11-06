@@ -28,11 +28,32 @@
 //
 
 #if canImport(SwiftData)
+  ///
+  /// A protocol that defines an agent register for a specific agent type.
+  ///
   public protocol AgentRegister: Sendable {
+    ///
+    /// The agent type associated with this register.
+    ///
     associatedtype AgentType: DataAgent
+
+    ///
+    /// The unique identifier for this agent register.
+    ///
     var id: String { get }
+
+    ///
+    /// Asynchronously retrieves the agent associated with this register.
+    ///
+    /// - Returns: The agent associated with this register.
+    ///
     @Sendable func agent() async -> AgentType
   }
 
-  extension AgentRegister { public var id: String { "\(AgentType.self)" } }
+  extension AgentRegister {
+    ///
+    /// The unique identifier for this agent register.
+    ///
+    public var id: String { "\(AgentType.self)" }
+  }
 #endif

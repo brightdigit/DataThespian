@@ -30,18 +30,15 @@
 #if canImport(SwiftData)
   public import SwiftData
 
-  // @ModelActor
-  // public actor ModelActorDatabase: Database {}
-
+  /// Simplied and customizable `ModelActor` ``Database``.
   public actor ModelActorDatabase: Database, ModelActor {
+    /// The model executor used by this database.
     public nonisolated let modelExecutor: any SwiftData.ModelExecutor
+    /// The model container used by this database.
     public nonisolated let modelContainer: SwiftData.ModelContainer
 
-    private init(modelExecutor: any ModelExecutor, modelContainer: ModelContainer) {
-      self.modelExecutor = modelExecutor
-      self.modelContainer = modelContainer
-    }
-
+    /// Initializes a new `ModelActorDatabase` with the given `modelContainer`.
+    /// - Parameter modelContainer: The model container to use for this database.
     public init(modelContainer: SwiftData.ModelContainer) {
       self.init(
         modelContainer: modelContainer,
@@ -49,6 +46,12 @@
       )
     }
 
+    /// Initializes a new `ModelActorDatabase` with
+    /// the given `modelContainer` and a custom `modelContext` closure.
+    /// - Parameters:
+    ///   - modelContainer: The model container to use for this database.
+    ///   - closure: A closure that creates a
+    ///   custom `ModelContext` from the `ModelContainer`.
     public init(
       modelContainer: SwiftData.ModelContainer,
       modelContext closure: @Sendable @escaping (ModelContainer) -> ModelContext
@@ -59,6 +62,12 @@
       )
     }
 
+    /// Initializes a new `ModelActorDatabase` with
+    /// the given `modelContainer` and a custom `modelExecutor` closure.
+    /// - Parameters:
+    ///   - modelContainer: The model container to use for this database.
+    ///   - closure: A closure that creates
+    ///   a custom `ModelExecutor` from the `ModelContainer`.
     public init(
       modelContainer: SwiftData.ModelContainer,
       modelExecutor closure: @Sendable @escaping (ModelContainer) -> any ModelExecutor
@@ -67,6 +76,11 @@
         modelExecutor: closure(modelContainer),
         modelContainer: modelContainer
       )
+    }
+
+    private init(modelExecutor: any ModelExecutor, modelContainer: ModelContainer) {
+      self.modelExecutor = modelExecutor
+      self.modelContainer = modelContainer
     }
   }
 

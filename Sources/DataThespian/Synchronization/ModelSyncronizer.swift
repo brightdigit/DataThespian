@@ -30,10 +30,20 @@
 #if canImport(SwiftData)
   public import SwiftData
 
+  /// A protocol that defines a model synchronizer.
   public protocol ModelSyncronizer {
+    /// The type of the persistent model.
     associatedtype PersistentModelType: PersistentModel
+    /// The type of the data to be synchronized.
     associatedtype DataType: Sendable
 
+    /// Synchronizes the model with the provided data, using the specified database.
+    ///
+    /// - Parameters:
+    ///   - model: The model to be synchronized.
+    ///   - library: The data to be synchronized with the model.
+    ///   - database: The database to be used for the synchronization.
+    /// - Throws: Any errors that may occur during the synchronization process.
     static func synchronizeModel(
       _ model: Model<PersistentModelType>,
       with library: DataType,

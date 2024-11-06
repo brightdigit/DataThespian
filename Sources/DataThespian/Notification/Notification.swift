@@ -32,6 +32,12 @@
   import Foundation
 
   extension Notification {
+    /// Extracts a set of `ManagedObjectMetadata` from the user info dictionary of the notification.
+    ///
+    /// - Parameter key: The key to use to extract the set of `NSManagedObject` instances
+    /// from the user info dictionary.
+    /// - Returns: An optional set of `ManagedObjectMetadata` instances,
+    /// or `nil` if the set of `NSManagedObject` instances could not be found or extracted.
     internal func managedObjects(key: String) -> Set<ManagedObjectMetadata>? {
       guard let objects = userInfo?[key] as? Set<NSManagedObject> else {
         return nil

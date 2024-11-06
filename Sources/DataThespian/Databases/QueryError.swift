@@ -29,8 +29,11 @@
 
 #if canImport(SwiftData)
   public import SwiftData
-
+  /// An error that occurs when a query fails to find an item.
   public enum QueryError<PersistentModelType: PersistentModel>: Error {
+    /// Indicates that the item was not found.
+    ///
+    /// - Parameter selector: The `Selector.Get` instance that was used to perform the query.
     case itemNotFound(Selector<PersistentModelType>.Get)
   }
 #endif

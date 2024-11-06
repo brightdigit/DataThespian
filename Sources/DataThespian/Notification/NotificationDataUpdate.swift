@@ -30,14 +30,24 @@
 #if canImport(CoreData) && canImport(SwiftData)
   import CoreData
   import Foundation
-
+  /// Represents a set of changes to managed objects in a Core Data store.
   internal struct NotificationDataUpdate: DatabaseChangeSet, Sendable {
+    /// The set of managed objects that were inserted.
     internal let inserted: Set<ManagedObjectMetadata>
 
+    /// The set of managed objects that were deleted.
     internal let deleted: Set<ManagedObjectMetadata>
 
+    /// The set of managed objects that were updated.
     internal let updated: Set<ManagedObjectMetadata>
 
+    /// Initializes a `NotificationDataUpdate` instance with the specified sets
+    /// of inserted, deleted, and updated managed objects.
+    ///
+    /// - Parameters:
+    ///   - inserted: The set of managed objects that were inserted, or an empty set if none were inserted.
+    ///   - deleted: The set of managed objects that were deleted, or an empty set if none were deleted.
+    ///   - updated: The set of managed objects that were updated, or an empty set if none were updated.
     private init(
       inserted: Set<ManagedObjectMetadata>?,
       deleted: Set<ManagedObjectMetadata>?,
@@ -50,6 +60,13 @@
       )
     }
 
+    /// Initializes a `NotificationDataUpdate` instance with
+    /// the specified sets of inserted, deleted, and updated managed objects.
+    ///
+    /// - Parameters:
+    ///   - inserted: The set of managed objects that were inserted.
+    ///   - deleted: The set of managed objects that were deleted.
+    ///   - updated: The set of managed objects that were updated.
     private init(
       inserted: Set<ManagedObjectMetadata>,
       deleted: Set<ManagedObjectMetadata>,
@@ -60,6 +77,9 @@
       self.updated = updated
     }
 
+    /// Initializes a `NotificationDataUpdate` instance from a Notification object.
+    ///
+    /// - Parameter notification: The notification that triggered the data update.
     internal init(_ notification: Notification) {
       self.init(
         inserted: notification.managedObjects(key: NSInsertedObjectsKey),

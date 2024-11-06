@@ -31,15 +31,27 @@
   @preconcurrency import Combine
   import Foundation
 
+  /// A register that manages the publication of database changes.
   internal struct PublishingRegister: AgentRegister {
+    /// The unique identifier for the register.
     internal let id: String
+
+    /// The subject that publishes database change sets.
     private let subject: PassthroughSubject<any DatabaseChangeSet, Never>
 
+    /// Initializes a new instance of `PublishingRegister`.
+    ///
+    /// - Parameters:
+    ///   - id: The unique identifier for the register.
+    ///   - subject: The subject that publishes database change sets.
     internal init(id: String, subject: PassthroughSubject<any DatabaseChangeSet, Never>) {
       self.id = id
       self.subject = subject
     }
 
+    /// Creates a new publishing agent.
+    ///
+    /// - Returns: A new instance of `PublishingAgent`.
     internal func agent() async -> PublishingAgent {
       let agent = AgentType(id: id, subject: subject)
 

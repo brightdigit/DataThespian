@@ -33,10 +33,12 @@
   import CoreData
   import Foundation
   import SwiftData
-
+  /// Monitors the database for changes and notifies registered agents of those changes.
   public actor DataMonitor: DatabaseMonitoring, Loggable {
+    /// The logging category for this class.
     public static var loggingCategory: ThespianLogging.Category { .data }
 
+    /// The shared instance of the `DataMonitor`.
     public static let shared = DataMonitor()
 
     private var object: (any NSObjectProtocol)?
@@ -44,6 +46,12 @@
 
     private init() { Self.logger.debug("Creating DatabaseMonitor") }
 
+    /// Registers the given agent with the database monitor.
+    ///
+    /// - Parameters:
+    ///   - registration: The agent to register.
+    ///   - force: Whether to force the registration,
+    ///    even if a registration with the same ID already exists.
     public nonisolated func register(_ registration: any AgentRegister, force: Bool) {
       Task { await self.addRegistration(registration, force: force) }
     }
@@ -52,6 +60,9 @@
       registrations.add(withID: registration.id, force: force, agent: registration.agent)
     }
 
+    /// Begins monitoring the database with the given agent registrations.
+    ///
+    /// - Parameter builders: The agent registrations to monitor.
     public nonisolated func begin(with builders: [any AgentRegister]) {
       Task {
         await self.addObserver()

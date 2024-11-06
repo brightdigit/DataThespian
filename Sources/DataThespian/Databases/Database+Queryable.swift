@@ -31,10 +31,17 @@
   public import SwiftData
 
   extension Database {
+    /// Saves the current state of the database.
+    /// - Throws: Any errors that occur during the save operation.
     public func save() async throws {
       try await self.withModelContext { try $0.save() }
     }
 
+    /// Inserts a new persistent model into the database.
+    /// - Parameters:
+    ///   - closuer: A closure that creates a new instance of the persistent model.
+    ///   - closure: A closure that performs additional operations on the inserted model.
+    /// - Returns: The result of the `closure` parameter.
     public func insert<PersistentModelType: PersistentModel, U: Sendable>(
       _ closuer: @Sendable @escaping () -> PersistentModelType,
       with closure: @escaping @Sendable (PersistentModelType) throws -> U
@@ -44,6 +51,11 @@
       }
     }
 
+    /// Retrieves an optional persistent model from the database.
+    /// - Parameters:
+    ///   - selector: A selector that specifies the model to retrieve.
+    ///   - closure: A closure that performs additional operations on the retrieved model.
+    /// - Returns: The result of the `closure` parameter.
     public func getOptional<PersistentModelType, U: Sendable>(
       for selector: Selector<PersistentModelType>.Get,
       with closure: @escaping @Sendable (PersistentModelType?) throws -> U
@@ -53,6 +65,11 @@
       }
     }
 
+    /// Retrieves a list of persistent models from the database.
+    /// - Parameters:
+    ///   - selector: A selector that specifies the models to retrieve.
+    ///   - closure: A closure that performs additional operations on the retrieved models.
+    /// - Returns: The result of the `closure` parameter.
     public func fetch<PersistentModelType, U: Sendable>(
       for selector: Selector<PersistentModelType>.List,
       with closure: @escaping @Sendable ([PersistentModelType]) throws -> U
@@ -62,6 +79,9 @@
       }
     }
 
+    /// Deletes a persistent model from the database.
+    /// - Parameter selector: A selector that specifies the model to delete.
+    /// - Throws: Any errors that occur during the delete operation.
     public func delete<PersistentModelType>(_ selector: Selector<PersistentModelType>.Delete)
       async throws
     {

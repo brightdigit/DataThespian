@@ -27,14 +27,40 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+/// A protocol that defines the rules for a type that represents the unique keys for a `Model` type.
+///
+/// The `UniqueKeys` protocol has two associated type requirements:
+///
+/// - `Model`: The type for which the unique keys are defined.
+/// This type must conform to the `Unique` protocol.
+/// - `PrimaryKey`: The type that represents the primary key for the `Model` type.
+/// This type must conform to the `UniqueKey` protocol, and
+/// its `Model` associated type must be the same as
+/// the `Model` associated type of the `UniqueKeys` protocol.
+///
+/// The protocol also has a static property requirement, `primary`,
+/// which returns the primary key for the `Model` type.
+@_documentation(visibility: internal)
 public protocol UniqueKeys<Model>: Sendable {
+  /// The type for which the unique keys are defined. This type must conform to the `Unique` protocol.
   associatedtype Model: Unique
+
+  /// The type that represents the primary key for the `Model` type.
+  /// This type must conform to the `UniqueKey` protocol, and
+  /// its `Model` associated type must be the same as
+  /// the `Model` associated type of the `UniqueKeys` protocol.
   associatedtype PrimaryKey: UniqueKey where PrimaryKey.Model == Model
 
+  /// The primary key for the `Model` type.
   static var primary: PrimaryKey { get }
 }
 
 extension UniqueKeys {
+  /// Creates a `UniqueKeyPath` instance for the specified key path.
+  ///
+  /// - Parameter keyPath: A key path for a property of
+  /// the `Model` type. The property must be `Sendable`, `Equatable`, and `Codable`.
+  /// - Returns: A `UniqueKeyPath` instance for the specified key path.
   public static func keyPath<ValueType: Sendable & Equatable & Codable>(
     _ keyPath: any KeyPath<Model, ValueType> & Sendable
   ) -> UniqueKeyPath<Model, ValueType> {

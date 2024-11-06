@@ -30,9 +30,18 @@
 #if canImport(SwiftData)
   public import Foundation
   public import SwiftData
-
+  ///
+  /// Represents a descriptor that can be used to fetch data from a data store.
+  ///
   extension FetchDescriptor {
-    public init(predicate: Predicate<T>? = nil, sortBy: [SortDescriptor<T>] = [], fetchLimit: Int?)    {
+    ///
+    /// Initializes a `FetchDescriptor` with the specified parameters.
+    /// - Parameters:
+    ///   - predicate: An optional `Predicate` that filters the results.
+    ///   - sortBy: An array of `SortDescriptor` objects that determine the sort order of the results.
+    ///   - fetchLimit: An optional integer that limits the number of results returned.
+    public init(predicate: Predicate<T>? = nil, sortBy: [SortDescriptor<T>] = [], fetchLimit: Int?)
+    {
       self.init(predicate: predicate, sortBy: sortBy)
       self.fetchLimit = fetchLimit
     }

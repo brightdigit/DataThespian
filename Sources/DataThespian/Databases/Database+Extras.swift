@@ -32,16 +32,29 @@
   public import SwiftData
 
   extension Database {
+    /// Executes a database transaction asynchronously.
+    ///
+    /// - Parameter block: A closure that performs database operations within the transaction.
+    /// - Throws: Any errors that occur during the transaction.
     public func transaction(_ block: @Sendable @escaping (ModelContext) throws -> Void) async throws
     {
-      try await self.withModelContext{ context in
+      try await self.withModelContext { context in
         try context.transaction {
           try block(context)
         }
       }
     }
+
+    /// Deletes all models of the specified types from the database asynchronously.
+    ///
+    /// - Parameter types: An array of `PersistentModel.Type` instances
+    /// representing the model types to delete.
+    /// - Throws: Any errors that occur during the deletion process.
     public func deleteAll(of types: [any PersistentModel.Type]) async throws {
-      try await self.transaction { context in for type in types { try context.delete(model: type) }
+      try await self.transaction { context in
+        for type in types {
+          try context.delete(model: type)
+        }
       }
     }
   }

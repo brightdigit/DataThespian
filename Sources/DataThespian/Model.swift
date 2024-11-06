@@ -30,25 +30,48 @@
 #if canImport(SwiftData)
   import Foundation
   public import SwiftData
-
+  /// Phantom Type for easily retrieving fetching `PersistentModel` objects from a `ModelContext`.
   public struct Model<T: PersistentModel>: Sendable, Identifiable {
-    public struct NotFoundError: Error { public let persistentIdentifier: PersistentIdentifier }
+    /// An error that is thrown when a `PersistentModel`
+    /// with the specified `PersistentIdentifier` is not found.
+    public struct NotFoundError: Error {
+      /// The `PersistentIdentifier` of the `PersistentModel` that was not found.
+      public let persistentIdentifier: PersistentIdentifier
+    }
 
+    /// The unique identifier of the model.
     public var id: PersistentIdentifier.ID { persistentIdentifier.id }
+
+    /// The `PersistentIdentifier` of the model.
     public let persistentIdentifier: PersistentIdentifier
 
+    /// Initializes a new `Model` instance with the specified `PersistentIdentifier`.
+    ///
+    /// - Parameter persistentIdentifier: The `PersistentIdentifier` of the model.
     public init(persistentIdentifier: PersistentIdentifier) {
       self.persistentIdentifier = persistentIdentifier
     }
   }
 
   extension Model where T: PersistentModel {
+    /// A boolean value indicating whether the model is temporary or not.
     public var isTemporary: Bool {
       self.persistentIdentifier.isTemporary ?? false
     }
 
-    public init(_ model: T) { self.init(persistentIdentifier: model.persistentModelID) }
+    /// Initializes a new `Model` instance with the specified `PersistentModel`.
+    ///
+    /// - Parameter model: The `PersistentModel` to initialize the `Model` with.
+    public init(_ model: T) {
+      self.init(persistentIdentifier: model.persistentModelID)
+    }
 
-    internal static func ifMap(_ model: T?) -> Model? { model.map(self.init) }
+    /// Creates a new `Model` instance from the specified `PersistentModel`.
+    ///
+    /// - Parameter model: The `PersistentModel` to create the `Model` from.
+    /// - Returns: A new `Model` instance, or `nil` if the `PersistentModel` is `nil`.
+    internal static func ifMap(_ model: T?) -> Model? {
+      model.map(self.init)
+    }
   }
 #endif

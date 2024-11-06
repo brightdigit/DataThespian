@@ -29,10 +29,19 @@
 
 #if canImport(SwiftData)
   public import SwiftData
-
+  /// A struct that holds metadata about a managed object.
   public struct ManagedObjectMetadata: Sendable, Hashable {
+    /// The name of the entity associated with the managed object.
     public let entityName: String
+    /// The persistent identifier of the managed object.
     public let persistentIdentifier: PersistentIdentifier
+
+    /// Initializes a `ManagedObjectMetadata` instance
+    /// with the provided entity name and persistent identifier.
+    ///
+    /// - Parameters:
+    ///   - entityName: The name of the entity associated with the managed object.
+    ///   - persistentIdentifier: The persistent identifier of the managed object.
     public init(entityName: String, persistentIdentifier: PersistentIdentifier) {
       self.entityName = entityName
       self.persistentIdentifier = persistentIdentifier
@@ -43,16 +52,23 @@
     import CoreData
 
     extension ManagedObjectMetadata {
+      /// Initializes a `ManagedObjectMetadata` instance with the provided `NSManagedObject`.
+      ///
+      /// - Parameter managedObject: The `NSManagedObject` instance to get the metadata from.
       internal init?(managedObject: NSManagedObject) {
         let persistentIdentifier: PersistentIdentifier
-        do { persistentIdentifier = try managedObject.objectID.persistentIdentifier() } catch {
+        do {
+          persistentIdentifier = try managedObject.objectID.persistentIdentifier()
+        } catch {
           assertionFailure(error: error)
           return nil
         }
+
         guard let entityName = managedObject.entity.name else {
           assertionFailure("Missing entity name.")
           return nil
         }
+
         self.init(entityName: entityName, persistentIdentifier: persistentIdentifier)
       }
     }

@@ -28,14 +28,21 @@
 //
 
 #if canImport(SwiftData)
-  public import SwiftData
-
+  import SwiftData
+  /// A protocol that defines the requirements for a synchronizer that can synchronize model differences.
   public protocol ModelDifferenceSyncronizer: ModelSyncronizer {
+    /// The type of synchronization difference used by this synchronizer.
     associatedtype SynchronizationDifferenceType: SynchronizationDifference
     where
       SynchronizationDifferenceType.DataType == DataType,
       SynchronizationDifferenceType.PersistentModelType == PersistentModelType
 
+    /// Synchronizes the given synchronization difference with the database.
+    ///
+    /// - Parameters:
+    ///   - diff: The synchronization difference to be synchronized.
+    ///   - database: The database to be used for the synchronization.
+    /// - Throws: An error that may occur during the synchronization process.
     static func synchronize(
       _ diff: SynchronizationDifferenceType,
       using database: any Database
@@ -43,6 +50,13 @@
   }
 
   extension ModelDifferenceSyncronizer {
+    /// Synchronizes the given model with the library using the database.
+    ///
+    /// - Parameters:
+    ///   - model: The model to be synchronized.
+    ///   - library: The library to be used for the synchronization.
+    ///   - database: The database to be used for the synchronization.
+    /// - Throws: An error that may occur during the synchronization process.
     public static func synchronizeModel(
       _ model: Model<PersistentModelType>,
       with library: DataType,

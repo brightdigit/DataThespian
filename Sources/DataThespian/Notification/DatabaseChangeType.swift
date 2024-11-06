@@ -27,21 +27,32 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+/// An enumeration that represents the different types of changes that can occur in a database.
 public enum DatabaseChangeType: CaseIterable, Sendable {
+  /// Represents an insertion of a new record in the database.
   case inserted
+  /// Represents a deletion of a record in the database.
   case deleted
+  /// Represents an update to an existing record in the database.
   case updated
+
   #if canImport(SwiftData)
+    /// The key path associated with the current change type.
     internal var keyPath: KeyPath<any DatabaseChangeSet, Set<ManagedObjectMetadata>> {
       switch self {
-      case .inserted: \.inserted
-      case .deleted: \.deleted
-      case .updated: \.updated
+      case .inserted:
+        return \.inserted
+      case .deleted:
+        return \.deleted
+      case .updated:
+        return \.updated
       }
     }
   #endif
 }
 
+/// An extension to `Set` where the `Element` is `DatabaseChangeType`.
 extension Set where Element == DatabaseChangeType {
+  /// A static property that represents a set containing all `DatabaseChangeType` cases.
   public static let all: Self = .init(DatabaseChangeType.allCases)
 }

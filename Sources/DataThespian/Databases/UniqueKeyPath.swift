@@ -29,15 +29,28 @@
 
 public import Foundation
 
+// swiftlint:disable unavailable_function
+
+/// A struct that represents a unique key path for a model type.
+@_documentation(visibility: internal)
 public struct UniqueKeyPath<Model: Unique, ValueType: Sendable & Equatable & Codable>: UniqueKey {
+  /// The key path for the model type.
   private let keyPath: KeyPath<Model, ValueType> & Sendable
 
+  /// Initializes a new instance of `UniqueKeyPath` with the given key path.
+  ///
+  /// - Parameter keyPath: The key path for the model type.
   internal init(keyPath: any KeyPath<Model, ValueType> & Sendable) {
     self.keyPath = keyPath
   }
 
-  // swiftlint:disable:next unavailable_function
+  /// Creates a predicate that checks if the value of the key path is equal to the given value.
+  ///
+  /// - Parameter value: The value to compare against.
+  /// - Returns: A predicate that can be used to filter models.
   public func predicate(equals value: ValueType) -> Predicate<Model> {
     fatalError("Not implemented yet.")
   }
 }
+
+// swiftlint:enable unavailable_function

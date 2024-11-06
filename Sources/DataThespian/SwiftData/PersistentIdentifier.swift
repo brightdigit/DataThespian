@@ -31,7 +31,6 @@
   import CoreData
   import Foundation
   import SwiftData
-
   /// Returns the value of a child property of an object using reflection.
   ///
   /// - Parameters:

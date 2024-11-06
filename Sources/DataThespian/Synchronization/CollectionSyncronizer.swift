@@ -29,32 +29,60 @@
 
 #if canImport(SwiftData)
   public import SwiftData
-
   private struct SynchronizationUpdate<PersistentModelType: PersistentModel, DataType: Sendable> {
     var file: DataType?
     var entry: PersistentModelType?
   }
-
+  /// A protocol that defines the synchronization behavior between a persistent model and data.
   public protocol CollectionSyncronizer {
+    /// The type of the persistent model.
     associatedtype PersistentModelType: PersistentModel
+
+    /// The type of the data.
     associatedtype DataType: Sendable
+
+    /// The type of the identifier.
     associatedtype ID: Hashable
 
+    /// The key path to the identifier in the data.
     static var dataKey: KeyPath<DataType, ID> { get }
+
+    /// The key path to the identifier in the persistent model.
     static var persistentModelKey: KeyPath<PersistentModelType, ID> { get }
 
+    /// Retrieves a selector for fetching the persistent model from the data.
+    ///
+    /// - Parameter data: The data to use for constructing the selector.
+    /// - Returns: A selector for fetching the persistent model.
     static func getSelector(from data: DataType) -> DataThespian.Selector<PersistentModelType>.Get
 
+    /// Creates a persistent model from the provided data.
+    ///
+    /// - Parameter data: The data to create the persistent model from.
+    /// - Returns: The created persistent model.
     static func persistentModel(from data: DataType) -> PersistentModelType
+
+    /// Synchronizes the persistent model with the provided data.
+    ///
+    /// - Parameters:
+    ///   - persistentModel: The persistent model to synchronize.
+    ///   - data: The data to synchronize the persistent model with.
+    /// - Throws: Any errors that occur during the synchronization process.
     static func syncronize(_ persistentModel: PersistentModelType, with data: DataType) throws
   }
 
   extension CollectionSyncronizer {
-    public static func syncronizeDifference    (
+    /// Synchronizes the difference between a collection of persistent models and a collection of data.
+    ///
+    /// - Parameters:
+    ///   - difference: The difference between the persistent models and the data.
+    ///   - modelContext: The model context to use for the synchronization.
+    /// - Returns: The list of persistent models that were inserted.
+    /// - Throws: Any errors that occur during the synchronization process.
+    public static func syncronizeDifference(
       _ difference: CollectionDifference<PersistentModelType, DataType>,
       using modelContext: ModelContext
     ) throws -> [PersistentModelType] {
-      // try await database.withModelContext { modelContext in
       try modelContext.delete(difference.deleteSelectors)
 
       let modelsToInsert: [Model<PersistentModelType>] = difference.inserts.map { model in

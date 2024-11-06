@@ -31,8 +31,13 @@
   public import SwiftData
 
   extension ModelActor where Self: Database {
+    /// A Boolean value indicating whether the current thread is the background thread.
     public static var assertIsBackground: Bool { false }
 
+    /// Executes a closure within the context of the model.
+    ///
+    /// - Parameter closure: The closure to execute within the model context.
+    /// - Returns: The result of the closure execution.
     public func withModelContext<T: Sendable>(
       _ closure: @Sendable @escaping (ModelContext) throws -> T
     ) async rethrows -> T {

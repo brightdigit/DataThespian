@@ -30,23 +30,40 @@
 #if canImport(SwiftData)
   public import Foundation
   public import SwiftData
-
+  /// A type that represents a selector for interacting with a `PersistentModel`.
   public enum Selector<T: PersistentModel>: Sendable {
+    /// A type that represents a way to delete data from a `PersistentModel`.
     public enum Delete: Sendable {
+      /// Deletes data that matches the provided `Predicate`.
       case predicate(Predicate<T>)
+      /// Deletes all data for the `PersistentModel`.
       case all
+      /// Deletes the provided `Model`.
       case model(Model<T>)
     }
+
+    /// A type that represents a way to fetch data from a `PersistentModel`.
     public enum List: Sendable {
+      /// Fetches data using the provided `FetchDescriptor`.
       case descriptor(FetchDescriptor<T>)
     }
+
+    /// A type that represents a way to retrieve a `PersistentModel`.
     public enum Get: Sendable {
+      /// Retrieves the `Model` with the provided `Model`.
       case model(Model<T>)
+      /// Retrieves the `PersistentModel` instances that match the provided `Predicate`.
       case predicate(Predicate<T>)
     }
   }
 
   extension Selector.Get {
+    /// Retrieves the `PersistentModel` instance with the provided unique key value.
+    ///
+    /// - Parameters:
+    ///   - key: The unique key to search for.
+    ///   - value: The value of the unique key to search for.
+    /// - Returns: A `Selector.Get` case that can be used to retrieve the `PersistentModel` instance.
     @available(*, unavailable, message: "Not implemented yet.")
     public static func unique<UniqueKeyableType: UniqueKey>(
       _ key: UniqueKeyableType,
@@ -59,6 +76,15 @@
   }
 
   extension Selector.List {
+    /// Creates a `Selector.List` case
+    /// that fetches `PersistentModel` instances using the provided parameters.
+    ///
+    /// - Parameters:
+    ///   - type: The type of `PersistentModel` to fetch.
+    ///   - predicate: An optional `Predicate` to filter the results.
+    ///   - sortBy: An optional array of `SortDescriptor` instances to sort the results.
+    ///   - fetchLimit: An optional limit on the number of results to fetch.
+    /// - Returns: A `Selector.List` case that can be used to fetch `PersistentModel` instances.
     public static func descriptor(
       _ type: T.Type,
       predicate: Predicate<T>? = nil,
@@ -68,6 +94,14 @@
       .descriptor(.init(predicate: predicate, sortBy: sortBy, fetchLimit: fetchLimit))
     }
 
+    /// Creates a `Selector.List` case that fetches `PersistentModel` instances
+    /// using the provided parameters.
+    ///
+    /// - Parameters:
+    ///   - predicate: An optional `Predicate` to filter the results.
+    ///   - sortBy: An optional array of `SortDescriptor` instances to sort the results.
+    ///   - fetchLimit: An optional limit on the number of results to fetch.
+    /// - Returns: A `Selector.List` case that can be used to fetch `PersistentModel` instances.
     public static func descriptor(
       predicate: Predicate<T>? = nil,
       sortBy: [SortDescriptor<T>] = [],
@@ -76,10 +110,18 @@
       .descriptor(.init(predicate: predicate, sortBy: sortBy, fetchLimit: fetchLimit))
     }
 
+    /// Creates a `Selector.List` case that fetches all `PersistentModel` instances of the provided type.
+    ///
+    /// - Parameter type: The type of `PersistentModel` to fetch.
+    /// - Returns: A `Selector.List` case
+    /// that can be used to fetch all `PersistentModel` instances of the provided type.
     public static func all(_ type: T.Type) -> Selector.List {
       .descriptor(.init())
     }
 
+    /// Creates a `Selector.List` case that fetches all `PersistentModel` instances.
+    ///
+    /// - Returns: A `Selector.List` case that can be used to fetch all `PersistentModel` instances.
     public static func all() -> Selector.List {
       .descriptor(.init())
     }

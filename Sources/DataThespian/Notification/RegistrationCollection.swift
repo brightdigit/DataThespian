@@ -29,12 +29,14 @@
 
 #if canImport(SwiftData)
   import Foundation
-
+  /// An actor that manages a collection of `DataAgent` registrations.
   internal actor RegistrationCollection: Loggable {
     internal static var loggingCategory: ThespianLogging.Category { .application }
 
     private var registrations = [String: DataAgent]()
 
+    /// Notifies the collection of a database change set update.
+    /// - Parameter update: The database change set update.
     nonisolated internal func notify(_ update: any DatabaseChangeSet) {
       Task {
         await self.onUpdate(update)
@@ -42,9 +44,16 @@
       }
     }
 
+    /// Adds a new `DataAgent` registration to the collection.
+    /// - Parameters:
+    ///   - id: The unique identifier for the registration.
+    ///   - force: A Boolean value indicating whether to force the registration if it already exists.
+    ///   - agent: A closure that creates the `DataAgent` to be registered.
     nonisolated internal func add(
       withID id: String, force: Bool, agent: @Sendable @escaping () async -> DataAgent
-    ) { Task { await self.append(withID: id, force: force, agent: agent) } }
+    ) {
+      Task { await self.append(withID: id, force: force, agent: agent) }
+    }
 
     private func append(
       withID id: String, force: Bool, agent: @Sendable @escaping () async -> DataAgent

@@ -28,7 +28,14 @@
 //
 
 #if canImport(SwiftData)
+  /// A protocol that defines the behavior for database monitoring.
   public protocol DatabaseMonitoring: Sendable {
+    /// Registers an agent with the database monitoring system.
+    ///
+    /// - Parameters:
+    ///   - registration: The agent to be registered.
+    ///   - force: A boolean value indicating whether the registration should be forced,
+    ///   even if a registration with the same ID already exists.
     func register(_ registration: any AgentRegister, force: Bool)
   }
 #endif

@@ -17,16 +17,7 @@ let swiftSettings: [SwiftSetting] = [
   SwiftSetting.enableExperimentalFeature("VariadicGenerics"),
 
   SwiftSetting.enableUpcomingFeature("FullTypedThrows"),
-  SwiftSetting.enableUpcomingFeature("InternalImportsByDefault"),
-
-  SwiftSetting.unsafeFlags([
-    "-Xfrontend",
-    "-warn-long-function-bodies=100"
-  ]),
-  SwiftSetting.unsafeFlags([
-    "-Xfrontend",
-    "-warn-long-expression-type-checking=100"
-  ])
+  SwiftSetting.enableUpcomingFeature("InternalImportsByDefault")
 ]
 
 let package = Package(

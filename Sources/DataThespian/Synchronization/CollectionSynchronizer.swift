@@ -1,5 +1,5 @@
 //
-//  CollectionSyncronizer.swift
+//  CollectionSynchronizer.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -34,7 +34,7 @@
     var entry: PersistentModelType?
   }
   /// A protocol that defines the synchronization behavior between a persistent model and data.
-  public protocol CollectionSyncronizer {
+  public protocol CollectionSynchronizer {
     /// The type of the persistent model.
     associatedtype PersistentModelType: PersistentModel
 
@@ -68,10 +68,10 @@
     ///   - persistentModel: The persistent model to synchronize.
     ///   - data: The data to synchronize the persistent model with.
     /// - Throws: Any errors that occur during the synchronization process.
-    static func syncronize(_ persistentModel: PersistentModelType, with data: DataType) throws
+    static func synchronize(_ persistentModel: PersistentModelType, with data: DataType) throws
   }
 
-  extension CollectionSyncronizer {
+  extension CollectionSynchronizer {
     /// Synchronizes the difference between a collection of persistent models and a collection of data.
     ///
     /// - Parameters:
@@ -79,7 +79,7 @@
     ///   - modelContext: The model context to use for the synchronization.
     /// - Returns: The list of persistent models that were inserted.
     /// - Throws: Any errors that occur during the synchronization process.
-    public static func syncronizeDifference(
+    public static func synchronizeDifference(
       _ difference: CollectionDifference<PersistentModelType, DataType>,
       using modelContext: ModelContext
     ) throws -> [PersistentModelType] {
@@ -120,7 +120,7 @@
           assertionFailure()
           continue
         }
-        try Self.syncronize(entry, with: file)
+        try Self.synchronize(entry, with: file)
       }
 
       return inserted

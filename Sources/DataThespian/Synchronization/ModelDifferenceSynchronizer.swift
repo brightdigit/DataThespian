@@ -1,5 +1,5 @@
 //
-//  ModelDifferenceSyncronizer.swift
+//  ModelDifferenceSynchronizer.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -30,7 +30,7 @@
 #if canImport(SwiftData)
   import SwiftData
   /// A protocol that defines the requirements for a synchronizer that can synchronize model differences.
-  public protocol ModelDifferenceSyncronizer: ModelSyncronizer {
+  public protocol ModelDifferenceSynchronizer: ModelSynchronizer {
     /// The type of synchronization difference used by this synchronizer.
     associatedtype SynchronizationDifferenceType: SynchronizationDifference
     where
@@ -49,7 +49,7 @@
     ) async throws
   }
 
-  extension ModelDifferenceSyncronizer {
+  extension ModelDifferenceSynchronizer {
     /// Synchronizes the given model with the library using the database.
     ///
     /// - Parameters:

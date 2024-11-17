@@ -75,11 +75,11 @@ let package = Package(
 - ``DatabaseChangePublicist``
 - ``DatabaseChangeType``
 
-### Syncronization
+### Synchronization
 
-- ``CollectionSyncronizer``
-- ``ModelDifferenceSyncronizer``
-- ``ModelSyncronizer``
+- ``CollectionSynchronizer``
+- ``ModelDifferenceSynchronizer``
+- ``ModelSynchronizer``
 - ``SynchronizationDifference``
 - ``CollectionDifference``
 

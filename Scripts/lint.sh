@@ -35,10 +35,10 @@ fi
 if [ "$LINT_MODE" == "NONE" ]; then
 	exit
 elif [ "$LINT_MODE" == "STRICT" ]; then
-	SWIFTFORMAT_OPTIONS="--strict --configuration .swift-format"
+	SWIFTFORMAT_OPTIONS="--strict"
 	SWIFTLINT_OPTIONS="--strict"
 else 
-	SWIFTFORMAT_OPTIONS="--configuration .swift-format"
+	SWIFTFORMAT_OPTIONS=""
 	SWIFTLINT_OPTIONS=""
 fi
 
@@ -53,16 +53,16 @@ fi
 if [ -z "$CI" ]; then
 	run_command $MINT_RUN swiftlint --fix
 	pushd $PACKAGE_DIR
-	run_command $MINT_RUN swift-format format $SWIFTFORMAT_OPTIONS  --recursive --parallel --in-place Sources Tests Example/Sources
+	run_command $MINT_RUN swift-format format --configuration .swift-format  --recursive --parallel --in-place Sources Tests Example/Sources
 	popd
 else 
 	set -e
 fi
 
 $PACKAGE_DIR/scripts/header.sh -d  $PACKAGE_DIR/Sources -c "Leo Dion" -o "BrightDigit" -p "DataThespian"
-run_command $MINT_RUN swiftlint lint $SWIFTLINT_OPTIONS
+run_command $MINT_RUN swiftlint lint $SWIFTLINT_OPTIONS 
 
 pushd $PACKAGE_DIR
-run_command $MINT_RUN swift-format lint --recursive --parallel $SWIFTFORMAT_OPTIONS Sources Tests Example/Sources
+run_command $MINT_RUN swift-format lint --recursive --parallel --configuration .swift-format  $SWIFTFORMAT_OPTIONS Sources Tests Example/Sources
 #run_command $MINT_RUN periphery scan $PERIPHERY_OPTIONS --disable-update-check
 popd

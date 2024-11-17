@@ -205,7 +205,7 @@ nubimus templi praesagaque adspicit longam et Nesso patris. Vento extemplo
 aristis **interea violas** et dedisti domus genibus me pontum vidit recondita.
 **Nubila locum**.
 
-## Syncronizing Data
+## Synchronizing Data
 
 Lorem markdownum *tela sepulcro* coniugialia incingitur peractum celat animus;
 nihil! Ad dabit, mihi indoluit, regno adiere et quidem patefecit victima. Suos

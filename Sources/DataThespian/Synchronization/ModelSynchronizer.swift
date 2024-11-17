@@ -1,5 +1,5 @@
 //
-//  ModelSyncronizer.swift
+//  ModelSynchronizer.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -31,7 +31,7 @@
   public import SwiftData
 
   /// A protocol that defines a model synchronizer.
-  public protocol ModelSyncronizer {
+  public protocol ModelSynchronizer {
     /// The type of the persistent model.
     associatedtype PersistentModelType: PersistentModel
     /// The type of the data to be synchronized.

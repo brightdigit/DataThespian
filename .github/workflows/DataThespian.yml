@@ -67,7 +67,7 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-build-${{ env.cache-name }}-${{ matrix.xcode }}-
       - name: Cache mint
-        if: startsWith(matrix.xcode,'/Applications/Xcode_16.1')
+        if: startsWith(matrix.xcode,'/Applications/Xcode_16.2')
         id: cache-mint
         uses: actions/cache@v4
         env:
@@ -88,7 +88,7 @@ jobs:
           mkdir -p ~/Library/org.swift.swiftpm/security/        
           cp macros.json ~/Library/org.swift.swiftpm/security/        
       - name: Install mint
-        if: startsWith(matrix.xcode,'/Applications/Xcode_16.1')
+        if: startsWith(matrix.xcode,'/Applications/Xcode_16.2')
         run: |
           brew update
           brew install mint
@@ -110,7 +110,7 @@ jobs:
         run: rm -rf .build
       - name: Lint
         run: ./scripts/lint.sh
-        if: startsWith(matrix.xcode,'/Applications/Xcode_16.1')
+        if: startsWith(matrix.xcode,'/Applications/Xcode_16.2')
       - name: Run iOS target tests
         run: xcodebuild test -scheme ${{ env.PACKAGE_NAME }} -destination 'platform=iOS Simulator,name=${{ matrix.iPhoneName }},OS=${{ matrix.iOSVersion }}' -enableCodeCoverage YES build test
       - uses: sersoft-gmbh/swift-coverage-action@v4

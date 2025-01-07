@@ -49,7 +49,7 @@ jobs:
       matrix:
         include:
           - xcode: "/Applications/Xcode_16.2.app"
-            os: macos-14
+            os: macos-15
             iOSVersion: "18.1"
             watchOSVersion: "11.0"
             watchName: "Apple Watch Series 9 (41mm)"

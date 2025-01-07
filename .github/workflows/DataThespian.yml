@@ -50,10 +50,10 @@ jobs:
         include:
           - xcode: "/Applications/Xcode_16.2.app"
             os: macos-15
-            iOSVersion: "18.1"
-            watchOSVersion: "11.0"
-            watchName: "Apple Watch Series 9 (41mm)"
-            iPhoneName: "iPhone 15"
+            iOSVersion: "18.2"
+            watchOSVersion: "11.2"
+            watchName: "Apple Watch Series 10 (42mm)"
+            iPhoneName: "iPhone 16"
     steps:
       - uses: actions/checkout@v4
       - name: Cache swift package modules

@@ -73,10 +73,10 @@ public init(modelContainer: SwiftData.ModelContainer) {
 }
 ```
 
-This means if we pass SwiftData models throughout our app, we will be running our models through a variety of `ModelContext` objects which will result in a crash. The best approach to this is create a singleton for the `Database` and `ModelContainer` which ensures it to be shared across the `.environment` and application:
+The best approach is to create a singleton using `SharedDatabase`:
 
 ```swift
- public struct SharedDatabase {
+public struct SharedDatabase {
   public static let shared: SharedDatabase = .init()
 
   public let schemas: [any PersistentModel.Type]
@@ -96,7 +96,7 @@ This means if we pass SwiftData models throughout our app, we will be running ou
 }
 ```
 
-Then in our SwiftUI code, we call:
+Then in your SwiftUI code:
 
 ```swift
 var body: some Scene {
@@ -112,7 +112,44 @@ var body: some Scene {
 
 ### Making Queries
 
+DataThespian uses a type-safe `Selector` enum to specify what data to query:
 
+```swift
+// Get a single item
+let item = try await database.get(for: .predicate(#Predicate<Item> { 
+    $0.name == "Test" 
+}))
+
+// Fetch a list with sorting
+let items = await database.fetch(for: .descriptor(
+    predicate: #Predicate<Item> { $0.isActive == true },
+    sortBy: [SortDescriptor(\Item.timestamp, order: .reverse)],
+    fetchLimit: 10
+))
+
+// Delete matching items
+try await database.delete(.predicate(#Predicate<Item> { 
+    $0.timestamp < oneWeekAgo 
+}))
+```
+
+### Important: Working with Temporary IDs
+
+When inserting new models, SwiftData assigns temporary IDs that cannot be used across contexts until explicitly saved. After saving, you must re-query using a field value rather than the Model reference. Here's the safe pattern:
+
+```swift
+// Create with a known unique value
+let timestamp = Date()
+let newItem = await database.insert { Item(name: "Test", timestamp: timestamp) }
+
+// Save to get permanent ID
+try await database.save()
+
+// Re-query using a unique field value
+let item = try await database.getOptional(for: .predicate(#Predicate<Item> { 
+    $0.timestamp == timestamp 
+}))
+```
 
 ## Topics
 

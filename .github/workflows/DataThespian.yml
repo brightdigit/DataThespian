@@ -13,7 +13,7 @@ jobs:
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     runs-on: ubuntu-latest
     container:
-      image: swiftlang/swift:nightly-6.0-jammy
+      image: swift:6.0
     steps:
       - uses: actions/checkout@v4
       - name: Cache swift package modules
@@ -48,7 +48,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - xcode: "/Applications/Xcode_16.1.app"
+          - xcode: "/Applications/Xcode_16.2.app"
             os: macos-14
             iOSVersion: "18.1"
             watchOSVersion: "11.0"

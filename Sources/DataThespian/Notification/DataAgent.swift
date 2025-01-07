@@ -51,7 +51,7 @@
   extension DataAgent {
     /// Called when the data agent's operations are completed.
     ///
-    /// - Parameter _: The closure to be executed when the operations are completed.
-    public func onCompleted(_: @Sendable @escaping () -> Void) {}
+    /// - Parameter closure: The closure to be executed when the operations are completed.
+    public func onCompleted(_ closure: @Sendable @escaping () -> Void) {}
   }
 #endif

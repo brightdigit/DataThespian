@@ -31,7 +31,6 @@ let package = Package(
   ],
   dependencies: [
     .package(url: "https://github.com/brightdigit/FelinePine.git", from: "1.0.0-beta.2"),
-    .package(url: "https://github.com/swiftlang/swift-testing.git", from: "6.0.3"),
     .package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.4.0"),
   ],
   targets: [

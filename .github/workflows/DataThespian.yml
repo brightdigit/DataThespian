@@ -13,7 +13,7 @@ jobs:
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     runs-on: ubuntu-latest
     container:
-      image: swiftlang/swift:nightly-6.0-jammy
+      image: swift:6.0
     steps:
       - uses: actions/checkout@v4
       - name: Cache swift package modules
@@ -48,12 +48,12 @@ jobs:
     strategy:
       matrix:
         include:
-          - xcode: "/Applications/Xcode_16.1.app"
-            os: macos-14
-            iOSVersion: "18.1"
-            watchOSVersion: "11.0"
-            watchName: "Apple Watch Series 9 (41mm)"
-            iPhoneName: "iPhone 15"
+          - xcode: "/Applications/Xcode_16.2.app"
+            os: macos-15
+            iOSVersion: "18.2"
+            watchOSVersion: "11.2"
+            watchName: "Apple Watch Series 10 (42mm)"
+            iPhoneName: "iPhone 16"
     steps:
       - uses: actions/checkout@v4
       - name: Cache swift package modules
@@ -67,7 +67,7 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-build-${{ env.cache-name }}-${{ matrix.xcode }}-
       - name: Cache mint
-        if: startsWith(matrix.xcode,'/Applications/Xcode_16.1')
+        if: startsWith(matrix.xcode,'/Applications/Xcode_16.2')
         id: cache-mint
         uses: actions/cache@v4
         env:
@@ -88,7 +88,7 @@ jobs:
           mkdir -p ~/Library/org.swift.swiftpm/security/        
           cp macros.json ~/Library/org.swift.swiftpm/security/        
       - name: Install mint
-        if: startsWith(matrix.xcode,'/Applications/Xcode_16.1')
+        if: startsWith(matrix.xcode,'/Applications/Xcode_16.2')
         run: |
           brew update
           brew install mint
@@ -110,7 +110,7 @@ jobs:
         run: rm -rf .build
       - name: Lint
         run: ./scripts/lint.sh
-        if: startsWith(matrix.xcode,'/Applications/Xcode_16.1')
+        if: startsWith(matrix.xcode,'/Applications/Xcode_16.2')
       - name: Run iOS target tests
         run: xcodebuild test -scheme ${{ env.PACKAGE_NAME }} -destination 'platform=iOS Simulator,name=${{ matrix.iPhoneName }},OS=${{ matrix.iOSVersion }}' -enableCodeCoverage YES build test
       - uses: sersoft-gmbh/swift-coverage-action@v4

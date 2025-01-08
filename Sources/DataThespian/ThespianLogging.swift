@@ -42,4 +42,9 @@ public enum ThespianLogging: LoggingSystem {
     /// Logs related to data.
     case data
   }
+
+  /// Default subsystem to use for logging.
+  public static var subsystem: String {
+    "DataThespian"
+  }
 }

@@ -41,12 +41,12 @@
     ///
     /// - Parameters:
     ///   - model: The model to be synchronized.
-    ///   - library: The data to be synchronized with the model.
+    ///   - data: The data to be synchronized with the model.
     ///   - database: The database to be used for the synchronization.
     /// - Throws: Any errors that may occur during the synchronization process.
     static func synchronizeModel(
       _ model: Model<PersistentModelType>,
-      with library: DataType,
+      with data: DataType,
       using database: any Database
     ) async throws
   }

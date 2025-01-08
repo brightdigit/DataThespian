@@ -3,7 +3,7 @@
 //  DataThespian
 //
 //  Created by Leo Dion.
-//  Copyright © 2024 BrightDigit.
+//  Copyright © 2025 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person
 //  obtaining a copy of this software and associated documentation
@@ -51,7 +51,7 @@
   extension DataAgent {
     /// Called when the data agent's operations are completed.
     ///
-    /// - Parameter _: The closure to be executed when the operations are completed.
-    public func onCompleted(_: @Sendable @escaping () -> Void) {}
+    /// - Parameter closure: The closure to be executed when the operations are completed.
+    public func onCompleted(_ closure: @Sendable @escaping () -> Void) {}
   }
 #endif

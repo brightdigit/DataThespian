@@ -3,7 +3,7 @@
 //  DataThespian
 //
 //  Created by Leo Dion.
-//  Copyright © 2024 BrightDigit.
+//  Copyright © 2025 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person
 //  obtaining a copy of this software and associated documentation
@@ -41,12 +41,12 @@
     ///
     /// - Parameters:
     ///   - model: The model to be synchronized.
-    ///   - library: The data to be synchronized with the model.
+    ///   - data: The data to be synchronized with the model.
     ///   - database: The database to be used for the synchronization.
     /// - Throws: Any errors that may occur during the synchronization process.
     static func synchronizeModel(
       _ model: Model<PersistentModelType>,
-      with library: DataType,
+      with data: DataType,
       using database: any Database
     ) async throws
   }

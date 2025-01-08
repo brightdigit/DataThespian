@@ -3,7 +3,7 @@
 //  DataThespian
 //
 //  Created by Leo Dion.
-//  Copyright © 2024 BrightDigit.
+//  Copyright © 2025 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person
 //  obtaining a copy of this software and associated documentation
@@ -84,30 +84,30 @@
         )
 
       let data = data ?? []
-      let imageMap: [ID: DataType] = .init(
+      let dataMap: [ID: DataType] = .init(
         uniqueKeysWithValues: data.map {
           ($0[keyPath: dataKeyPath], $0)
         }
       )
 
-      let entryIDsToUpdate = Set(entryMap.keys).intersection(imageMap.keys)
-      let entryIDsToDelete = Set(entryMap.keys).subtracting(imageMap.keys)
-      let libraryIDsToInsert = Set(imageMap.keys).subtracting(entryMap.keys)
+      let entryIDsToUpdate = Set(entryMap.keys).intersection(dataMap.keys)
+      let entryIDsToDelete = Set(entryMap.keys).subtracting(dataMap.keys)
+      let entryIDsToInsert = Set(dataMap.keys).subtracting(entryMap.keys)
 
       let entriesToDelete = entryIDsToDelete.compactMap { entryMap[$0] }.map(Model.init)
-      let libraryItemsToInsert = libraryIDsToInsert.compactMap { imageMap[$0] }
-      let imagesToUpdate = entryIDsToUpdate.compactMap {
-        imageMap[$0]
+      let entryItemsToInsert = entryIDsToInsert.compactMap { dataMap[$0] }
+      let entriesToUpdate = entryIDsToUpdate.compactMap {
+        dataMap[$0]
       }
 
-      assert(entryIDsToUpdate.count == imagesToUpdate.count)
+      assert(entryIDsToUpdate.count == entriesToUpdate.count)
       assert(entryIDsToDelete.count == entriesToDelete.count)
-      assert(libraryItemsToInsert.count == libraryIDsToInsert.count)
+      assert(entryItemsToInsert.count == entryIDsToInsert.count)
 
       self.init(
-        inserts: libraryItemsToInsert,
+        inserts: entryItemsToInsert,
         modelsToDelete: entriesToDelete,
-        updates: imagesToUpdate
+        updates: entriesToUpdate
       )
     }
   }

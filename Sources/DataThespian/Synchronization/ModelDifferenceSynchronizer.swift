@@ -3,7 +3,7 @@
 //  DataThespian
 //
 //  Created by Leo Dion.
-//  Copyright © 2024 BrightDigit.
+//  Copyright © 2025 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person
 //  obtaining a copy of this software and associated documentation
@@ -50,20 +50,20 @@
   }
 
   extension ModelDifferenceSynchronizer {
-    /// Synchronizes the given model with the library using the database.
+    /// Synchronizes the given model with the data using the database.
     ///
     /// - Parameters:
     ///   - model: The model to be synchronized.
-    ///   - library: The library to be used for the synchronization.
+    ///   - data: The data to be used for the synchronization.
     ///   - database: The database to be used for the synchronization.
     /// - Throws: An error that may occur during the synchronization process.
     public static func synchronizeModel(
       _ model: Model<PersistentModelType>,
-      with library: DataType,
+      with data: DataType,
       using database: any Database
     ) async throws {
-      let diff = try await database.get(for: .model(model)) { libraryEntry in
-        SynchronizationDifferenceType.comparePersistentModel(libraryEntry, with: library)
+      let diff = try await database.get(for: .model(model)) { entry in
+        SynchronizationDifferenceType.comparePersistentModel(entry, with: data)
       }
 
       return try await self.synchronize(diff, using: database)

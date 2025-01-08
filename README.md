@@ -22,15 +22,22 @@
 * [Introduction](#introduction)
    * [Requirements](#requirements)
    * [Installation](#installation)
+   * [Usage](#usage)
+      * [Setting up Database](#setting-up-database)
+      * [Making Queries](#making-queries)
    * [Documentation](#documentation)
 * [License](#license)
 
-<!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-
-
 # Introduction
 
-<!-- What does DataThespian do in 2 paragraphs -->
+DataThespian is [a thread-safe SwiftData implementation that uses the power of ModelActors](https://brightdigit.com/tutorials/swiftdata-modelactor/) to provide an optimized and type-safe database interface. It offers a clean API for common database operations while maintaining concurrency safety and preventing common SwiftData pitfalls.
+
+Key features:
+- Thread-safe database operations using ModelActor
+- Type-safe query interface with Selectors
+- SwiftUI integration via Environment
+- Support for monitoring database changes
+- Collection synchronization utilities
 
 ## Requirements 
 
@@ -66,118 +73,105 @@ let package = Package(
 )
 ```
 
+## Usage
+
+### Setting up Database
+
+When working with SwiftData, it's crucial to use a single `ModelContext` throughout your app. There are two ways to create your database:
+
+#### Using Built-in ModelActorDatabase
+
+```swift
+// Create a database using the built-in ModelActorDatabase
+let database = ModelActorDatabase(modelContainer: container)
+```
+
+#### Creating Your Own Database Type
+
+You can also create your own database type by implementing the `Database` protocol:
+
+```swift
+@ModelActor
+actor CustomDatabase: Database {
+}
+```
+
+#### Using SharedDatabase
+
+To avoid issues with multiple ModelContexts being created each time SwiftUI redraws views, use `SharedDatabase` to ensure a single shared context:
+
+```swift
+public struct SharedDatabase {
+    public static let shared: SharedDatabase = .init()
+
+    public let schemas: [any PersistentModel.Type]
+    public let modelContainer: ModelContainer
+    public let database: any Database
+
+    private init(
+        schemas: [any PersistentModel.Type] = .all,
+        modelContainer: ModelContainer? = nil,
+        database: (any Database)? = nil
+    ) {
+        self.schemas = schemas
+        let modelContainer = modelContainer ?? .forTypes(schemas)
+        self.modelContainer = modelContainer
+        self.database = database ?? ModelActorDatabase(modelContainer: modelContainer)
+    }
+}
+```
+
+Then set up the database in your SwiftUI app:
+
+```swift
+var body: some Scene {
+    WindowGroup {
+        RootView()
+    }
+    .database(SharedDatabase.shared.database)
+    /* If you need @Query support
+    .modelContainer(SharedDatabase.shared.modelContainer)
+    */
+}
+```
+
+Access the database in your views using the environment:
+
+```swift
+@Environment(\.database) private var database
+```
+
+### Making Queries
+
+DataThespian provides [a type-safe way to query your data](https://brightdigit.com/tutorials/swiftdata-crud-operations-modelactor/):
+
+```swift
+// Fetch a single item
+let item = try await database.get(for: .predicate(#Predicate<Item> { 
+    $0.name == "Test" 
+}))
+
+// Fetch multiple items with sorting
+let items = await database.fetch(for: .descriptor(
+    predicate: #Predicate<Item> { $0.isActive },
+    sortBy: [SortDescriptor(\Item.timestamp, order: .reverse)]
+))
+
+// Insert new item
+let timestamp = Date()
+let newItem = await database.insert { 
+    Item(name: "Test", timestamp: timestamp) 
+}
+
+// Save changes
+try await database.save()
+
+// Re-query after save using a unique field
+let savedItem = try await database.getOptional(for: .predicate(#Predicate<Item> { 
+    $0.timestamp == timestamp 
+}))
+```
 <!--
-
-# Usage
-
-Rursus de *quoque* traxit et fata nec, *tum loqui* et functo onusque, sunt
-conata. Horum calentibus dum. Tibi picem, *repugnat auro*, probarunt sanguine
-Perseu enim, discenda in. Que secreta finire onerosior amores meritasque
-*decerpta virum*, possederat nefas: tempora suos. Sive rerum et frustra et iter
-qui?
-
-## Setting up your `Database`
-
-Sternuntur discors, et utar duorum, matertera vidi, mane. Ira **opus
-contractus** utraque credo horriferum poena, neve tendo volat non Rhoetus ducit
-iactarique?
-
-```
-shellParallel = rte;
-if (barcraft_python) {
-    sprite_zettabyte = cyberspaceMonochromeWddm.uploadExabyte(3 +
-            output_software, left_ad);
-    debugger_ios.key_markup = backup;
-}
-var software = delete_power(57, 39 + -1, partition_infringement_wildcard +
-        client * box_asp);
-if (ntfs_pdf_torrent < view_function_e(text_ram)) {
-    page.host_iscsi_mode(ddr_spooling_cpl(91, 2), srgbCompatible(dsl));
-    typefaceBandwidthCaptcha *= kibibyte;
-} else {
-    serp_flash(simplexYoutubeClipboard, botPeoplewareMeta + heap);
-    ibmFileKey = file_wave;
-}
-```
-
-Nefas eodem et dolore at visa addidit, qui in concutiens: adnuit. Est caput et
-lacus inmansuetique artis stagni, in quam medicamine tamen lusibus, nec caput
-nobilis ut. Idem fortibus!
-
-- Ne fletu formosa annos fruentur fatali
-- I atris est Sabaea peremi
-- Caput ictaque morsa vixque protinus tamen
-
-Caligine ipse aequora natorum infans sanguine levibus, pariturae alium Alcyone
-Pelops: loquendo talisque solque in revolat. Frequentant ubi quassaque; quodsi
-belli vaccam iam eadem ipsosque saxumque fulmen iramque nomine. Sit notare
-Philoctete, nocte cernentem, fuerat cum, sic Argo cornua et. Spiritus [mea
-a](http://desieratphoceus.io/maioracaelo.html) devicto iusto. Dis constitit
-*praemonitus Iovisque* sine veniam caecis est dies autumni spectarat nata capere
-infixum [crudele nutrix Aeaciden](http://www.parte.org/), me.
-
-## Setting up in SwiftUI
-
-Commemorare sacer, [per ultima](http://www.ostendenseffugies.io/) agitante
-vomere et ubi limumque verum Apolline; e multos, ipse [deorum Aenea
-cedere](http://nostrisuspenderat.io/)! Murmure vanis intempestiva et motis
-[coniunx](http://sed.com/ferro-amatas); quae non silet semine.
-
-Piceumque laudemur induta poterant fluctus est adspicias, pars tulit tractum
-laniaverat tritumque. Nati quae sacer pulso marmore orbem letalibus nepotum.
-Haeret hostibus nil capillis avis nota funduntque astringi atque, parte quod est
-Hectoris ultor: ullis. Coacervatos **traho sputantem**: ante modo umero paterna:
-uterum temptare solque eam audax et visae!
-
-```
-if (domain_maximize(array)) {
-    address.interlacedKofficeDesktop = lagBug + 4;
-    megabytePramDhcp.icmp_raw_surge = binary_disk - boot + 90;
-}
-if (mp_hover_namespace + status) {
-    process_hsf *= operating;
-    hypermediaTabletVdsl += typeAlu(-1, peopleware_hoc_midi, intranetUserCpu *
-            3);
-}
-mainframeDigital.pram_asp_daw(jsonCyberspace, software.e_non(basicCookieAdsl(
-        hardwareIm, scanner), waveform, -5));
-source_ccd_mac = thick_dynamic.heap_ip_toslink(pptp, -5);
-```
-
-Narratur ante: cannae sunt animi cum viscera iungat tollens. Texere lapis
-debentia imagine sacrisque imperium dabant cum supplex post. Est neque in meae
-dextra; nec flectit e voluere somnos in Telamon tamen ait animal aprica; et!
-Fecit vino communis et eratis deum liquitur alvum **sui aut in** ira.
-
-## Querying the `Database`
-
-Lorem markdownum quos falsosque hiems eademque **praeterita morae**, in sive,
-Tethyn viros. Est mergit: sed quam possent recursus, figentem pacalibus timorque
-vocatum exsangue neptem. Ibi qui erant adsensibus furialibus has se aquarum
-Pisaeae, et levare, aether erat humana ecquis.
-
-Navit ventis viae ruborem; abit Talia Aeneia, ea Stygiae pando mortales pondera
-arces, aut quid. Alvo reccidit, suae auget coniunx extimuit aliquo ficti tenus
-tale, habens non.
-
-```
-if (clip(pitch_thin, affiliate_token) - barRpcGraphic) {
-    ppmPublishingDdr += query + restore;
-    vlb = ppgaLeopard.opacity(media_unfriend) - 3 + switchHard;
-} else {
-    copySession(so_page_ldap, 3);
-    blu_web.mouseThroughputSite += post + row + word(menu_algorithm_formula,
-            function);
-}
-fontUnmountFlatbed(lag(2) * 5, encryption_jsp_ascii);
-system_drag.google_vista_raw = social;
-```
-
-Quid maiora de hunc devoveas, seu virtus pittheam deme gemitus arva tremuloque
-lorisque lymphis Aeacidae [tellusque](http://pateres-boreae.org/referentem).
-Ramos Perseus suo Haemum nec gratissima fuerat, surgit in non. Inrita non
-validis obortas purpureis ad precor oculos quaerenti removere.
-
 
 ## Listening for Changes
 

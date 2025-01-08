@@ -3,7 +3,7 @@
 //  DataThespian
 //
 //  Created by Leo Dion.
-//  Copyright © 2024 BrightDigit.
+//  Copyright © 2025 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person
 //  obtaining a copy of this software and associated documentation
@@ -41,5 +41,10 @@ public enum ThespianLogging: LoggingSystem {
     case application
     /// Logs related to data.
     case data
+  }
+
+  /// Default subsystem to use for logging.
+  public static var subsystem: String {
+    "DataThespian"
   }
 }

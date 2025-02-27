@@ -109,12 +109,13 @@ public struct SharedDatabase {
     public let database: any Database
 
     private init(
-        schemas: [any PersistentModel.Type] = .all,
+        schemas: [any PersistentModel.Type],
         modelContainer: ModelContainer? = nil,
         database: (any Database)? = nil
     ) {
         self.schemas = schemas
-        let modelContainer = modelContainer ?? .forTypes(schemas)
+        // add cde to handle schema failure
+        let modelContainer = try! modelContainer ?? ModelContainer(for: Schema(forTypes))
         self.modelContainer = modelContainer
         self.database = database ?? ModelActorDatabase(modelContainer: modelContainer)
     }

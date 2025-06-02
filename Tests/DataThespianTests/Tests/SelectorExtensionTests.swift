@@ -18,7 +18,7 @@ internal struct SelectorExtensionTests {
       switch selector {
       case .all:
         // Test passes - selector is the .all case
-        #expect(true)
+        break
       default:
         // Test fails - selector is not the .all case
         Issue.record("Expected .all case but got a different case")

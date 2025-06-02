@@ -63,7 +63,7 @@ internal struct PerformanceTests {
       let count = await database.fetch(for: .all(Parent.self)) { parents in
         parents.count
       }
-    #expect(count == 0)
+      #expect(count == 0)
 
       // Log performance metrics
       let duration = endTime.timeIntervalSince(startTime)

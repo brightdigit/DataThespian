@@ -1,5 +1,5 @@
 //
-//  Model.swift
+//  AnyModel.swift
 //  DataThespian
 //
 //  Created by Leo Dion.
@@ -30,8 +30,9 @@
 #if canImport(SwiftData)
   import Foundation
   public import SwiftData
+
   /// Phantom Type for easily retrieving fetching `PersistentModel` objects from a `ModelContext`.
-  public struct Model<T: PersistentModel>: Sendable, Identifiable {
+  public struct AnyModel: Sendable, Identifiable {
     /// An error that is thrown when a `PersistentModel`
     /// with the specified `PersistentIdentifier` is not found.
     public struct NotFoundError: Error {
@@ -53,20 +54,28 @@
     }
   }
 
-  extension Model where T: PersistentModel {
+  extension AnyModel {
     /// Initializes a new `Model` instance with the specified `PersistentModel`.
     ///
     /// - Parameter model: The `PersistentModel` to initialize the `Model` with.
-    public init(_ model: T) {
+    public init(_ model: any PersistentModel) {
       self.init(persistentIdentifier: model.persistentModelID)
     }
 
-    /// Creates a new `Model` instance from the specified `PersistentModel`.
-    ///
-    /// - Parameter model: The `PersistentModel` to create the `Model` from.
-    /// - Returns: A new `Model` instance, or `nil` if the `PersistentModel` is `nil`.
-    internal static func ifMap(_ model: T?) -> Model? {
-      model.map(self.init)
+    /// Type erases the ``Model``
+    /// - Parameter typeErase: Original ``Model``.
+    public init(typeErase: Model<some PersistentModel>) {
+      self.init(persistentIdentifier: typeErase.persistentIdentifier)
+    }
+  }
+
+  extension Model {
+    /// Creates a typed ``Model``
+    /// - Parameters:
+    ///   - anyModel: ``AnyModel``
+    ///   - _:  ``Model`` type.
+    public init(anyModel: AnyModel, type _: T.Type) {
+      self.init(persistentIdentifier: anyModel.persistentIdentifier)
     }
   }
 #endif

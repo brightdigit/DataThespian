@@ -114,7 +114,7 @@
     /// Sends the update to the subject.
     /// - Parameter update: The database change set.
     private func sendUpdate(_ update: any DatabaseChangeSet) {
-      Task { @MainActor in self.subject.send(update) }
+      Task { @MainActor in await self.subject.send(update) }
     }
 
     /// Cancels the agent.

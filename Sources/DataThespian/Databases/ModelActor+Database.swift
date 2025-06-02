@@ -28,6 +28,7 @@
 //
 
 #if canImport(SwiftData)
+  import os.log
   public import SwiftData
 
   extension ModelActor where Self: Database {
@@ -44,6 +45,52 @@
       assert(isMainThread: true, if: Self.assertIsBackground)
       let modelContext = self.modelContext
       return try closure(modelContext)
+    }
+    /// Retrieves an optional persistent model from the data store and returns a transformed result.
+    /// - Parameters:
+    ///   - selector: A `Selector<PersistentModelType>.Get` instance
+    ///   that defines the criteria for retrieving the persistent model.
+    ///   - closure: A closure that performs some operation on
+    ///   the retrieved `PersistentModelType` instance (or `nil`)
+    ///   and returns a transformed result of type `U`.
+    /// - Returns: The transformed result of type `U`.
+    public func getOptional<PersistentModelType, U: Sendable>(
+      for selector: Selector<PersistentModelType>.Get,
+      with closure: @escaping @Sendable (PersistentModelType?) throws -> U
+    ) async rethrows -> U {
+      guard case .model(let model) = selector else {
+        return try await self.withModelContext {
+          try $0.getOptional(for: selector, with: closure)
+        }
+      }
+
+      return try closure(self[model.persistentIdentifier, as: PersistentModelType.self])
+    }
+
+    /// Fetches an array of models matching the given list selector
+    /// - Parameter selector: A selector defining the query criteria for retrieving multiple models
+    /// - Returns: An array of wrapped Model instances matching the selector criteria
+    public func fetch<PersistentModelType>(for selector: Selector<PersistentModelType>.List)
+      async -> [Model<PersistentModelType>] where PersistentModelType: PersistentModel
+    {
+      let fetchedIdentifiers: [Model<PersistentModelType>]
+
+      guard case .descriptor(let descriptor) = selector else {
+        fatalError("Invalid selector: \(selector)")
+      }
+
+      do {
+        fetchedIdentifiers = try await self.withModelContext { modelContext in
+          try modelContext.fetchIdentifiers(descriptor).map(
+            Model<PersistentModelType>.init(persistentIdentifier:)
+          )
+        }
+      } catch {
+        os_log(.error, "Failed to fetch identifiers: %{public}@", error.localizedDescription)
+        return []
+      }
+
+      return fetchedIdentifiers
     }
   }
 #endif

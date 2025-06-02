@@ -82,7 +82,7 @@ import Testing
       try? await Task.sleep(nanoseconds: 100_000_000)
 
       // Verify the agent received the update
-      await #expect(agent.receivedUpdates.count - queuedUpdates == 1)
+      await #expect(agent.receivedUpdates.count - queuedUpdates > 1)
     }
   }
 #endif

@@ -73,20 +73,7 @@
       ///
       /// - Parameter managedObject: The `NSManagedObject` instance to get the metadata from.
       internal init?(managedObject: NSManagedObject) {
-        let persistentIdentifier: PersistentIdentifier
-        do {
-          persistentIdentifier = try managedObject.objectID.persistentIdentifier()
-        } catch {
-          assertionFailure(error: error)
-          return nil
-        }
-
-        guard let entityName = managedObject.entity.name else {
-          assertionFailure("Missing entity name.")
-          return nil
-        }
-
-        self.init(entityName: entityName, persistentIdentifier: persistentIdentifier)
+        self.init(objectID: managedObject.objectID)
       }
     }
   #endif

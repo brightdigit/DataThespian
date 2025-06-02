@@ -84,7 +84,7 @@ internal struct DatabaseTests {
       
       // Create multiple parents concurrently
       try await withThrowingTaskGroup(of: Void.self) { group in
-        for i in 0..<5 {
+        for _ in 0..<5 {
           group.addTask {
             try await database.withModelContext { context in
               context.insert(Parent(id: UUID()))
@@ -106,16 +106,58 @@ internal struct DatabaseTests {
     #if canImport(SwiftData)
       let database = try TestingDatabase(for: Parent.self, Child.self)
       
-      // Test invalid operation
-      do {
-        try await database.withModelContext { context in
-          // Attempt to save without any changes
-          try context.save()
+      // Add some initial rows
+      let existingIDs = (0..<3).map { _ in UUID() }
+      try await database.withModelContext { context in
+        for id in existingIDs {
+          context.insert(Parent(id: id))
         }
-      } catch {
-        // Expected error
-        #expect(true)
+        try context.save()
       }
+      
+      // Verify initial state
+      let initialCount = await database.fetch(for: .all(Parent.self)) { parents in
+        parents.count
+      }
+      #expect(initialCount == 3)
+      
+      // Try to delete a non-existent parent
+      let nonExistentID = UUID()
+      try await database.delete(.predicate(#Predicate<Parent> { parent in
+        parent.id == nonExistentID
+      }))
+      try await database.save()
+      
+      // Verify state after deleting non-existent row
+      let countAfterSingleDelete = await database.fetch(for: .all(Parent.self)) { parents in
+        parents.count
+      }
+      #expect(countAfterSingleDelete == 3)
+      
+      // Try to delete multiple non-existent parents
+      let nonExistentIDs = (0..<5).map { _ in UUID() }
+      try await database.delete(.predicate(#Predicate<Parent> { parent in
+        nonExistentIDs.contains(parent.id)
+      }))
+      try await database.save()
+      
+      // Verify state after deleting multiple non-existent rows
+      let countAfterMultipleDelete = await database.fetch(for: .all(Parent.self)) { parents in
+        parents.count
+      }
+      #expect(countAfterMultipleDelete == 3)
+      
+      // Verify we can still delete existing rows
+      try await database.delete(.predicate(#Predicate<Parent> { parent in
+        existingIDs.contains(parent.id)
+      }))
+      try await database.save()
+      
+      // Verify final state
+      let finalCount = await database.fetch(for: .all(Parent.self)) { parents in
+        parents.count
+      }
+      #expect(finalCount == 0)
     #endif
   }
 

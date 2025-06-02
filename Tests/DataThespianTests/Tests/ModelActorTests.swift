@@ -21,11 +21,22 @@ internal struct ModelActorTests {
       }
 
       // Test getOptional with model selector
-      let parentModels = await database.fetch<Parent>(for: .all(Parent.self))
+      let parentModels: [Model<Parent>]
+      let parentIDs: [UUID]
+      #if swift(>=6.1)
+        parentModels = await database.fetch(for: .all(Parent.self))
+      #else
+        parentModels = await database.fetch<Parent>(for: .all(Parent.self))
+      #endif
+
       let selectors = parentModels.map { Selector<Parent>.Get.model($0) }
       #expect(parentModels.count == 1)
 
-      let parentIDs = await database.fetch(for: selectors) { $0.id }
+      #if swift(>=6.1)
+        parentIDs = await database.fetch(for: selectors) { $0.id }
+      #else
+        parentIDs = try await database.fetch<Parent>(for: selectors) { $0.id }
+      #endif
 
       #expect(parentIDs.count == 1)
       #expect(parentIDs.first == parentID)

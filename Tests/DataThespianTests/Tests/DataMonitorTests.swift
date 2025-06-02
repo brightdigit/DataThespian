@@ -55,7 +55,8 @@ import Testing
       #expect(ObjectIdentifier(monitor1) == ObjectIdentifier(monitor2))
     }
 
-    @Test internal func testBeginMonitoring() async {
+    @Test(.disabled(if: !Thread.current.isRunningXCTest, "Unavailable in Swift Package Manager."))
+    internal func testBeginMonitoring() async {
       let monitor = DataMonitor.shared
       let agent = MockAgent()
       let registration = MockAgentRegister(id: "testBeginMonitoring", agent: agent)

@@ -82,9 +82,9 @@
     /// - Parameter notification: The notification that triggered the data update.
     internal init(_ notification: Notification) {
       self.init(
-        inserted: notification.managedObjects(key: NSInsertedObjectsKey),
-        deleted: notification.managedObjects(key: NSDeletedObjectsKey),
-        updated: notification.managedObjects(key: NSUpdatedObjectsKey)
+        inserted: notification.managedObjectIDs(key: NSInsertedObjectIDsKey),
+        deleted: notification.managedObjectIDs(key: NSDeletedObjectIDsKey),
+        updated: notification.managedObjectIDs(key: NSUpdatedObjectIDsKey)
       )
     }
   }

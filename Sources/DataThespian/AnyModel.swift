@@ -55,11 +55,6 @@
   }
 
   extension AnyModel {
-    /// A boolean value indicating whether the model is temporary or not.
-    public var isTemporary: Bool {
-      self.persistentIdentifier.isTemporary ?? false
-    }
-
     /// Initializes a new `Model` instance with the specified `PersistentModel`.
     ///
     /// - Parameter model: The `PersistentModel` to initialize the `Model` with.

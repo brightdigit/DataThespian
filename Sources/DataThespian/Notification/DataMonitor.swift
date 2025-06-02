@@ -43,6 +43,7 @@
 
     private var object: (any NSObjectProtocol)?
     private var registrations = RegistrationCollection()
+    internal var allowEmptyChanges : Bool = false
 
     private init() { Self.logger.debug("Creating DatabaseMonitor") }
 
@@ -69,13 +70,17 @@
         for builder in builders { await self.addRegistration(builder, force: false) }
       }
     }
+    
+    internal func allowEmptyChangesForTesting() {
+      allowEmptyChanges = true
+    }
 
     private func addObserver() {
       guard object == nil else {
         return
       }
       object = NotificationCenter.default.addObserver(
-        forName: .NSManagedObjectContextDidSave,
+        forName: .NSManagedObjectContextDidSaveObjectIDs,
         object: nil,
         queue: nil,
         using: { notification in
@@ -86,12 +91,14 @@
     }
 
     private func notifyRegisration(_ update: any DatabaseChangeSet) {
-      guard !update.isEmpty else {
-        return
-      }
+      
+      guard !update.isEmpty || allowEmptyChanges else {
+          return
+        }
       Self.logger.debug("Notifying of Update")
 
       registrations.notify(update)
     }
   }
+
 #endif

@@ -68,7 +68,7 @@ if [ -z "$FORMAT_ONLY" ]; then
     run_command $MINT_RUN swiftlint lint $SWIFTLINT_OPTIONS || exit 1
 fi
 
-$PACKAGE_DIR/scripts/header.sh -d  $PACKAGE_DIR/Sources -c "Leo Dion" -o "BrightDigit" -p "DataThespian"
+$PACKAGE_DIR/Scripts/header.sh -d  $PACKAGE_DIR/Sources -c "Leo Dion" -o "BrightDigit" -p "DataThespian"
 
 run_command $MINT_RUN swiftlint lint $SWIFTLINT_OPTIONS
 

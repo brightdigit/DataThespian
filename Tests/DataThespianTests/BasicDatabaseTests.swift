@@ -69,7 +69,8 @@ internal struct BasicDatabaseTests {
       }
       
       // Delete all parents
-      try await database.delete(Selector<Parent>.Delete.all)
+      try await database.delete(.all(Parent.self))
+      
       
       // Verify all parents were deleted
       let count = await database.fetch(for: .all(Parent.self)) { parents in

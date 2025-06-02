@@ -13,7 +13,7 @@ internal struct SelectorExtensionTests {
     #if canImport(SwiftData)
       // Test that the .all(Type) extension method returns .all
       let selector = Selector<Parent>.Delete.all(Parent.self)
-      
+
       // Use pattern matching to verify the case
       switch selector {
       case .all:
@@ -25,11 +25,11 @@ internal struct SelectorExtensionTests {
       }
     #endif
   }
-  
+
   @Test internal func testSelectorDeleteAllTypeUsage() async throws {
     #if canImport(SwiftData)
       let database = try TestingDatabase(for: Parent.self, Child.self)
-      
+
       // Verify we can call the method without error
       // This is mainly checking that the method signature is correct
       try await database.delete(.all(Parent.self))

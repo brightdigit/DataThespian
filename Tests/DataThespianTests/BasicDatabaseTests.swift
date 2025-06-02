@@ -74,10 +74,10 @@ internal struct BasicDatabaseTests {
       try await database.delete(.all(Parent.self))
 
       // Verify all parents were deleted
-      let count = await database.fetch(for: .all(Parent.self)) { parents in
+      let parentCount = await database.fetch(for: .all(Parent.self)) { parents in
         parents.count
       }
-      #expect(count == 0)
+      #expect(parentCount == 0)
     #endif
   }
 }

@@ -56,14 +56,15 @@ internal struct PerformanceTests {
       try await database.delete(
         .predicate(
           #Predicate<Parent> { parentIDs.contains($0.id) }
-        ))
+        )
+      )
       let endTime = Date()
 
       // Verify all parents were deleted
-      let count = await database.fetch(for: .all(Parent.self)) { parents in
+      let newParentCount = await database.fetch(for: .all(Parent.self)) { parents in
         parents.count
       }
-      #expect(count == 0)
+      #expect(newParentCount == 0)
 
       // Log performance metrics
       let duration = endTime.timeIntervalSince(startTime)

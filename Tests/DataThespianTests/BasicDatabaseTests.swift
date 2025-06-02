@@ -77,7 +77,7 @@ internal struct BasicDatabaseTests {
       let count = await database.fetch(for: .all(Parent.self)) { parents in
         parents.count
       }
-      #expect(isEmpty)
+      #expect(count == 0)
     #endif
   }
 }

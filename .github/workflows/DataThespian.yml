@@ -8,27 +8,16 @@ env:
 jobs:
   build-ubuntu:
     name: Build on Ubuntu
-    env:
-      SWIFT_VER: 6.0
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
     runs-on: ubuntu-latest
-    container:
-      image: swift:6.0
+    container: swift:${{ matrix.swift-version }}-${{ matrix.os }}
+    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+    strategy:
+      matrix:
+        os: ["noble", "jammy"]
+        swift-version: ["6.0", "6.1"]
     steps:
       - uses: actions/checkout@v4
-      - name: Cache swift package modules
-        id: cache-spm-linux
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-spm
-        with:
-          path: .build
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.swift-version }}-${{ hashFiles('Package.resolved') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.swift-version }}-
-            ${{ runner.os }}-${{ env.cache-name }}-
-      - name: Test
-        run: swift test --enable-code-coverage 
+      - uses: brightdigit/swift-build@v1
       - uses: sersoft-gmbh/swift-coverage-action@v4
         id: coverage-files
         with:          
@@ -43,99 +32,99 @@ jobs:
           files: ${{ join(fromJSON(steps.coverage-files.outputs.files), ',') }}    
   build-macos:
     name: Build on macOS
-    runs-on: ${{ matrix.os }}
+    env:
+      PACKAGE_NAME: DataThespian
+    runs-on: ${{ matrix.runs-on }}
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - xcode: "/Applications/Xcode_16.2.app"
-            os: macos-15
-            iOSVersion: "18.2"
-            watchOSVersion: "11.2"
-            watchName: "Apple Watch Series 10 (42mm)"
-            iPhoneName: "iPhone 16"
+          # SPM Build Matrix
+          - runs-on: macos-15
+            xcode: "/Applications/Xcode_16.1.app"
+          - runs-on: macos-15
+            xcode: "/Applications/Xcode_16.3.app"
+          
+          # iOS Build Matrix
+          - type: ios
+            runs-on: macos-15
+            xcode: "/Applications/Xcode_16.1.app"
+            deviceName: "iPhone 16"
+            osVersion: "18.1"
+          - type: ios
+            runs-on: macos-15
+            xcode: "/Applications/Xcode_16.3.app"
+            deviceName: "iPhone 16 Pro"
+            osVersion: "18.4"
+  
+          # watchOS Build Matrix
+          - type: watchos
+            runs-on: macos-15
+            xcode: "/Applications/Xcode_16.1.app"
+            deviceName: "Apple Watch Ultra 2 (49mm)"
+            osVersion: "11.1"
+          - type: watchos
+            runs-on: macos-15
+            xcode: "/Applications/Xcode_16.3.app"
+            deviceName: "Apple Watch Ultra 2 (49mm)"
+            osVersion: "11.4"
+
+          - type: visionos
+            runs-on: macos-15
+            xcode: "/Applications/Xcode_16.3.app"
+            deviceName: "Apple Vision Pro"
+            osVersion: "2.4"
+  
     steps:
       - uses: actions/checkout@v4
-      - name: Cache swift package modules
-        id: cache-spm-macos
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-spm
+
+      - name: Build and Test
+        uses: brightdigit/swift-build@v1
         with:
-          path: .build
-          key: ${{ matrix.os }}-build-${{ env.cache-name }}-${{ matrix.xcode }}-${{ hashFiles('Package.resolved') }}
-          restore-keys: |
-            ${{ matrix.os }}-build-${{ env.cache-name }}-${{ matrix.xcode }}-
-      - name: Cache mint
-        if: startsWith(matrix.xcode,'/Applications/Xcode_16.2')
-        id: cache-mint
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-mint
+          scheme: ${{ env.PACKAGE_NAME }}
+          type: ${{ matrix.type }}
+          xcode: ${{ matrix.xcode }}
+          deviceName: ${{ matrix.deviceName }}
+          osVersion: ${{ matrix.osVersion }}
+          
+      # Common Coverage Steps
+      - name: Process Coverage
+        uses: sersoft-gmbh/swift-coverage-action@v4
+  
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v4
         with:
-          path: .mint
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('Mintfile') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - name: Set Xcode Name
-        run: echo "XCODE_NAME=$(basename -- ${{ matrix.xcode }} | sed 's/\.[^.]*$//' | cut -d'_' -f2)" >> $GITHUB_ENV
-      - name: Setup Xcode
-        run: sudo xcode-select -s ${{ matrix.xcode }}/Contents/Developer || (sudo ls -1 /Applications | grep "Xcode")
-      - name: Enable Swift Testing
-        run: |
-          mkdir -p ~/Library/org.swift.swiftpm/security/        
-          cp macros.json ~/Library/org.swift.swiftpm/security/        
-      - name: Install mint
-        if: startsWith(matrix.xcode,'/Applications/Xcode_16.2')
-        run: |
-          brew update
-          brew install mint
-      - name: Build
-        run: swift build
-      - name: Run Swift Package tests
-        run: swift test --enable-code-coverage
-      - uses: sersoft-gmbh/swift-coverage-action@v4
-        id: coverage-files-spm
-        with:          
-          fail-on-empty-output: true
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4        
-        with:
-          files: ${{ join(fromJSON(steps.coverage-files-spm.outputs.files), ',') }} 
           token: ${{ secrets.CODECOV_TOKEN }}
-          flags: macOS,${{ env.XCODE_NAME }},${{ matrix.runs-on }}
-      - name: Clean up spm build directory
-        run: rm -rf .build
+          flags: ${{ matrix.type && format('{0}{1}', matrix.type, matrix.osVersion) || 'spm' }}
+
+  lint:
+    name: Linting
+    if: "!contains(github.event.head_commit.message, 'ci skip')"  
+    runs-on: ubuntu-latest
+    needs: [build-ubuntu, build-macos]
+    env:
+      MINT_PATH: .mint/lib
+      MINT_LINK_PATH: .mint/bin
+    steps:
+      - uses: actions/checkout@v4    
+      - name: Cache mint
+        id: cache-mint
+        uses: actions/cache@v4  
+        env:
+          cache-name: cache
+        with:
+          path: |
+            .mint
+            Mint         
+          key: ${{ runner.os }}-mint-${{ hashFiles('**/Mintfile') }}
+          restore-keys: |
+            ${{ runner.os }}-mint-  
+      - name: Install mint
+        if: steps.cache-mint.outputs.cache-hit != 'true'
+        run: |
+          git clone https://github.com/yonaskolb/Mint.git
+          cd Mint
+          swift run mint install yonaskolb/mint
       - name: Lint
-        run: ./scripts/lint.sh
-        if: startsWith(matrix.xcode,'/Applications/Xcode_16.2')
-      - name: Run iOS target tests
-        run: xcodebuild test -scheme ${{ env.PACKAGE_NAME }} -destination 'platform=iOS Simulator,name=${{ matrix.iPhoneName }},OS=${{ matrix.iOSVersion }}' -enableCodeCoverage YES build test
-      - uses: sersoft-gmbh/swift-coverage-action@v4
-        id: coverage-files-iOS
-        with:          
-          fail-on-empty-output: true
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4       
-        with:
-          fail_ci_if_error: true
-          verbose: true        
-          token: ${{ secrets.CODECOV_TOKEN }}  
-          files: ${{ join(fromJSON(steps.coverage-files-iOS.outputs.files), ',') }}   
-          flags: iOS,iOS${{ matrix.iOSVersion }},macOS,${{ env.XCODE_NAME }}  
-      - name: Run watchOS target tests
-        run: xcodebuild test -scheme ${{ env.PACKAGE_NAME }} -destination 'platform=watchOS Simulator,name=${{ matrix.watchName }},OS=${{ matrix.watchOSVersion }}' -enableCodeCoverage YES build test
-      - uses: sersoft-gmbh/swift-coverage-action@v4
-        id: coverage-files-watchOS
-        with:          
-          fail-on-empty-output: true
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4       
-        with:
-          fail_ci_if_error: true
-          verbose: true        
-          token: ${{ secrets.CODECOV_TOKEN }}  
-          files: ${{ join(fromJSON(steps.coverage-files-watchOS.outputs.files), ',') }}   
-          flags: watchOS,watchOS${{ matrix.watchOSVersion }},macOS,${{ env.XCODE_NAME }}
+        run: ./Scripts/lint.sh

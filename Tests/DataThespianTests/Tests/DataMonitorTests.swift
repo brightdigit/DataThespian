@@ -11,40 +11,40 @@ import Testing
   @Suite(.enabled(if: swiftDataIsAvailable()), .serialized)
   internal struct DataMonitorTests {
     private actor MockAgent: DataAgent {
+      fileprivate private(set) var receivedUpdates: [any DatabaseChangeSet] = []
       let agentID: UUID
 
       init(agentID: UUID = UUID()) {
         self.agentID = agentID
       }
+
       nonisolated func onUpdate(_ update: any DataThespian.DatabaseChangeSet) {
         Task {
           await self.notify(update)
         }
       }
 
-      func finish() async {
+      fileprivate func finish() async {
       }
 
-      private(set) var receivedUpdates: [any DatabaseChangeSet] = []
-
-      func notify(_ update: any DatabaseChangeSet) {
+      fileprivate func notify(_ update: any DatabaseChangeSet) {
         receivedUpdates.append(update)
       }
     }
 
     private final class MockAgentRegister: AgentRegister {
-      func agent() async -> DataMonitorTests.MockAgent {
-        agent
-      }
-
       typealias AgentType = MockAgent
 
-      let id: String
-      let agent: MockAgent
+      fileprivate let id: String
+      private let agent: MockAgent
 
-      init(id: String, agent: MockAgent) {
+      fileprivate init(id: String, agent: MockAgent) {
         self.id = id
         self.agent = agent
+      }
+
+      fileprivate func agent() async -> DataMonitorTests.MockAgent {
+        agent
       }
     }
 

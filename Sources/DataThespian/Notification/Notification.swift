@@ -45,12 +45,12 @@
 
       return Set(objects.compactMap(ManagedObjectMetadata.init(managedObject:)))
     }
-    
+
     internal func managedObjectIDs(key: String) -> Set<ManagedObjectMetadata>? {
       guard let objectIDs = userInfo?[key] as? Set<NSManagedObjectID> else {
         return nil
       }
-      
+
       return Set(objectIDs.compactMap(ManagedObjectMetadata.init(objectID:)))
     }
   }

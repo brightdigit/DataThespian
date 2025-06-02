@@ -52,25 +52,23 @@
     import CoreData
 
     extension ManagedObjectMetadata {
-      
       internal init?(objectID: NSManagedObjectID) {
         let persistentIdentifier: PersistentIdentifier
         do {
-          persistentIdentifier = try  objectID.persistentIdentifier()
+          persistentIdentifier = try objectID.persistentIdentifier()
         } catch {
           assertionFailure(error: error)
           return nil
         }
-       
-        
+
         guard let entityName = objectID.entityName else {
           assertionFailure("Missing entity name.")
           return nil
         }
-       
+
         self.init(entityName: entityName, persistentIdentifier: persistentIdentifier)
       }
-      
+
       /// Initializes a `ManagedObjectMetadata` instance with the provided `NSManagedObject`.
       ///
       /// - Parameter managedObject: The `NSManagedObject` instance to get the metadata from.

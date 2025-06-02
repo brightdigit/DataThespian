@@ -7,12 +7,10 @@ import PackageDescription
 let swiftSettings: [SwiftSetting] = [
   SwiftSetting.enableExperimentalFeature("AccessLevelOnImport"),
   SwiftSetting.enableExperimentalFeature("BitwiseCopyable"),
-  SwiftSetting.enableExperimentalFeature("GlobalActorIsolatedTypesUsability"),
   SwiftSetting.enableExperimentalFeature("IsolatedAny"),
   SwiftSetting.enableExperimentalFeature("MoveOnlyPartialConsumption"),
   SwiftSetting.enableExperimentalFeature("NestedProtocols"),
   SwiftSetting.enableExperimentalFeature("NoncopyableGenerics"),
-  SwiftSetting.enableExperimentalFeature("RegionBasedIsolation"),
   SwiftSetting.enableExperimentalFeature("TransferringArgsAndResults"),
   SwiftSetting.enableExperimentalFeature("VariadicGenerics"),
 

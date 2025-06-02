@@ -30,24 +30,26 @@ internal struct BasicDatabaseTests {
     #if canImport(SwiftData)
       let database = try TestingDatabase(for: Parent.self, Child.self)
       let parentID = UUID()
-      
+
       // Test insert
       try await database.withModelContext { context in
         context.insert(Parent(id: parentID))
         try context.save()
       }
-      
+
       // Verify insert
       let initialCount = await database.fetch(for: .all(Parent.self)) { parents in
         parents.count
       }
       #expect(initialCount == 1)
-      
+
       // Test delete using predicate
-      try await database.delete(.predicate(#Predicate<Parent> { parent in
-        parent.id == parentID
-      }))
-      
+      try await database.delete(
+        .predicate(
+          #Predicate<Parent> { parent in
+            parent.id == parentID
+          }))
+
       // Verify delete
       let finalCount = await database.fetch(for: .all(Parent.self)) { parents in
         parents.count
@@ -59,7 +61,7 @@ internal struct BasicDatabaseTests {
   @Test internal func testDeleteAll() async throws {
     #if canImport(SwiftData)
       let database = try TestingDatabase(for: Parent.self, Child.self)
-      
+
       // Insert multiple parents
       try await database.withModelContext { context in
         for _ in 0..<5 {
@@ -67,16 +69,15 @@ internal struct BasicDatabaseTests {
         }
         try context.save()
       }
-      
+
       // Delete all parents
       try await database.delete(.all(Parent.self))
-      
-      
+
       // Verify all parents were deleted
       let count = await database.fetch(for: .all(Parent.self)) { parents in
         parents.count
       }
-      #expect(count == 0)
+      #expect(isEmpty)
     #endif
   }
-} 
+}

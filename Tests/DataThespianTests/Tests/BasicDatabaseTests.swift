@@ -48,7 +48,9 @@ internal struct BasicDatabaseTests {
         .predicate(
           #Predicate<Parent> { parent in
             parent.id == parentID
-          }))
+          }
+        )
+      )
 
       // Verify delete
       let finalCount = await database.fetch(for: .all(Parent.self)) { parents in

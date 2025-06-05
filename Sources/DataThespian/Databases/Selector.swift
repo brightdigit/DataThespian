@@ -126,4 +126,15 @@
       .descriptor(.init())
     }
   }
+
+  extension Selector.Delete {
+    /// Creates a `Selector.Delete` case that deletes all `PersistentModel` instances of the provided type.
+    ///
+    /// - Parameter type: The type of `PersistentModel` to fetch.
+    /// - Returns: A `Selector.Delete` case
+    /// that can be used to delete all `PersistentModel` instances of the provided type.
+    public static func all(_ type: T.Type) -> Selector.Delete {
+      .all
+    }
+  }
 #endif

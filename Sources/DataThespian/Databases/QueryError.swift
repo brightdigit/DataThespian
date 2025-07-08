@@ -35,5 +35,18 @@
     ///
     /// - Parameter selector: The `Selector.Get` instance that was used to perform the query.
     case itemNotFound(Selector<PersistentModelType>.Get)
+    
+    /// Indicates that the model's backing data has been invalidated.
+    ///
+    /// - Parameter model: The `Model` instance that has invalidated backing data.
+    case modelInvalidated(Model<PersistentModelType>)
+    
+    /// Indicates that the model context has been invalidated.
+    case contextInvalidated
+    
+    /// Indicates that accessing the model failed due to backing data issues.
+    ///
+    /// - Parameter underlyingError: The underlying error that caused the failure.
+    case backingDataError(Error)
   }
 #endif

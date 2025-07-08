@@ -1,13 +1,13 @@
 {
-  "originHash" : "218abd6c7fefffa1c55b8836619484f00b1390a28b87c886220a143df08c3ed2",
+  "originHash" : "0d139503e5eacc3774833b03320e68d2889c4688ca54b93fb819451be9c916dc",
   "pins" : [
     {
       "identity" : "felinepine",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/brightdigit/FelinePine.git",
       "state" : {
-        "revision" : "54c727e0b069ffda7f80db7af99bfab2518e0780",
-        "version" : "1.0.0-beta.2"
+        "revision" : "7abf84e0cded44bc99fae106030e8e25e270dae0",
+        "version" : "1.0.0"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swiftlang/swift-docc-plugin",
       "state" : {
-        "revision" : "85e4bb4e1cd62cec64a4b8e769dcefdf0c5b9d64",
-        "version" : "1.4.3"
+        "revision" : "3e4f133a77e644a5812911a0513aeb7288b07d06",
+        "version" : "1.4.5"
       }
     },
     {
@@ -26,15 +26,6 @@
       "state" : {
         "revision" : "b45d1f2ed151d057b54504d653e0da5552844e34",
         "version" : "1.0.0"
-      }
-    },
-    {
-      "identity" : "swift-log",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-log.git",
-      "state" : {
-        "revision" : "9cb486020ebf03bfa5b5df985387a14a98744537",
-        "version" : "1.6.1"
       }
     }
   ],

@@ -59,10 +59,40 @@
     /// Retrieves a persistent model from the context.
     /// - Parameter model: A `Model<T>` instance representing the persistent model to fetch.
     /// - Returns: The `T` instance of the persistent model.
-    /// - Throws: `QueryError.itemNotFound` if the model is not found in the context.
+    /// - Throws: `QueryError.itemNotFound` if the model is not found in the context,
+    /// or other `QueryError` types for backing data issues.
     public func get<T>(_ model: Model<T>) throws -> T
     where T: PersistentModel {
-      guard let item = try self.getOptional(model) else {
+      do {
+        guard let item = try self.getOptional(model) else {
+          throw QueryError.itemNotFound(.model(model))
+        }
+        return item
+      } catch let error as QueryError<T> {
+        // Handle model invalidation errors with retry logic
+        switch error {
+        case .modelInvalidated, .contextInvalidated:
+          // Try with retry logic
+          if let item = try self.getOptionalWithRetry(model) {
+            return item
+          } else {
+            throw QueryError.itemNotFound(.model(model))
+          }
+        default:
+          throw error
+        }
+      }
+    }
+    
+    /// Retrieves a persistent model from the context with retry logic for invalidated models.
+    /// - Parameter model: A `Model<T>` instance representing the persistent model to fetch.
+    /// - Parameter maxRetries: Maximum number of retry attempts (default: 3)
+    /// - Returns: The `T` instance of the persistent model.
+    /// - Throws: `QueryError.itemNotFound` if the model is not found in the context after all retries,
+    /// or other `QueryError` types for backing data issues.
+    public func getWithRetry<T>(_ model: Model<T>, maxRetries: Int = 3) throws -> T
+    where T: PersistentModel {
+      guard let item = try self.getOptionalWithRetry(model, maxRetries: maxRetries) else {
         throw QueryError.itemNotFound(.model(model))
       }
       return item

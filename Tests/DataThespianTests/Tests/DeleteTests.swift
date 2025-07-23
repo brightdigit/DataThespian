@@ -115,4 +115,38 @@ internal struct DeleteTests {
       #expect(parentCount == 0)
     #endif
   }
+
+  @Test internal func testFetchModelAfterDelete() async throws {
+    #if canImport(SwiftData)
+      let database = try TestingDatabase(for: Parent.self, Child.self)
+      let parentIDs = (0..<5).map { _ in UUID() }
+
+      // Insert multiple parents
+      try await database.withModelContext { context in
+        for id in parentIDs {
+          context.insert(Parent(id: id))
+        }
+        try context.save()
+      }
+
+      // Fetch their Model representations
+      let models = await database.fetch(for: .all(Parent.self))
+      #expect(models.count == parentIDs.count)
+    
+
+      // Delete all parents
+      try await database.delete(.all(Parent.self))
+
+      // Try to fetch a property for each deleted model
+      for model in models {
+        let result = await database.getOptional(for: .model(model)) { parent -> UUID? in
+          guard let parent else {
+            return nil
+          }
+          return parent.id
+        }
+        #expect(result == nil)
+      }
+    #endif
+  }
 }

@@ -64,7 +64,7 @@
         }
       }
 
-      return try closure(self[model.persistentIdentifier, as: PersistentModelType.self])
+      return try closure(self[model.persistentIdentifier, as: PersistentModelType.self]?.flatOptional())
     }
 
     /// Fetches an array of models matching the given list selector

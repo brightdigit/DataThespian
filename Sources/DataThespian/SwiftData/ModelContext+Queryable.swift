@@ -82,7 +82,7 @@
       case .predicate(let predicate):
         persistentModel = try self.first(where: predicate)
       }
-      return try closure(persistentModel)
+      return try closure(persistentModel?.flatOptional())
     }
 
     /// Retrieves a list of persistent models based on a selector and performs a closure on it.

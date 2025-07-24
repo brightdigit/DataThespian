@@ -138,15 +138,16 @@ internal struct DeleteTests {
       try await database.delete(.all(Parent.self))
 
       // Try to fetch a property for each deleted model
-      for model in models {
-        let result = await database.getOptional(for: .model(model)) { parent -> UUID? in
-          guard let parent else {
-            return nil
-          }
-          return parent.id
-        }
-        #expect(result == nil)
-      }
+    let result =  await database.fetch(for: models.map(Selector.Get.model)) { $0.id }
+//      for model in models {
+//        let result = await database.getOptional(for: .model(model)) { parent -> UUID? in
+//          guard let parent else {
+//            return nil
+//          }
+//          return parent.id
+//        }
+    #expect(result.isEmpty)
+      
     #endif
   }
 }

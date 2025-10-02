@@ -30,6 +30,7 @@
 #if canImport(SwiftData)
   import os.log
   public import SwiftData
+import Foundation
 
   extension ModelActor where Self: Database {
     /// A Boolean value indicating whether the current thread is the background thread.
@@ -64,7 +65,16 @@
         }
       }
 
-      return try closure(self[model.persistentIdentifier, as: PersistentModelType.self])
+      let persistentIdentifier = model.persistentIdentifier
+      // return try closure(self[model.persistentIdentifier, as: PersistentModelType.self])
+      
+      let fetchDescriptor = FetchDescriptor<PersistentModelType>(predicate: #Predicate{
+        $0.persistentModelID == persistentIdentifier
+      } ,fetchLimit: 1)
+      
+      return try await self.withModelContext { modelContext in
+        try closure(modelContext.fetch(fetchDescriptor).first)
+      }
     }
 
     /// Fetches an array of models matching the given list selector

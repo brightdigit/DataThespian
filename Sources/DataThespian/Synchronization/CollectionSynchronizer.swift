@@ -34,7 +34,7 @@
     var entry: PersistentModelType?
   }
   /// A protocol that defines the synchronization behavior between a persistent model and data.
-  public protocol CollectionSynchronizer {
+public protocol CollectionSynchronizer : SendableMetatype {
     /// The type of the persistent model.
     associatedtype PersistentModelType: PersistentModel
 

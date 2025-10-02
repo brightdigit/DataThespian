@@ -14,10 +14,10 @@ jobs:
     strategy:
       matrix:
         os: ["noble", "jammy"]
-        swift-version: ["6.0", "6.1"]
+        swift-version: ["6.0", "6.1", "6.2"]
     steps:
       - uses: actions/checkout@v4
-      - uses: brightdigit/swift-build@v1
+      - uses: brightdigit/swift-build@v1.3.4
       - uses: sersoft-gmbh/swift-coverage-action@v4
         id: coverage-files
         with:          
@@ -45,6 +45,8 @@ jobs:
             xcode: "/Applications/Xcode_16.1.app"
           - runs-on: macos-15
             xcode: "/Applications/Xcode_16.3.app"
+          - runs-on: macos-26
+            xcode: "/Applications/Xcode_26.0.app"
           
           # iOS Build Matrix
           - type: ios
@@ -57,6 +59,12 @@ jobs:
             xcode: "/Applications/Xcode_16.3.app"
             deviceName: "iPhone 16 Pro"
             osVersion: "18.4"
+          - type: ios
+            runs-on: macos-26
+            xcode: "/Applications/Xcode_26.0.app"
+            deviceName: "iPhone 17 Pro"
+            osVersion: "26.0"
+            download-platform: true
   
           # watchOS Build Matrix
           - type: watchos
@@ -69,18 +77,31 @@ jobs:
             xcode: "/Applications/Xcode_16.3.app"
             deviceName: "Apple Watch Ultra 2 (49mm)"
             osVersion: "11.4"
+            download-platform: true
+          - type: watchos
+            runs-on: macos-26
+            xcode: "/Applications/Xcode_26.0.app"
+            deviceName: "Apple Watch Ultra 3 (49mm)"
+            osVersion: "26.0"
+            download-platform: true
 
           - type: visionos
             runs-on: macos-15
             xcode: "/Applications/Xcode_16.3.app"
             deviceName: "Apple Vision Pro"
             osVersion: "2.4"
+          - type: visionos
+            runs-on: macos-26
+            xcode: "/Applications/Xcode_26.0.app"
+            deviceName: "Apple Vision Pro"
+            osVersion: "26.0"
+            download-platform: true
   
     steps:
       - uses: actions/checkout@v4
 
       - name: Build and Test
-        uses: brightdigit/swift-build@v1
+        uses: brightdigit/swift-build@v1.3.4
         with:
           scheme: ${{ env.PACKAGE_NAME }}
           type: ${{ matrix.type }}

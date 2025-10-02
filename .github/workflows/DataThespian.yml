@@ -54,6 +54,7 @@ jobs:
             xcode: "/Applications/Xcode_16.1.app"
             deviceName: "iPhone 16"
             osVersion: "18.1"
+            download-platform: true
           - type: ios
             runs-on: macos-15
             xcode: "/Applications/Xcode_16.3.app"
@@ -72,6 +73,7 @@ jobs:
             xcode: "/Applications/Xcode_16.1.app"
             deviceName: "Apple Watch Ultra 2 (49mm)"
             osVersion: "11.1"
+            download-platform: true
           - type: watchos
             runs-on: macos-15
             xcode: "/Applications/Xcode_16.3.app"

@@ -28,6 +28,7 @@
 //
 
 #if canImport(SwiftData)
+import Foundation
   import os.log
   public import SwiftData
 
@@ -64,7 +65,16 @@
         }
       }
 
-      return try closure(self[model.persistentIdentifier, as: PersistentModelType.self])
+      let persistentIdentifier = model.persistentIdentifier
+      // return try closure(self[model.persistentIdentifier, as: PersistentModelType.self])
+
+      let fetchDescriptor = FetchDescriptor<PersistentModelType>(predicate: #Predicate{
+        $0.persistentModelID == persistentIdentifier
+      }, fetchLimit: 1)
+
+      return try await self.withModelContext { modelContext in
+        try closure(modelContext.fetch(fetchDescriptor).first)
+      }
     }
 
     /// Fetches an array of models matching the given list selector

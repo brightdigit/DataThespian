@@ -18,6 +18,7 @@ internal class ContentObject {
   private var databaseChangeSubscription: AnyCancellable?
   private var database: (any Database)?
   internal private(set) var items = [ItemViewModel]()
+  internal private(set) var lastDeletedItems = [Model<Item>]()
   internal var selectedItemsID: Set<ItemViewModel.ID> = []
   private var newItem: AnyCancellable?
   internal var error: (any Error)?
@@ -49,6 +50,7 @@ internal class ContentObject {
   private static func deleteModels(_ models: [Model<Item>], from database: (any Database))
     async throws
   {
+    
     try await database.deleteModels(models)
   }
 
@@ -87,6 +89,20 @@ internal class ContentObject {
     }
     self.deleteItems(models)
   }
+  
+  func causeCrash () {
+    assert(database != nil)
+    guard let database else{
+      return
+    }
+    let selectors : [DataThespian.Selector<Item>.Get] = self.lastDeletedItems.map(DataThespian.Selector<Item>.Get.model)
+    Task {
+      await database.fetch(for: selectors) { models in
+        print(models.timestamp)
+      }
+    }
+  }
+  
   internal func deleteItems(offsets: IndexSet) {
     let models =
       offsets
@@ -95,6 +111,7 @@ internal class ContentObject {
 
     assert(models.count == offsets.count)
 
+    self.lastDeletedItems = models
     self.deleteItems(models)
   }
 
@@ -105,6 +122,7 @@ internal class ContentObject {
     Task {
       try await Self.deleteModels(models, from: database)
       try await database.save()
+      self.lastDeletedItems = models
     }
   }
 
@@ -122,7 +140,7 @@ internal class ContentObject {
         let item = try modelContext.get(item.model)
         let child = try modelContext.get(childModel)
         assert(child != nil && item != nil)
-        child?.parent = item
+        child.parent = item
         try modelContext.save()
       }
     }
@@ -134,7 +152,7 @@ internal class ContentObject {
     }
     Task {
       let insertedModel = await database.insert { Item(timestamp: date) }
-      print("inserted:", insertedModel.isTemporary)
+      //print("inserted:", insertedModel.isTemporary)
       try await database.save()
       let savedModel = try await database.get(
         for: .predicate(
@@ -143,7 +161,7 @@ internal class ContentObject {
           }
         )
       )
-      print("saved:", savedModel.isTemporary)
+      //print("saved:", savedModel.isTemporary)
     }
   }
 }

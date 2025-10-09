@@ -35,6 +35,11 @@ internal struct ContentView: View {
             Label("Delete Selected Items", systemImage: "trash")
           }
         }
+        ToolbarItem {
+          Button(action: object.causeCrash) {
+            Label("Cause Crash", systemImage: "car.side.rear.and.collision.and.car.side.front")
+          }.disabled(self.object.lastDeletedItems.isEmpty)
+        }
       }
     } detail: {
       let selectedItems = object.selectedItems
